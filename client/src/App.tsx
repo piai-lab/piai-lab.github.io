@@ -9,7 +9,7 @@ import Home from "./pages/Home";
 import Team from "./pages/Team";
 
 function Router() {
-  return <Switch><Route path="/" component={Home} /><Route path="/team" component={Team} /><Route path="/404" component={NotFound} /><Route component={NotFound} /></Switch>;
+  return <Switch><Route path="/" component={Home} /><Route path="/team" component={Team} /><Route path="/team/" component={Team} /><Route path="/404" component={NotFound} /><Route component={NotFound} /></Switch>;
 }
 
 export default function App() {
