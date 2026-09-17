@@ -71,13 +71,6 @@ const members = [
     roleEn: "AI Algorithms & Backend Engineer",
     avatar: "/team/qiuran.webp",
   },
-  {
-    nameZh: "万梦璇",
-    nameEn: "Mengxuan Wan",
-    roleZh: "药物发现 AI 工程师",
-    roleEn: "Drug Discovery AI Engineer",
-    avatar: "/team/mengxuan.webp",
-  },
 ];
 
 const collaborators = [

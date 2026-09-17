@@ -3,6 +3,7 @@
  * 视觉规则：以连续、克制的中文研究机构叙事组织内容；基础设施先于愿景；避免产品卡片、PPT 式页码和装饰性控件；首屏与收束仅使用新的统一 WebGL 粒子方案。
  */
 import { useEffect, useRef, useState } from "react";
+import ProductShowcase from "@/components/ProductShowcase";
 import {
   ArrowDown,
   ArrowLeft,
@@ -28,6 +29,7 @@ type NewsItem = {
   previewSubtitle: string;
   previewImage: string;
 };
+type ResearchItem = { date: string; title: string; href: string; venue?: string };
 
 const assets = {
   labWordmark: "/brand/piai-lab-wordmark-e.png",
@@ -61,7 +63,7 @@ function Logo({ hero = false }: { hero?: boolean }) {
 }
 
 function HeroTitle({ zh }: { zh: boolean }) {
-  const title = zh ? "让人类知识多一倍" : "Double human knowledge";
+  const title = zh ? "让人类知识增长十倍" : "Grow human knowledge tenfold";
   return (
     <h1 aria-label={title}>
       <span className="hero-title-line">{title}</span>
@@ -255,40 +257,40 @@ export default function ContentHome() {
         },
       ];
 
-  const research = zh
+  const research: ResearchItem[] = zh
     ? [
         {
           date: "2026.08",
           title:
             "KnowMeBenchV2: Evidence-Grounded Person-Centric Long-Video Understanding",
-          href: "",
+          href: "", venue: "EMNLP 2026",
         },
         {
           date: "2026.08",
           title:
             "MemGovern: Enhancing Code Agents through Learning from Governed Human Experiences",
-          href: "",
+          href: "", venue: "EMNLP 2026",
         },
         {
           date: "2026.08",
           title: "Controlled Self-Evolution for Algorithmic Code Optimization",
-          href: "",
+          href: "", venue: "EMNLP 2026",
         },
         {
           date: "2026.07",
           title:
             "Knowme-bench: Benchmarking person understanding for lifelong digital companions",
-          href: "",
+          href: "", venue: "ACL 2026",
         },
         {
           date: "2026.07",
           title: "LiveCANNBench: Benchmark SWE AI Coding for Ascend CANN",
-          href: "",
+          href: "", venue: "ACL 2026",
         },
         {
           date: "2024.12",
           title: "π-HuB: the proteomic navigator of the human body",
-          href: "https://www.nature.com/articles/s41586-024-08280-5",
+          href: "https://www.nature.com/articles/s41586-024-08280-5", venue: "Nature",
         },
       ]
     : [
@@ -296,34 +298,34 @@ export default function ContentHome() {
           date: "AUG 2026",
           title:
             "KnowMeBenchV2: Evidence-Grounded Person-Centric Long-Video Understanding",
-          href: "",
+          href: "", venue: "EMNLP 2026",
         },
         {
           date: "AUG 2026",
           title:
             "MemGovern: Enhancing Code Agents through Learning from Governed Human Experiences",
-          href: "",
+          href: "", venue: "EMNLP 2026",
         },
         {
           date: "AUG 2026",
           title: "Controlled Self-Evolution for Algorithmic Code Optimization",
-          href: "",
+          href: "", venue: "EMNLP 2026",
         },
         {
           date: "JUL 2026",
           title:
             "Knowme-bench: Benchmarking person understanding for lifelong digital companions",
-          href: "",
+          href: "", venue: "ACL 2026",
         },
         {
           date: "JUL 2026",
           title: "LiveCANNBench: Benchmark SWE AI Coding for Ascend CANN",
-          href: "",
+          href: "", venue: "ACL 2026",
         },
         {
           date: "DEC 2024",
           title: "π-HuB: the proteomic navigator of the human body",
-          href: "https://www.nature.com/articles/s41586-024-08280-5",
+          href: "https://www.nature.com/articles/s41586-024-08280-5", venue: "Nature",
         },
       ];
 
@@ -409,232 +411,14 @@ export default function ContentHome() {
         />
       </section>
 
-      <section
-        className="infrastructure-section content-section"
-        id="infrastructure"
-      >
-        <div className="infrastructure-heading section-heading-only section-heading-centered" id="vision">
-          <h2 className="section-title">{zh ? "愿景" : "Vision"}</h2>
-          <p className="vision-infrastructure-statement">
-            {zh
-              ? "让人工智能以可靠高效的方式参与知识生成"
-              : "Make AI a reliable, efficient participant in knowledge generation"}
+      <section className="product-vision" id="vision">
+        <div className="vision-product-heading">
+          <h2>{zh ? "愿景" : "Vision"}</h2>
+          <p>
+            {zh ? "让人工智能以可靠高效的方式参与知识生成" : "Enabling the genesis of new knowledge through reliable, efficient AI"}
           </p>
         </div>
-        <div
-          className="infra-atlas"
-          aria-label={
-            zh
-              ? "πAI Lab 科研基础设施能力网络"
-              : "πAI Lab research infrastructure capability network"
-          }
-        >
-          <div className="infra-atlas-intro">
-            <span>
-              {zh ? "科学智能的研究能力网络" : "RESEARCH CAPABILITY NETWORK"}
-            </span>
-          </div>
-          <div className="infra-network-primary">
-            <div className="infra-foundation-network">
-              <article>
-                <span>DATA</span>
-                <b>OmniData</b>
-                <p>
-                  {zh
-                    ? "多源生物医学数据的收集、清洗与统一入口"
-                    : "Biomedical data collection, cleaning and access"}
-                </p>
-              </article>
-              <article>
-                <span>METHODS</span>
-                <b>OmniEngine</b>
-                <p>
-                  {zh
-                    ? "经验证的分析方法、算法与工具能力"
-                    : "Validated analytical methods, algorithms and tools"}
-                </p>
-              </article>
-              <article>
-                <span>KNOWLEDGE</span>
-                <b>OmniScholar</b>
-                <p>
-                  {zh
-                    ? "文献、专利、指南与教科书的知识组织"
-                    : "Literature, patents, guidelines and textbooks"}
-                </p>
-              </article>
-              <article>
-                <span>DISCOVERY</span>
-                <b>OmniKnowledge</b>
-                <p>
-                  {zh
-                    ? "新知识在研究过程中的沉淀、组织与复用"
-                    : "Knowledge accumulation, organization and reuse"}
-                </p>
-              </article>
-            </div>
-            <div className="infra-network-link" aria-hidden="true">
-              <span />
-            </div>
-            <article className="infra-network-node">
-              <span>{zh ? "科研执行框架" : "RESEARCH EXECUTION"}</span>
-              <b>OmniHarness</b>
-              <p>
-                {zh
-                  ? "使数据、方法与知识能够在任务中被稳定调用、检验与积累"
-                  : "Stable invocation, validation and accumulation of scientific capabilities"}
-              </p>
-              <small>
-                Memory · Reasoning ·{" "}
-                {zh ? "调用 · 验证" : "Calling · Validation"}
-              </small>
-            </article>
-            <div className="infra-network-link" aria-hidden="true">
-              <span />
-            </div>
-            <article className="infra-network-node">
-              <span>
-                {zh ? "科学研究的数字大脑" : "DIGITAL BRAIN FOR SCIENCE"}
-              </span>
-              <b>OmniMind</b>
-              <p>
-                {zh
-                  ? "汇聚数据、方法、知识与研究过程，支持持续的科学智能"
-                  : "Bringing together data, methods, knowledge and research processes"}
-              </p>
-            </article>
-          </div>
-          <div
-            className="infra-system-registry"
-            aria-label={zh ? "科研支撑系统" : "Research support systems"}
-          >
-            <article>
-              <b>OmniPatent</b>
-              <p>{zh ? "专利研究与写作" : "Patent research and writing"}</p>
-            </article>
-            <article>
-              <b>OmniPlotter</b>
-              <p>
-                {zh
-                  ? "统计图与原理图生成"
-                  : "Statistical and schematic figures"}
-              </p>
-            </article>
-            <article>
-              <b>OmniSketch</b>
-              <p>{zh ? "科研技术路线图" : "Research technical roadmaps"}</p>
-            </article>
-            <article>
-              <b>OmniSlide</b>
-              <p>
-                {zh
-                  ? "研究成果叙事与呈现"
-                  : "Research storytelling and presentation"}
-              </p>
-            </article>
-            <article>
-              <b>AI4S News</b>
-              <p>
-                {zh
-                  ? "AI for Science 前沿追踪"
-                  : "AI for Science frontier tracking"}
-              </p>
-            </article>
-            <article>
-              <b>Euler</b>
-              <p>
-                {zh
-                  ? "组织知识与协作上下文"
-                  : "Organizational knowledge and context"}
-              </p>
-            </article>
-            <article>
-              <b>Haros</b>
-              <p>
-                {zh
-                  ? "多智能体科研工作台"
-                  : "Unified workspace for research agents"}
-              </p>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section className="vision-section content-section" id="vision">
-        <div className="section-heading-only section-heading-centered">
-          <h2 className="section-title">{zh ? "愿景" : "Vision"}</h2>
-        </div>
-        <div className="vision-manifesto">
-          <div className="vision-proposition">
-            <h3>
-              {zh
-                ? "让人工智能以可靠高效的方式参与知识生成"
-                : "Make AI a reliable, efficient participant in knowledge generation"}
-            </h3>
-          </div>
-          <figure className="vision-artwork">
-            <img src={assets.visionArtwork} alt={zh ? "由证据、路径与验证标记构成的知识生成图景" : "An artwork of knowledge generation, made of evidence, paths and verification marks"} />
-          </figure>
-          <div
-            className="vision-continuum"
-            aria-label={zh ? "研究重点" : "Research focus"}
-          >
-            <p>{zh ? "研究重点" : "RESEARCH FOCUS"}</p>
-            <ol>
-              <li>
-                <span>01</span>
-                <div>
-                  <b>{zh ? "科学证据" : "Scientific evidence"}</b>
-                  <small>
-                    {zh
-                      ? "让文献、专利、数据、方法与主张可追溯、可审查、可复用。"
-                      : "Traceable, examinable and reusable evidence."}
-                  </small>
-                </div>
-              </li>
-              <li>
-                <span>02</span>
-                <div>
-                  <b>{zh ? "可靠工作流" : "Reliable workflows"}</b>
-                  <small>
-                    {zh
-                      ? "把溯源、评估、可复现、恢复与人工监督纳入 AI 辅助研究。"
-                      : "Provenance, evaluation, reproducibility and oversight."}
-                  </small>
-                </div>
-              </li>
-              <li>
-                <span>03</span>
-                <div>
-                  <b>{zh ? "科学表达" : "Scientific communication"}</b>
-                  <small>
-                    {zh
-                      ? "创建清晰、可编辑、可验证的研究成果，让表达始终连着证据。"
-                      : "Editable, verifiable research artifacts connected to evidence."}
-                  </small>
-                </div>
-              </li>
-              <li>
-                <span>04</span>
-                <div>
-                  <b>{zh ? "生物医学研究" : "Biomedical research"}</b>
-                  <small>
-                    {zh
-                      ? "在医学与生命科学中，用高要求的真实问题检验方法与系统。"
-                      : "Testing ideas on demanding real-world biomedical questions."}
-                  </small>
-                </div>
-              </li>
-            </ol>
-            <div className="vision-principles">
-              <b>{zh ? "我们如何工作" : "HOW WE WORK"}</b>
-              <span>{zh ? "开放研究" : "Open research"}</span>
-              <span>{zh ? "证据优先" : "Evidence first"}</span>
-              <span>{zh ? "可复现" : "Reproducible"}</span>
-              <span>{zh ? "研究者主导" : "Researcher led"}</span>
-            </div>
-          </div>
-        </div>
+        <ProductShowcase zh={zh} />
       </section>
 
       <section className="research-directory content-section" id="research">
@@ -652,12 +436,12 @@ export default function ContentHome() {
                 key={item.title}
               >
                 <time>{item.date}</time>
-                <h3>{item.title}</h3>
+                <h3>{item.title}</h3><span className="research-venue">{item.venue}</span>
               </a>
             ) : (
               <div className="research-item research-pending" key={item.title}>
                 <time>{item.date}</time>
-                <h3>{item.title}</h3>
+                <h3>{item.title}</h3><span className="research-venue">{item.venue}</span>
               </div>
             )
           )}
