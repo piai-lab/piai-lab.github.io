@@ -5,6 +5,8 @@
 import PoissonDiskSampling from "poisson-disk-sampling";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import symbolSvg from "@/assets/piai-lab-symbol.svg?raw";
+import symbolUrl from "@/assets/piai-lab-symbol.svg";
 
 type ParticleTone = "paper" | "dark" | "morph";
 
@@ -149,7 +151,7 @@ export default function ResearchParticleField({ tone = "paper" }: { tone?: Parti
 /**
  * 底部收束专用形变场。
  * 视觉规则：采用用户 MorphingParticlesComponent 的“基础散点 → 目标点位 → hover/pulse 推进”管线；
- * 目标形状以 πAI Lab 的无限环语义独立生成，不复用缺失的第三方 cube/individual 纹理。
+ * 目标点位直接采样已确认的品牌母版，静态回退也使用同一份 SVG。
  */
 const morphSimFragment = `
 precision highp float;
@@ -174,9 +176,46 @@ precision highp float;
 uniform vec3 uColor1;uniform vec3 uColor2;uniform vec3 uColor3;uniform float uTime;varying float vScale;varying float vVelocity;varying vec2 vPosition;
 void main(){vec2 p=gl_PointCoord-.5;float circle=smoothstep(.5,.38,length(p));if(circle<.02)discard;float mixValue=clamp(.5+.5*sin(vPosition.x*5.3+vPosition.y*4.1+uTime*.45),0.,1.);vec3 color=mix(uColor1,uColor2,mixValue);color=mix(color,uColor3,smoothstep(.72,1.,mixValue));float alpha=circle*smoothstep(.02,.21,vScale)*(.38+.62*vVelocity);gl_FragColor=vec4(color,alpha);}`;
 
+function sampleBrandSilhouette() {
+  const source = new DOMParser().parseFromString(symbolSvg, "image/svg+xml");
+  const viewBox = source.documentElement.getAttribute("viewBox")?.trim().split(/[\s,]+/).map(Number);
+  const context = document.createElement("canvas").getContext("2d");
+  if (!context || !viewBox || viewBox.length !== 4 || !viewBox.every(Number.isFinite)) return null;
+  const [left, top, width, height] = viewBox;
+  if (width <= 0 || height <= 0) return null;
+  const paths = Array.from(source.querySelectorAll("path"), path => ({
+    shape: new Path2D(path.getAttribute("d") || ""),
+    fillRule: path.getAttribute("fill-rule") === "evenodd" ? "evenodd" as const : "nonzero" as const,
+  }));
+  // One isotropic grid keeps both axes faithful to the canonical viewBox.
+  const step = width / 256;
+  const points: [number, number][] = [];
+  for (let y = top + step / 2; y < top + height; y += step) {
+    for (let x = left + step / 2; x < left + width; x += step) {
+      if (paths.some(path => context.isPointInPath(path.shape, x, y, path.fillRule))) {
+        points.push([(x - left - width / 2) / (width / 2), (y - top - height / 2) / (width / 2)]);
+      }
+    }
+  }
+  return points.length ? { points, aspect: height / width } : null;
+}
+
 export function MorphingParticleField() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [shouldInitialize, setShouldInitialize] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  const [unavailable, setUnavailable] = useState(false);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const onChange = () => {
+      setReady(false);
+      setReducedMotion(preference.matches);
+    };
+    preference.addEventListener("change", onChange);
+    return () => preference.removeEventListener("change", onChange);
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -189,18 +228,36 @@ export function MorphingParticleField() {
     }, { threshold: 0.01 });
     observer.observe(canvas);
     return () => observer.disconnect();
-  }, []);
+  }, [reducedMotion]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const container = canvas?.parentElement;
-    if (!canvas || !container || !shouldInitialize) return;
+    if (!canvas || !container || !shouldInitialize || reducedMotion || unavailable) return;
+    setReady(false);
+    let silhouette: ReturnType<typeof sampleBrandSilhouette>;
+    try {
+      silhouette = sampleBrandSilhouette();
+    } catch {
+      setUnavailable(true);
+      return;
+    }
+    if (!silhouette) {
+      setUnavailable(true);
+      return;
+    }
     // Do not let a lost/exhausted WebGL context take down the whole React tree.
     let renderer: THREE.WebGLRenderer;
     try {
       renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "high-performance", preserveDrawingBuffer: true, stencil: false, precision: "highp" });
     } catch {
-      canvas.classList.add("particle-field-unavailable");
+      setUnavailable(true);
+      return;
+    }
+    if (!renderer.extensions.has("EXT_color_buffer_float")) {
+      renderer.dispose();
+      renderer.forceContextLoss();
+      setUnavailable(true);
       return;
     }
     const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
@@ -221,12 +278,9 @@ export function MorphingParticleField() {
       baseData[index * 4] = x;
       baseData[index * 4 + 1] = y;
       baseData[index * 4 + 2] = .32 + ((index % 11) / 40);
-      const t = (index / count) * Math.PI * 6;
-      const r = .76 + (((index * 47) % 19) / 100);
-      const denom = 1 + Math.cos(t) * Math.cos(t);
-      const wave = Math.sin(t * 3.1 + index * .17) * .032;
-      targetData[index * 4] = (r * Math.sin(t) / denom) + wave;
-      targetData[index * 4 + 1] = (.57 * Math.sin(t) * Math.cos(t) / denom) + Math.cos(t * 2.2 + index) * .025;
+      const target = silhouette.points[Math.floor(index * silhouette.points.length / count)];
+      targetData[index * 4] = target[0];
+      targetData[index * 4 + 1] = target[1];
       targetData[index * 4 + 2] = .58;
     }
     const baseTexture = new THREE.DataTexture(baseData, size, size, THREE.RGBAFormat, THREE.FloatType);
@@ -246,9 +300,8 @@ export function MorphingParticleField() {
     for (let index = 0; index < count; index += 1) { uv[index * 2] = (index % size) / size; uv[index * 2 + 1] = Math.floor(index / size) / size; }
     geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(count * 3), 3));
     geometry.setAttribute("uv", new THREE.BufferAttribute(uv, 2));
-    const renderMaterial = new THREE.ShaderMaterial({ uniforms: { uPosition: { value: baseTexture }, uPixelRatio: { value: pixelRatio }, uParticleScale: { value: .60 }, uColor1: { value: new THREE.Color("#0b3477") }, uColor2: { value: new THREE.Color("#079a98") }, uColor3: { value: new THREE.Color("#146d8e") }, uTime: { value: 0 } }, vertexShader: morphRenderVertex, fragmentShader: morphRenderFragment, transparent: true, depthTest: false, depthWrite: false });
+    const renderMaterial = new THREE.ShaderMaterial({ uniforms: { uPosition: { value: baseTexture }, uPixelRatio: { value: pixelRatio }, uParticleScale: { value: .60 }, uColor1: { value: new THREE.Color("#e7f0ff") }, uColor2: { value: new THREE.Color("#bcd8eb") }, uColor3: { value: new THREE.Color("#ffffff") }, uTime: { value: 0 } }, vertexShader: morphRenderVertex, fragmentShader: morphRenderFragment, transparent: true, depthTest: false, depthWrite: false });
     const mesh = new THREE.Points(geometry, renderMaterial);
-    mesh.scale.set(4.5, -4.5, 4.5);
     scene.add(mesh);
     const clock = new THREE.Clock();
     let previous = 0;
@@ -257,9 +310,22 @@ export function MorphingParticleField() {
     let active = true;
     let rendered = false;
     let raf = 0;
-    const resize = () => { const rect = container.getBoundingClientRect(); renderer.setSize(Math.max(1, rect.width), Math.max(1, rect.height), false); camera.aspect = rect.width / Math.max(1, rect.height); camera.updateProjectionMatrix(); renderMaterial.uniforms.uPixelRatio.value = pixelRatio; };
+    const resize = () => {
+      const rect = container.getBoundingClientRect();
+      const width = Math.max(1, rect.width);
+      const height = Math.max(1, rect.height);
+      renderer.setSize(width, height, false);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      const visibleHeight = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.position.z;
+      const scale = Math.min(4.5, visibleHeight * camera.aspect * .84 / 2, visibleHeight * .78 / (2 * silhouette.aspect));
+      mesh.scale.set(scale, -scale, scale);
+      renderMaterial.uniforms.uPixelRatio.value = pixelRatio;
+      renderMaterial.uniforms.uParticleScale.value = Math.max(.34, Math.min(.83, width / 1200 * .83));
+    };
     const onMove = () => { targetHover = 1; };
     const onLeave = () => { targetHover = .72; };
+    const onContextLost = () => setUnavailable(true);
     const observer = new IntersectionObserver((entries) => { active = entries[0]?.isIntersecting ?? false; }, { threshold: 0 });
     observer.observe(canvas);
     const render = () => {
@@ -272,16 +338,17 @@ export function MorphingParticleField() {
       hover += (targetHover - hover) * .045;
       simMaterial.uniforms.uPosition.value = rendered ? rt1.texture : baseTexture;
       simMaterial.uniforms.uTime.value = elapsed;
-      simMaterial.uniforms.uHover.value = hover + Math.sin(elapsed * .8) * .06;
+      // Keep the emblem recognizable without hover, including on touch screens.
+      simMaterial.uniforms.uHover.value = Math.min(1, .84 + (hover + Math.sin(elapsed * .8) * .06) * .16);
       renderer.setRenderTarget(rt2);
       renderer.clear();
       renderer.render(simScene, simCamera);
       renderer.setRenderTarget(null);
       renderMaterial.uniforms.uPosition.value = rendered ? rt2.texture : baseTexture;
       renderMaterial.uniforms.uTime.value = elapsed;
-      renderMaterial.uniforms.uParticleScale.value = (renderer.domElement.width / pixelRatio) / 2000 * .83;
       renderer.clear();
       renderer.render(scene, camera);
+      if (!rendered) setReady(true);
       const swap = rt1;
       rt1 = rt2;
       rt2 = swap;
@@ -291,9 +358,14 @@ export function MorphingParticleField() {
     window.addEventListener("resize", resize);
     canvas.addEventListener("pointermove", onMove, { passive: true });
     canvas.addEventListener("pointerleave", onLeave, { passive: true });
+    canvas.addEventListener("webglcontextlost", onContextLost);
     raf = requestAnimationFrame(render);
-    return () => { observer.disconnect(); window.removeEventListener("resize", resize); canvas.removeEventListener("pointermove", onMove); canvas.removeEventListener("pointerleave", onLeave); cancelAnimationFrame(raf); geometry.dispose(); simMesh.geometry.dispose(); simMaterial.dispose(); renderMaterial.dispose(); baseTexture.dispose(); targetTexture.dispose(); rt1.dispose(); rt2.dispose(); renderer.dispose(); renderer.forceContextLoss(); };
-  }, [shouldInitialize]);
+    return () => { observer.disconnect(); window.removeEventListener("resize", resize); canvas.removeEventListener("pointermove", onMove); canvas.removeEventListener("pointerleave", onLeave); canvas.removeEventListener("webglcontextlost", onContextLost); cancelAnimationFrame(raf); geometry.dispose(); simMesh.geometry.dispose(); simMaterial.dispose(); renderMaterial.dispose(); baseTexture.dispose(); targetTexture.dispose(); rt1.dispose(); rt2.dispose(); renderer.dispose(); renderer.forceContextLoss(); };
+  }, [shouldInitialize, reducedMotion, unavailable]);
 
-  return <canvas ref={canvasRef} className="particle-field particle-field-morph" aria-hidden="true" />;
+  const showFallback = reducedMotion || unavailable || !ready;
+  return <>
+    <canvas key={reducedMotion ? "static" : "animated"} ref={canvasRef} className="particle-field particle-field-morph" style={{ visibility: showFallback ? "hidden" : "visible", opacity: .28 }} aria-hidden="true" />
+    {showFallback && <img src={symbolUrl} alt="" aria-hidden="true" style={{ position: "absolute", left: "8%", top: "11%", width: "84%", height: "78%", objectFit: "contain", filter: "brightness(0) invert(1)", opacity: .28, pointerEvents: "none" }} />}
+  </>;
 }

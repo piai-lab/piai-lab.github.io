@@ -4,6 +4,7 @@
  */
 import { useEffect, useRef, useState } from "react";
 import ProductShowcase from "@/components/ProductShowcase";
+import Logo from "@/components/Logo";
 import {
   ArrowDown,
   ArrowLeft,
@@ -32,7 +33,6 @@ type NewsItem = {
 type ResearchItem = { date: string; title: string; href: string; venue?: string };
 
 const assets = {
-  labWordmark: "/brand/piai-lab-wordmark-e.png",
   visionArtwork: "/vision/knowledge-generation-artwork.png",
 };
 
@@ -51,16 +51,6 @@ const teamLocations: GlobePoint[] = [
   { label: "休斯顿", lat: 29.76, lng: -95.369 },
   { label: "伦敦", lat: 51.507, lng: -0.128 },
 ];
-
-function Logo({ hero = false }: { hero?: boolean }) {
-  return (
-    <span
-      className={`brand-lockup brand-lab-lockup ${hero ? "hero-lab-lockup" : ""}`}
-    >
-      <img className="brand-wordmark-image" src={assets.labWordmark} alt="πAI Lab" />
-    </span>
-  );
-}
 
 function HeroTitle({ zh }: { zh: boolean }) {
   const title = zh ? "让人类知识增长十倍" : "Grow human knowledge tenfold";
@@ -385,7 +375,6 @@ export default function ContentHome() {
         <ResearchParticleField />
         <div className="hero-vignette" />
         <div className="hero-content">
-          <Logo hero />
           <HeroTitle zh={zh} />
           <div className="hero-actions">
             <a href="#news" className="pill-button pill-dark">
