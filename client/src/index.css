@@ -1363,35 +1363,6 @@ a.news-record:hover h3 {
   margin-bottom: -16px;
   pointer-events: auto;
 }
-.closing-motion-controls {
-  position: absolute;
-  right: 20px;
-  bottom: 14px;
-  z-index: 5;
-  display: flex;
-  gap: 2px;
-  align-items: center;
-}
-.closing-motion-controls button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  min-width: 38px;
-  min-height: 38px;
-  color: #94aac7;
-  font-size: 10px;
-  padding: 0 11px;
-  border-radius: 99px;
-}
-.closing-motion-controls button:hover {
-  color: #e2edff;
-  background: #d6e7ff0a;
-}
-.closing-motion-controls button:focus-visible {
-  outline: 2px solid #afc7ef;
-  outline-offset: 2px;
-}
 @media (max-width: 760px) {
   .team-section {
     padding-bottom: 24px;
@@ -1399,14 +1370,6 @@ a.news-record:hover h3 {
   .closing-art {
     height: 255px;
     margin-bottom: -12px;
-  }
-  .closing-motion-controls {
-    right: 12px;
-    bottom: 10px;
-  }
-  .closing-motion-controls button {
-    min-height: 40px;
-    min-width: 40px;
   }
 }
 

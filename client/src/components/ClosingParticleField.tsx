@@ -4,7 +4,6 @@
  * 以 21 秒连续完成费马螺旋、环面、品牌展翼与再次展开。
  */
 import { useEffect, useRef, useState } from "react";
-import { Pause, Play, RotateCcw } from "lucide-react";
 import * as THREE from "three";
 import symbolSvg from "@/assets/piai-lab-symbol.svg?raw";
 import symbolUrl from "@/assets/piai-lab-symbol.svg";
@@ -112,13 +111,8 @@ function sampleBrandSilhouette() {
   return points.length ? { points, aspect: height / width } : null;
 }
 
-export function MorphingParticleField({ zh = true }: { zh?: boolean }) {
-  const controlsRef = useRef<{ toggle: () => void; replay: () => void } | null>(
-    null
-  );
-  const pausedRef = useRef(false);
+export function MorphingParticleField() {
   const clockRef = useRef(0);
-  const [paused, setPaused] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [shouldInitialize, setShouldInitialize] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(
@@ -375,13 +369,12 @@ export function MorphingParticleField({ zh = true }: { zh?: boolean }) {
     };
     const render = (now: number, force = false) => {
       raf = 0;
-      const frozen = pausedRef.current;
-      if (!active || document.hidden || (frozen && rendered && !force)) return;
+      if (!active || document.hidden) return;
       const gap = Math.max(0, (now - previous) / 1000);
       const delta = Math.min(1 / 30, gap);
       previous = now;
       // start() resets the time base after a pause; only simulation dt is clamped.
-      elapsed += !frozen && !force ? gap : 0;
+      elapsed += !force ? gap : 0;
       clockRef.current = elapsed;
       const cycle = elapsed % 21;
       const ease = (start: number, end: number) => {
@@ -417,30 +410,12 @@ export function MorphingParticleField({ zh = true }: { zh?: boolean }) {
       rt1 = rt2;
       rt2 = swap;
       rendered = true;
-      if (!frozen) raf = requestAnimationFrame(render);
-    };
-    const start = () => {
-      if (raf || !active || document.hidden || (pausedRef.current && rendered))
-        return;
-      previous = performance.now();
       raf = requestAnimationFrame(render);
     };
-    controlsRef.current = {
-      toggle: () => {
-        pausedRef.current = !pausedRef.current;
-        setPaused(pausedRef.current);
-        if (pausedRef.current) stop();
-        else start();
-      },
-      replay: () => {
-        stop();
-        elapsed = 0;
-        clockRef.current = 0;
-        rendered = false;
-        pausedRef.current = false;
-        setPaused(false);
-        start();
-      },
+    const start = () => {
+      if (raf || !active || document.hidden) return;
+      previous = performance.now();
+      raf = requestAnimationFrame(render);
     };
     const onVisibility = () => {
       if (document.hidden) stop();
@@ -469,7 +444,6 @@ export function MorphingParticleField({ zh = true }: { zh?: boolean }) {
     canvas.addEventListener("webglcontextlost", onContextLost);
     start();
     return () => {
-      controlsRef.current = null;
       stop();
       observer.disconnect();
       resizeObserver.disconnect();
@@ -492,63 +466,35 @@ export function MorphingParticleField({ zh = true }: { zh?: boolean }) {
 
   const showFallback = reducedMotion || unavailable || !ready;
   return (
-    <>
-      <div className="closing-art">
-        <canvas
-          key={`${reducedMotion ? "static" : "animated"}-${compact}`}
-          ref={canvasRef}
-          className="particle-field particle-field-morph"
-          style={{
-            visibility: showFallback ? "hidden" : "visible",
-            opacity: 0.95,
-          }}
+    <div className="closing-art">
+      <canvas
+        key={`${reducedMotion ? "static" : "animated"}-${compact}`}
+        ref={canvasRef}
+        className="particle-field particle-field-morph"
+        style={{
+          visibility: showFallback ? "hidden" : "visible",
+          opacity: 0.95,
+        }}
+        aria-hidden="true"
+      />
+      {showFallback && (
+        <img
+          src={symbolUrl}
+          alt=""
           aria-hidden="true"
+          style={{
+            position: "absolute",
+            left: "8%",
+            top: "11%",
+            width: "84%",
+            height: "78%",
+            objectFit: "contain",
+            filter: "brightness(0) invert(1)",
+            opacity: 0.28,
+            pointerEvents: "none",
+          }}
         />
-        {showFallback && (
-          <img
-            src={symbolUrl}
-            alt=""
-            aria-hidden="true"
-            style={{
-              position: "absolute",
-              left: "8%",
-              top: "11%",
-              width: "84%",
-              height: "78%",
-              objectFit: "contain",
-              filter: "brightness(0) invert(1)",
-              opacity: 0.28,
-              pointerEvents: "none",
-            }}
-          />
-        )}
-      </div>
-      {!reducedMotion && !unavailable && (
-        <div
-          className="closing-motion-controls"
-          aria-label={zh ? "展翼动画控制" : "Brand animation controls"}
-        >
-          <button
-            type="button"
-            onClick={() => controlsRef.current?.toggle()}
-            aria-label={
-              zh
-                ? paused
-                  ? "继续动画"
-                  : "暂停动画"
-                : paused
-                  ? "Play animation"
-                  : "Pause animation"
-            }
-          >
-            {paused ? <Play size={14} /> : <Pause size={14} />}
-          </button>
-          <button type="button" onClick={() => controlsRef.current?.replay()}>
-            <RotateCcw size={13} />
-            <span>{zh ? "重播演化" : "Replay"}</span>
-          </button>
-        </div>
       )}
-    </>
+    </div>
   );
 }
