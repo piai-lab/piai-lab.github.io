@@ -509,7 +509,7 @@ export default function ContentHome() {
       </section>
 
       <section className="closing-vision content-section" id="closing">
-        <MorphingParticleField zh={zh} />
+        <MorphingParticleField />
         <div className="closing-vision-copy">
           <p>πAI Lab</p>
           <h2>
