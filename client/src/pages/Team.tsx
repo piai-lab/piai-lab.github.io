@@ -3,9 +3,9 @@
  * 视觉规则：研究机构名册语言，使用真实团队头像与明确组织关系；排印克制、标题居中、页脚与首页统一，不使用海报式大字或产品化口吻。
  */
 import { useEffect, useState } from "react";
+import Logo from "@/components/Logo";
 
 type Lang = "zh" | "en";
-const wordmark = "/brand/piai-lab-wordmark-e.png";
 
 const members = [
   {
@@ -141,7 +141,7 @@ export default function Team() {
     <main className="site-shell team-page" lang={zh ? "zh-CN" : "en"}>
       <header className="team-page-nav">
         <a className="team-brand" href="/" aria-label={zh ? "返回首页" : "Back to home"}>
-          <img className="brand-wordmark-image" src={wordmark} alt="πAI Lab" />
+          <Logo />
         </a>
         <button
           className="language-button"
@@ -212,9 +212,7 @@ export default function Team() {
       <footer className="institutional-footer team-footer">
         <div className="footer-top">
           <div className="footer-brand">
-            <span className="brand-lockup brand-lab-lockup">
-              <img className="brand-wordmark-image" src={wordmark} alt="πAI Lab" />
-            </span>
+            <Logo />
             <p>
               {zh
                 ? "面向知识生成的人工智能研究"

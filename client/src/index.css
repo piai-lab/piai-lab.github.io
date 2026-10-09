@@ -3110,12 +3110,13 @@ body {
   font-weight: 800;
   line-height: 1.1;
   letter-spacing: -0.075em;
-  white-space: nowrap;
+  white-space: normal;
 }
 .content-home .hero-title-line,
 .content-home .hero-letter {
   display: inline;
   font-style: normal;
+  white-space: normal;
 }
 .content-home .hero-lab-lockup {
   flex-direction: row;
@@ -9462,7 +9463,7 @@ body,
   color: #64777c !important;
 }
 .institutional-footer .footer-brand .brand-lab-name {
-  color: #0b3477 !important;
+  color: #15171a !important;
 }
 
 /* Collaborator portraits use the source deck's verified order. */
@@ -9549,55 +9550,57 @@ body,
   line-height: 1.52;
 }
 
-/* Wordmark-only identity: remove the former image mark from every surface. */
-.brand-lab-lockup {
-  gap: 0 !important;
+/* Approved wing symbol: preserve its 1024:672 canvas on every surface. */
+.brand-lab-lockup,
+.content-home .brand-lab-lockup,
+.team-page .brand-lab-lockup {
+  gap: 10px;
 }
-.brand-wordmark {
-  display: inline-block;
-  color: #079a98;
-  font-family: "Avenir Next", "Helvetica Neue", "Noto Sans SC", sans-serif;
-  font-weight: 760;
-  letter-spacing: -0.075em;
+.brand-lab-lockup .brand-lab-name {
+  color: #15171a;
+  font-family: "IBM Plex Sans", "Noto Sans SC", sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.035em;
   line-height: 1;
-  white-space: nowrap;
 }
-.brand-wordmark b {
-  color: #0b3477;
-  font-weight: 850;
-}
-.institutional-footer .brand-wordmark,
-.institutional-footer .brand-wordmark b {
-  color: #fff;
-}
-.team-brand .brand-wordmark {
-  font-size: inherit;
-}
-.brand-wordmark-image {
+.brand-symbol-image,
+.team-brand .brand-symbol-image {
   display: block;
-  width: auto;
-  height: 31px;
+  flex: none;
+  width: 64px;
+  height: auto;
+  max-width: 100%;
+  aspect-ratio: 1024 / 672;
   object-fit: contain;
+  filter: none;
 }
-.content-home .site-header .brand-wordmark-image {
-  height: 31px;
+.content-home .brand-link,
+.team-page .team-brand {
+  min-width: 44px;
+  min-height: 44px;
 }
-.content-home .hero-lab-lockup .brand-wordmark-image {
-  height: 68px;
+.content-home .brand-link:focus-visible,
+.team-page .team-brand:focus-visible {
+  outline: 2px solid #012e78;
+  outline-offset: 5px;
 }
-.institutional-footer .brand-wordmark-image {
-  height: 29px;
-}
-.team-brand .brand-wordmark-image {
-  height: 31px;
+.institutional-footer .brand-symbol-image {
+  width: 80px;
 }
 @media (max-width: 700px) {
-  .content-home .site-header .brand-wordmark-image,
-  .team-brand .brand-wordmark-image {
-    height: 25px;
+  .brand-lab-lockup,
+  .content-home .brand-lab-lockup,
+  .team-page .brand-lab-lockup {
+    gap: 7px;
   }
-  .content-home .hero-lab-lockup .brand-wordmark-image {
-    height: 48px;
+  .content-home .site-header .brand-lab-name,
+  .team-brand .brand-lab-name {
+    font-size: 18px;
+  }
+  .content-home .site-header .brand-symbol-image,
+  .team-brand .brand-symbol-image {
+    width: 56px;
   }
 }
 
@@ -9633,7 +9636,7 @@ body,
   }
 }
 
-/* Keep the selected navy-and-teal wordmark visible in the page footer. */
+/* The navy symbol shares the site's light footer surface. */
 .institutional-footer,
 .content-home .institutional-footer,
 .team-page .institutional-footer {
@@ -9656,13 +9659,7 @@ body,
   color: #64777c !important;
 }
 
-/* Team page masthead: the real wordmark needs presence, while the return is
-   an editorial directional mark rather than a small app-style button. */
-.team-page .team-brand .brand-wordmark-image {
-  width: auto !important;
-  height: 31px !important;
-  max-width: none;
-}
+/* Keep the team masthead aligned with the homepage navigation. */
 .team-page .team-page-nav {
   grid-template-columns: 1fr auto;
   padding-right: clamp(20px, 4vw, 62px);
@@ -9698,11 +9695,6 @@ body,
 .team-page .team-back:hover::after {
   opacity: 0.9;
   transform: scaleX(1.7);
-}
-@media (max-width: 700px) {
-  .team-page .team-brand .brand-wordmark-image {
-    height: 25px !important;
-  }
 }
 /* Product-led vision: full screenshots, a single caption, and quiet controls. */
 .content-home .product-vision {
