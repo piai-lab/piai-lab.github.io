@@ -10,26 +10,26 @@ const products = [
   {
     name: "OmniScholar",
     image: "omnischolar",
-    zh: "从一个问题、一篇论文出发，连接证据与深入研究。",
-    en: "Connect questions and papers with evidence and deeper research.",
+    zh: "从一个问题、一篇论文出发，连接证据与深入研究",
+    en: "Connect questions and papers with evidence and deeper research",
   },
   {
     name: "OmniSketch",
     image: "omnisketch",
-    zh: "将科学机制与研究思路，转化为清晰、可编辑的科研图示。",
-    en: "Turn scientific mechanisms and research ideas into clear, editable figures.",
+    zh: "将科学机制与研究思路，转化为清晰、可编辑的科研图示",
+    en: "Turn scientific mechanisms and research ideas into clear, editable figures",
   },
   {
     name: "OmniPlotter",
     image: "omniplotter",
-    zh: "让研究数据成为准确、可复现的科学图表。",
-    en: "Turn research data into accurate, reproducible scientific charts.",
+    zh: "让研究数据成为准确、可复现的科学图表",
+    en: "Turn research data into accurate, reproducible scientific charts",
   },
   {
     name: "Haros",
     image: "haros",
-    zh: "在同一工作台中，组织多种智能体完成持续的科研工作。",
-    en: "Bring research agents together in one workspace for ongoing scientific work.",
+    zh: "在同一工作台中，组织多种智能体完成持续的科研工作",
+    en: "Bring research agents together in one workspace for ongoing scientific work",
   },
 ];
 

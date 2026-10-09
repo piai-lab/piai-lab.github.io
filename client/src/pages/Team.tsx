@@ -187,8 +187,8 @@ export default function Team() {
           </div>
           <p>
             {zh
-              ? "与 πAI Lab 开展研究协作的学者和研究者。"
-              : "Scholars and researchers collaborating with πAI Lab."}
+              ? "与 πAI Lab 开展研究协作的学者和研究者"
+              : "Scholars and researchers collaborating with πAI Lab"}
           </p>
         </div>
         <div className="collaborator-grid">

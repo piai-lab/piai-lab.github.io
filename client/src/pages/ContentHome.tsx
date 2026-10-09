@@ -65,7 +65,7 @@ function HeroTitle({ zh }: { zh: boolean }) {
           <>
             Grow human
             <br />
-            knowledge <em>tenfold.</em>
+            knowledge <em>tenfold</em>
           </>
         )}
       </span>
