@@ -1,4 +1,4 @@
-/* π-AI · 连续动效研究主页。以亮白知识场、彩色微粒、长景深滚动和中心安全区组织页面；不使用静态卡片叠页。 */
+/* π-AI · 连续动效研究主页。以深蓝知识场、蓝灰微粒、长景深滚动和中心安全区组织页面；不使用静态卡片叠页。 */
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -12,15 +12,75 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
   --font-sans: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
 }
 :root {
-  --background: #fff;
-  --foreground: #131315;
-  --primary: #16171b;
-  --primary-foreground: #fff;
-  --muted: #f5f5f5;
-  --muted-foreground: #64646b;
-  --border: #e9e9ec;
+ color-scheme: dark;
+ --background: #111a27;
+ --surface: #172231;
+ --surface-raised: #202e41;
+ --foreground: #f0f4fb;
+ --text-body: #d0dbea;
+ --muted: var(--surface-raised);
+ --muted-foreground: #a6b6cb;
+ --border: #3b4d66;
+ --primary: #afc7ef;
+ --primary-hover: #d3e2fc;
+ --primary-foreground: var(--background);
+ --accent: #243954;
+ --accent-foreground: var(--foreground);
+ --secondary: var(--surface-raised);
+ --secondary-foreground: var(--text-body);
+ --card: var(--surface);
+ --card-foreground: var(--foreground);
+ --popover: var(--surface-raised);
+ --popover-foreground: var(--foreground);
+ --ring: var(--primary);
+ --input: var(--border);
+ --destructive: #fca5a5;
+ --destructive-foreground: var(--background);
+ --header-background: rgba(17,26,39,.94);
+ --team-background: linear-gradient(135deg,#102b53,#173966 58%,#0b2148);
+ --closing-background: #0c1830;
+ --particle-one: #afc7ef;
+ --particle-two: #7b9bc9;
+ --particle-three: #536f99;
+ --particle-opacity: .58;
+ --morph-one: #b7cbed;
+ --morph-two: #8caad6;
+ --morph-three: #f3f7fe;
+ --globe-highlight: rgba(54,75,107,.72);
+ --globe-midpoint: rgba(14,25,42,.84);
+ --globe-edge: rgba(5,12,22,.96);
+ --globe-grid: rgba(255,255,255,.18);
+ --globe-rim: rgba(255,255,255,.42);
+ --globe-marker: #9dbef7;
+ --globe-accent: var(--primary);
+ --globe-accent-ring: rgba(175,199,239,.54);
+ --globe-label: #ffffff;
+ /* Existing editorial layout aliases consume this same palette. */
+ --ink: var(--foreground);
+ --ink-soft: var(--muted-foreground);
+ --paper: var(--background);
+ --stone: var(--surface);
+ --line: var(--border);
+ --blue: var(--primary);
+ --gold: var(--primary);
+ --institution-ink: var(--foreground);
+ --institution-muted: var(--muted-foreground);
+ --institution-line: var(--border);
+ --institution-paper: var(--surface);
 }
 * {
   box-sizing: border-box;
@@ -30,8 +90,6 @@ html {
 }
 body {
   margin: 0;
-  color: #141418;
-  background: #fff;
   font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -43,14 +101,9 @@ button {
 button {
   font: inherit;
 }
-::selection {
-  color: #111;
-  background: #f7da7b;
-}
 .site-shell {
   min-width: 320px;
   overflow: hidden;
-  background: #fff;
 }
 
 /* navigation */
@@ -1723,9 +1776,6 @@ footer > span {
   font-size: 16px;
   line-height: 1.8;
 }
-.team-page {
-  background: #fff;
-}
 .team-page-nav {
   display: flex;
   align-items: center;
@@ -2998,20 +3048,10 @@ footer > span {
 }
 
 /* Institution-grade editorial reset: the following rules intentionally replace the earlier poster/card treatment. */
-:root {
-  --ink: #16191d;
-  --ink-soft: #51565e;
-  --paper: #fbfbfa;
-  --stone: #f3f4f3;
-  --line: #dfe2e3;
-  --blue: #234f9d;
-  --gold: #e59b2d;
-}
 html {
   scroll-behavior: smooth;
 }
 body {
-  color: var(--ink);
   font-family:
     "Noto Sans SC", "Source Han Sans SC", "PingFang SC", "Microsoft YaHei",
     sans-serif;
@@ -3020,17 +3060,12 @@ body {
 .particle-field-unavailable {
   display: none;
 }
-.content-home {
-  background: var(--paper);
-}
 .content-home .site-header {
   height: 72px;
   border-bottom: 1px solid transparent;
   font-family: "IBM Plex Sans", "Noto Sans SC", sans-serif;
 }
 .content-home .site-header-scrolled {
-  border-color: rgba(18, 25, 31, 0.09);
-  background: rgba(251, 251, 250, 0.94);
   box-shadow: none;
   backdrop-filter: blur(16px);
 }
@@ -3056,41 +3091,30 @@ body {
   gap: 42px;
 }
 .content-home .site-nav a {
-  color: #333940;
   font-size: 14px;
   font-weight: 500;
 }
 .content-home .site-nav a::after {
   bottom: -25px;
   height: 2px;
-  background: #1e2c3d;
 }
 .content-home .header-actions {
   gap: 17px;
 }
 .content-home .language-button {
-  color: #333940;
   font-size: 12px;
   font-weight: 600;
 }
 .content-home .header-cta {
   padding: 9px 16px 9px 18px;
-  background: #20242a;
   font-size: 13px;
   font-weight: 500;
 }
 .content-home .hero {
   min-height: min(875px, 100svh);
-  background: var(--paper);
 }
 .content-home .hero-vignette {
   height: 31%;
-  background: linear-gradient(
-    0deg,
-    var(--paper) 10%,
-    rgba(251, 251, 250, 0.94) 52%,
-    rgba(251, 251, 250, 0)
-  );
 }
 .content-home .hero-content {
   width: min(1010px, calc(100% - 56px));
@@ -3143,9 +3167,6 @@ body {
   box-shadow: none;
   transform: translateY(-1px);
 }
-.content-home .pill-dark {
-  background: #20242a;
-}
 .content-home .content-section {
   opacity: 0;
   transform: translateY(16px);
@@ -3176,7 +3197,6 @@ body {
 .content-home .news-section {
   padding: clamp(95px, 10vw, 155px) clamp(24px, 7vw, 118px)
     clamp(112px, 12vw, 170px);
-  background: #f5f6f5;
 }
 .content-home .news-grid {
   max-width: 1480px;
@@ -3529,7 +3549,6 @@ body {
 }
 .content-home .research-directory {
   padding: clamp(108px, 12vw, 174px) clamp(24px, 7vw, 118px);
-  background: #f4f5f5;
 }
 .content-home .research-list {
   max-width: 1480px;
@@ -3593,7 +3612,6 @@ body {
   display: grid;
   min-height: 650px;
   grid-template-columns: 0.9fr 1.1fr;
-  background: #ecefed;
 }
 .content-home .team-copy {
   align-items: flex-start;
@@ -3685,7 +3703,6 @@ body {
 .content-home .institutional-footer {
   padding: 68px clamp(24px, 7vw, 118px) 26px;
   color: #d9dfe2;
-  background: #1d252d;
 }
 .content-home .footer-top {
   display: grid;
@@ -3747,8 +3764,10 @@ body {
     gap: 22px;
   }
   .content-home .vision-layout,
-  .content-home .team-section,
-  .content-home .reach-section {
+.content-home .reach-section {
+    grid-template-columns: 1fr;
+  }
+  .content-home .team-section {
     grid-template-columns: 1fr;
   }
   .content-home .vision-detail {
@@ -3802,7 +3821,9 @@ body {
   .content-home .brand-lab-name {
     font-size: 16px;
   }
-  .content-home .site-nav,
+  .content-home .site-nav {
+    display: none;
+  }
   .content-home .header-cta {
     display: none;
   }
@@ -3836,9 +3857,12 @@ body {
     transform: none;
   }
   .content-home .news-section,
+.content-home .research-directory {
+    padding-right: 22px;
+    padding-left: 22px;
+  }
   .content-home .vision-section,
-  .content-home .infrastructure-section,
-  .content-home .research-directory {
+.content-home .infrastructure-section {
     padding-right: 22px;
     padding-left: 22px;
   }
@@ -3973,8 +3997,6 @@ body {
 
 /* Team-page continuation of the same institutional system. */
 .team-page {
-  color: var(--ink);
-  background: var(--paper);
   font-family: "Noto Sans SC", "Source Han Sans SC", "PingFang SC", sans-serif;
 }
 .team-page-nav {
@@ -4333,7 +4355,6 @@ body,
   width: 100%;
   max-width: var(--content-width);
   margin: 0 auto;
-  color: var(--ink);
   font-size: clamp(44px, 4.25vw, 68px);
   font-weight: 800;
   letter-spacing: -0.075em;
@@ -4357,7 +4378,6 @@ body,
 
 .content-home .news-section {
   padding: var(--section-pad) clamp(24px, 7vw, 118px);
-  background: #f7f8f7;
 }
 .content-home .news-grid {
   grid-template-columns: repeat(3, 1fr);
@@ -4598,7 +4618,6 @@ body,
 
 .content-home .research-directory {
   padding: var(--section-pad) clamp(24px, 7vw, 118px);
-  background: #fff;
 }
 .content-home .research-list {
   max-width: var(--content-width);
@@ -4622,7 +4641,6 @@ body,
   background: transparent;
 }
 .content-home .research-item time {
-  color: #2e3a45;
   font-size: 15px;
   font-weight: 800;
 }
@@ -4652,7 +4670,6 @@ body,
   display: block;
   min-height: 0;
   padding: var(--section-pad) 0 0;
-  background: #f2f4f3;
 }
 .content-home .team-heading {
   max-width: var(--content-width);
@@ -4770,7 +4787,6 @@ body,
 
 .content-home .institutional-footer {
   padding: 58px clamp(24px, 7vw, 118px) 24px;
-  background: #1d252d;
 }
 .content-home .footer-top {
   grid-template-columns: 1fr auto auto auto;
@@ -5009,14 +5025,7 @@ body,
 }
 
 /* πAI Lab 机构官网收束层：以纸白、细线、连续栏目和克制中文排印取代产品卡片与海报式分屏。 */
-.content-home {
-  --institution-ink: #1b2730;
-  --institution-muted: #647078;
-  --institution-line: #d8dddf;
-  --institution-paper: #f5f7f6;
-}
 .content-home .section-title {
-  color: var(--institution-ink);
   font-size: clamp(34px, 3.25vw, 52px);
   font-weight: 650;
   letter-spacing: -0.07em;
@@ -5033,7 +5042,6 @@ body,
 
 .content-home .news-section {
   padding: clamp(94px, 11vw, 154px) clamp(24px, 7vw, 118px);
-  background: #fff;
   overflow: hidden;
 }
 .content-home .news-rail-shell {
@@ -5054,16 +5062,10 @@ body,
   place-items: center;
   border: 1px solid var(--institution-line);
   border-radius: 50%;
-  background: #fff;
-  color: var(--institution-ink);
   transition:
     background 0.18s var(--ease-out),
     color 0.18s var(--ease-out),
     transform 0.18s var(--ease-out);
-}
-.content-home .news-rail-controls button:hover {
-  background: var(--institution-ink);
-  color: #fff;
 }
 .content-home .news-rail-controls button:active {
   transform: scale(0.95);
@@ -5099,7 +5101,6 @@ body,
 .content-home .news-record:hover {
   padding-right: 9px;
   padding-left: 9px;
-  border-color: #1d5b84;
 }
 .content-home .news-type {
   color: #7b858b;
@@ -5117,7 +5118,6 @@ body,
 .content-home .news-record h3 {
   max-width: 310px;
   margin: 42px 0 auto;
-  color: var(--institution-ink);
   font-size: clamp(20px, 1.75vw, 27px);
   font-weight: 600;
   letter-spacing: -0.055em;
@@ -5329,7 +5329,6 @@ body,
 
 .content-home .research-directory {
   padding: clamp(106px, 12vw, 166px) clamp(24px, 7vw, 118px);
-  background: #f5f7f6;
 }
 .content-home .research-list {
   max-width: 1040px;
@@ -5349,7 +5348,6 @@ body,
   background: transparent;
 }
 .content-home .research-item time {
-  color: #314a5b;
   font-size: 13px;
   font-weight: 750;
   font-variant-numeric: tabular-nums;
@@ -5370,7 +5368,6 @@ body,
 
 .content-home .team-section {
   padding-top: clamp(106px, 12vw, 166px);
-  background: #eef1f0;
 }
 .content-home .team-heading {
   max-width: 730px;
@@ -5445,7 +5442,6 @@ body,
 
 .institutional-footer {
   padding: 64px clamp(24px, 7vw, 118px) 25px !important;
-  background: #1b242c !important;
 }
 .institutional-footer .footer-top {
   grid-template-columns: minmax(260px, 1fr) auto auto auto !important;
@@ -5457,7 +5453,6 @@ body,
 }
 .institutional-footer .footer-brand p {
   margin-top: 19px !important;
-  color: #ccd4d7;
   font-size: 15px;
 }
 .institutional-footer .footer-column {
@@ -5470,16 +5465,11 @@ body,
 }
 .institutional-footer .footer-column a,
 .institutional-footer .footer-column p {
-  color: #e4e8e9;
   font-size: 14px;
 }
 .institutional-footer .footer-bottom {
   margin-top: 55px !important;
   border-top-color: rgba(255, 255, 255, 0.16);
-}
-
-.team-page {
-  background: #fff;
 }
 .team-page .team-page-hero {
   display: flex;
@@ -5487,7 +5477,6 @@ body,
   align-items: center;
   justify-content: center;
   padding: 128px 24px 74px;
-  background: #f5f7f6;
 }
 .team-page .team-page-hero h1 {
   color: #1b2730;
@@ -5497,7 +5486,6 @@ body,
 }
 .team-page .team-page-hero p {
   max-width: 730px;
-  color: #56636b;
   font-size: 17px;
   line-height: 1.94;
 }
@@ -5538,7 +5526,6 @@ body,
   gap: 18px;
   padding: 24px 0;
   border-bottom: 1px solid #d8dddf;
-  background: transparent;
   border-radius: 0;
   box-shadow: none;
 }
@@ -5558,7 +5545,6 @@ body,
 }
 .team-page .member-meta p {
   margin: 8px 0 0;
-  color: #627078;
   font-size: 13px;
   line-height: 1.55;
 }
@@ -5588,7 +5574,6 @@ body,
   border: 0;
   border-bottom: 1px solid #d8dddf;
   border-radius: 0;
-  background: transparent;
 }
 .team-page .collaborator-grid h3 {
   margin: 0;
@@ -5599,7 +5584,6 @@ body,
 }
 .team-page .collaborator-grid p {
   margin: 10px 0 0;
-  color: #667177;
   font-size: 14px;
   line-height: 1.6;
 }
@@ -5725,7 +5709,9 @@ body,
   .content-home .news-rail {
     scroll-behavior: auto;
   }
-  .content-home .news-record,
+  .content-home .news-record {
+    transition: none;
+  }
   .content-home .news-rail-controls button {
     transition: none;
   }
@@ -5737,10 +5723,6 @@ body,
   border-right: 0;
   border-bottom: 0;
   border-left: 0;
-  background: transparent;
-}
-.team-page .member-card,
-.team-page .collaborator-grid article {
   background: transparent;
 }
 .team-page .institutional-footer .footer-top {
@@ -5761,17 +5743,17 @@ body,
   letter-spacing: -0.07em;
 }
 .content-home .news-section,
-.content-home .infrastructure-section,
-.content-home .vision-section,
 .content-home .research-directory {
+  padding-top: clamp(74px, 7.2vw, 106px);
+  padding-bottom: clamp(78px, 7.5vw, 112px);
+}
+.content-home .infrastructure-section,
+.content-home .vision-section {
   padding-top: clamp(74px, 7.2vw, 106px);
   padding-bottom: clamp(78px, 7.5vw, 112px);
 }
 
 /* 动态：四列媒体预览、标题/入口、标题-日期-类别-阅读入口、底部左右控制。 */
-.content-home .news-section {
-  background: #fff;
-}
 .content-home .news-section .section-heading-only {
   max-width: var(--content-width);
   text-align: left;
@@ -5829,7 +5811,6 @@ body,
 }
 .content-home .news-record:hover {
   padding: 0 28px 0 0;
-  border-color: #edf0f1;
 }
 .content-home .news-preview {
   position: relative;
@@ -6014,7 +5995,6 @@ body,
   max-width: 95%;
   min-height: 58px;
   margin: 19px 0 0;
-  color: #1b252c;
   font-size: clamp(18px, 1.35vw, 23px);
   font-weight: 650;
   letter-spacing: -0.055em;
@@ -6025,13 +6005,11 @@ body,
   flex-wrap: wrap;
   gap: 13px;
   margin-top: 17px;
-  color: #68737a;
   font-size: 12px;
   font-weight: 500;
 }
 .content-home .news-meta time {
   margin: 0;
-  color: #68737a;
   font-size: 12px;
   font-weight: 500;
 }
@@ -6054,13 +6032,6 @@ body,
 .content-home .news-rail-controls button {
   width: 37px;
   height: 37px;
-  border-color: #e4e8e9;
-  color: #647078;
-  background: #fafbfb;
-}
-.content-home .news-rail-controls button:hover {
-  color: #fff;
-  background: #202a31;
 }
 
 /* 科研基础设施：单屏内完成阅读，保留层级，不把架构写成密集说明书。 */
@@ -6183,7 +6154,6 @@ body,
 /* 团队与收束：统一为同一深色材料，消除浅文案区与深地球区的硬切割。 */
 .content-home .team-section {
   padding-top: clamp(74px, 7.2vw, 106px);
-  background: #1c2a35;
   color: #fff;
   border-top: 0;
 }
@@ -6241,7 +6211,6 @@ body,
   margin: 64px clamp(16px, 4vw, 72px) 72px;
   border: 0;
   border-radius: 22px;
-  background: #030507;
   isolation: isolate;
 }
 .content-home .closing-vision::after {
@@ -6270,7 +6239,6 @@ body,
 }
 .content-home .closing-vision-copy p {
   margin: 0 0 22px;
-  color: #bbc8ff;
   font-size: 13px;
   font-weight: 650;
   letter-spacing: 0.08em;
@@ -6285,16 +6253,9 @@ body,
 }
 
 /* 团队详情页：缩短首屏，连续同色纸面和无卡片的名册节奏。 */
-.team-page {
-  background: #f7f8f7;
-}
-.team-page .team-page-nav {
-  background: rgba(247, 248, 247, 0.94);
-}
 .team-page .team-page-hero {
   min-height: 300px;
   padding: 102px 24px 54px;
-  background: #f7f8f7;
 }
 .team-page .team-page-hero h1 {
   font-size: clamp(33px, 2.9vw, 47px);
@@ -6309,7 +6270,6 @@ body,
 .team-page .collaborator-section {
   max-width: none;
   padding: clamp(70px, 7vw, 102px) clamp(24px, 7vw, 118px);
-  background: #f7f8f7;
 }
 .team-page .collaborator-section {
   padding-top: 0;
@@ -6399,9 +6359,12 @@ body,
     font-size: 34px;
   }
   .content-home .news-section,
+.content-home .research-directory {
+    padding-top: 70px;
+    padding-bottom: 74px;
+  }
   .content-home .infrastructure-section,
-  .content-home .vision-section,
-  .content-home .research-directory {
+.content-home .vision-section {
     padding-top: 70px;
     padding-bottom: 74px;
   }
@@ -6532,9 +6495,12 @@ body,
   font-size: clamp(30px, 2.45vw, 40px);
 }
 .content-home .news-section,
-.content-home .infrastructure-section,
-.content-home .vision-section,
 .content-home .research-directory {
+  padding-top: clamp(66px, 6.2vw, 92px);
+  padding-bottom: clamp(72px, 6.8vw, 102px);
+}
+.content-home .infrastructure-section,
+.content-home .vision-section {
   padding-top: clamp(66px, 6.2vw, 92px);
   padding-bottom: clamp(72px, 6.8vw, 102px);
 }
@@ -6543,13 +6509,6 @@ body,
 }
 .content-home .vision-section {
   background: linear-gradient(180deg, #f6f7f6 0, #fff 30%);
-}
-.content-home .research-directory {
-  background: linear-gradient(180deg, #fff 0, #f7f8f7 100%);
-}
-
-.content-home .team-section {
-  background: linear-gradient(135deg, #1c2a35 0, #243846 52%, #1e2e39 100%);
 }
 .content-home .team-body {
   position: relative;
@@ -6587,24 +6546,17 @@ body,
 .content-home .team-globe .institutional-globe {
   transform: scale(1.08);
 }
-
-.team-page .team-page-hero {
-  background: linear-gradient(180deg, #fff 0, #f7f8f7 100%);
-}
-.team-page .team-roster {
-  background: linear-gradient(180deg, #f7f8f7 0, #fff 42%);
-}
-.team-page .collaborator-section {
-  background: #fff;
-}
 @media (max-width: 700px) {
   .content-home .section-title {
     font-size: 32px;
   }
   .content-home .news-section,
+.content-home .research-directory {
+    padding-top: 63px;
+    padding-bottom: 70px;
+  }
   .content-home .infrastructure-section,
-  .content-home .vision-section,
-  .content-home .research-directory {
+.content-home .vision-section {
     padding-top: 63px;
     padding-bottom: 70px;
   }
@@ -6619,9 +6571,6 @@ body,
 }
 .team-page .collaborator-section .roster-heading {
   padding-top: clamp(58px, 5vw, 76px);
-}
-.team-page .collaborator-section {
-  background: linear-gradient(180deg, #fff 0, #f7f8f7 100%);
 }
 .team-page .member-grid,
 .team-page .collaborator-grid {
@@ -6651,8 +6600,13 @@ body,
 .content-home .news-section .section-heading-only,
 .content-home .infrastructure-section .section-heading-only,
 .content-home .vision-section .section-heading-only,
-.content-home .research-directory .section-heading-only,
 .content-home .team-section .team-heading {
+  max-width: 1180px;
+  margin-right: auto;
+  margin-left: auto;
+  text-align: center;
+}
+.content-home .research-directory .section-heading-only {
   max-width: 1180px;
   margin-right: auto;
   margin-left: auto;
@@ -6669,9 +6623,12 @@ body,
   letter-spacing: -0.075em;
 }
 .content-home .news-section,
-.content-home .infrastructure-section,
-.content-home .vision-section,
 .content-home .research-directory {
+  padding-top: clamp(104px, 9vw, 132px);
+  padding-bottom: clamp(92px, 8vw, 120px);
+}
+.content-home .infrastructure-section,
+.content-home .vision-section {
   padding-top: clamp(104px, 9vw, 132px);
   padding-bottom: clamp(92px, 8vw, 120px);
 }
@@ -6879,7 +6836,6 @@ body,
 
 /* 收束品牌作为可读的中心标记显示，不与粒子场混为低对比背景。 */
 .content-home .closing-vision-copy p {
-  color: #dce3ff;
   font-size: 15px;
   font-weight: 760;
   letter-spacing: 0.08em;
@@ -6903,7 +6859,6 @@ body,
   min-height: clamp(470px, 40vw, 610px);
   place-items: center;
   margin: 72px clamp(16px, 4vw, 72px) 78px;
-  background: #121317;
 }
 .content-home .closing-vision::after {
   background: radial-gradient(
@@ -6922,7 +6877,6 @@ body,
 }
 .content-home .closing-vision-copy p {
   margin: 0 0 20px;
-  color: #c8d5ff;
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.13em;
@@ -6938,9 +6892,12 @@ body,
 
 @media (max-width: 700px) {
   .content-home .news-section,
+.content-home .research-directory {
+    padding-top: 82px;
+    padding-bottom: 76px;
+  }
   .content-home .infrastructure-section,
-  .content-home .vision-section,
-  .content-home .research-directory {
+.content-home .vision-section {
     padding-top: 82px;
     padding-bottom: 76px;
   }
@@ -7019,7 +6976,8 @@ body,
   }
   .content-home .closing-vision-copy h2 {
     font-size: clamp(18px, 5.1vw, 25px);
-    white-space: nowrap;
+    white-space: normal;
+    text-wrap: balance;
   }
   .content-home .closing-vision-copy p {
     margin-bottom: 15px;
@@ -7367,9 +7325,6 @@ body,
 }
 
 /* 团队：用墨蓝灰连接到全站纸白和深色收束；文本与行动入口采用同一左轴。 */
-.content-home .team-section {
-  background: linear-gradient(140deg, #243641 0%, #20323d 52%, #293b45 100%);
-}
 .content-home .team-body::before {
   opacity: 0.56;
   background:
@@ -7765,7 +7720,6 @@ body,
   min-height: 34px;
   padding: 7px 13px;
   border-radius: 999px;
-  color: #17242b;
   transition:
     background-color 180ms cubic-bezier(0.23, 1, 0.32, 1),
     color 180ms cubic-bezier(0.23, 1, 0.32, 1),
@@ -7776,7 +7730,6 @@ body,
 }
 .content-home .site-nav a:hover {
   background: #eef0f3;
-  color: #101a20;
   transform: translateY(-1px);
 }
 .content-home .site-nav a:focus-visible {
@@ -7788,10 +7741,15 @@ body,
   transform: scale(0.97);
 }
 .content-home .news-section,
-.content-home .infrastructure-section,
-.content-home .vision-section,
 .content-home .research-directory,
 .content-home .team-section {
+  box-sizing: border-box;
+  min-height: calc(100vh - 64px);
+  padding-top: clamp(76px, 6.6vw, 106px);
+  padding-bottom: clamp(58px, 5vw, 82px);
+}
+.content-home .infrastructure-section,
+.content-home .vision-section {
   box-sizing: border-box;
   min-height: calc(100vh - 64px);
   padding-top: clamp(76px, 6.6vw, 106px);
@@ -7800,8 +7758,12 @@ body,
 .content-home .news-section .section-heading-only,
 .content-home .infrastructure-section .section-heading-only,
 .content-home .vision-section .section-heading-only,
-.content-home .research-directory .section-heading-only,
 .content-home .team-section .team-heading {
+  min-height: 48px;
+  margin: 0 auto;
+  text-align: center;
+}
+.content-home .research-directory .section-heading-only {
   min-height: 48px;
   margin: 0 auto;
   text-align: center;
@@ -7809,7 +7771,13 @@ body,
 .content-home .news-section .section-title,
 .content-home .infrastructure-section .section-title,
 .content-home .vision-section .section-title,
-.content-home .research-directory .section-title,
+.content-home .research-directory .section-title {
+  margin: 0;
+  font-size: clamp(30px, 2.35vw, 38px);
+  font-weight: 690;
+  letter-spacing: -0.075em;
+  line-height: 1.1;
+}
 .content-home .team-section .section-title {
   margin: 0;
   font-size: clamp(30px, 2.35vw, 38px);
@@ -8121,13 +8089,6 @@ body,
 /* 团队：去除横向切线，将文字和地球组织为同一深色空间中的两个重心。 */
 .content-home .team-section {
   overflow: hidden;
-  background:
-    radial-gradient(
-      circle at 74% 57%,
-      rgba(68, 106, 136, 0.22),
-      transparent 29%
-    ),
-    linear-gradient(135deg, #1f313c 0%, #263b47 48%, #1f303b 100%);
 }
 .content-home .team-heading {
   position: relative;
@@ -8248,18 +8209,24 @@ body,
     padding: 6px 10px;
   }
   .content-home .news-section,
+.content-home .research-directory,
+.content-home .team-section {
+    min-height: 0;
+    padding-top: 72px;
+    padding-bottom: 70px;
+  }
   .content-home .infrastructure-section,
-  .content-home .vision-section,
-  .content-home .research-directory,
-  .content-home .team-section {
+.content-home .vision-section {
     min-height: 0;
     padding-top: 72px;
     padding-bottom: 70px;
   }
   .content-home .news-section .section-title,
-  .content-home .infrastructure-section .section-title,
-  .content-home .vision-section .section-title,
-  .content-home .research-directory .section-title,
+.content-home .infrastructure-section .section-title,
+.content-home .vision-section .section-title,
+.content-home .research-directory .section-title {
+    font-size: 31px;
+  }
   .content-home .team-section .section-title {
     font-size: 31px;
   }
@@ -8501,9 +8468,6 @@ body,
   width: min(100%, 500px);
   height: min(100%, 500px);
 }
-.content-home .team-section {
-  background: linear-gradient(135deg, #203641, #274756 58%, #1c303a);
-}
 @media (max-width: 980px) {
   .content-home .infra-atlas {
     padding: 20px;
@@ -8578,7 +8542,6 @@ body,
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: #213b53;
   font-size: 13px;
   font-weight: 700;
   text-decoration: none;
@@ -8704,7 +8667,6 @@ body,
   place-items: center;
   border: 1px solid rgba(30, 48, 63, 0.16);
   border-radius: 50%;
-  color: #344552;
   transition:
     background 0.18s ease,
     color 0.18s ease,
@@ -8752,10 +8714,12 @@ body,
   display: block;
 }
 .content-home .news-section,
-.content-home .infrastructure-section,
-.content-home .vision-section,
 .content-home .research-directory,
 .content-home .team-section {
+  padding-top: clamp(56px, 3.4vw, 68px);
+}
+.content-home .infrastructure-section,
+.content-home .vision-section {
   padding-top: clamp(56px, 3.4vw, 68px);
 }
 .content-home .infrastructure-section .section-heading-only {
@@ -8775,7 +8739,6 @@ body,
 .team-page .institutional-footer {
   padding: 64px clamp(24px, 7vw, 118px) 25px !important;
   color: #d9dfe2;
-  background: #1b242c !important;
 }
 .team-page .institutional-footer .footer-top {
   display: grid;
@@ -8803,10 +8766,12 @@ body,
 }
 @media (max-width: 700px) {
   .content-home .news-section,
+.content-home .research-directory,
+.content-home .team-section {
+    padding-top: 58px;
+  }
   .content-home .infrastructure-section,
-  .content-home .vision-section,
-  .content-home .research-directory,
-  .content-home .team-section {
+.content-home .vision-section {
     padding-top: 58px;
   }
   .content-home .infra-atlas {
@@ -8845,7 +8810,6 @@ body,
   align-items: center;
   gap: 11px;
   margin-top: 34px;
-  color: #fff;
   font-size: 14px;
   font-weight: 700;
   text-decoration: none;
@@ -8863,7 +8827,6 @@ body,
     background 0.18s ease;
 }
 .content-home .team-link-button:hover i {
-  background: rgba(255, 255, 255, 0.14);
   transform: translate(2px, -2px);
 }
 .team-page .team-back {
@@ -8871,7 +8834,6 @@ body,
   height: 38px;
   border: 0;
   border-radius: 10px;
-  color: #2f4656;
   background: rgba(237, 242, 243, 0.88);
   box-shadow: inset 0 0 0 1px rgba(44, 67, 81, 0.08);
 }
@@ -8926,9 +8888,11 @@ body,
 
 /* Full-screen section cadence and institutional footer parity. */
 .content-home .news-section,
-.content-home .infrastructure-section,
-.content-home .vision-section,
 .content-home .team-section {
+  min-height: calc(100svh - 72px);
+}
+.content-home .infrastructure-section,
+.content-home .vision-section {
   min-height: calc(100svh - 72px);
 }
 .content-home .research-directory {
@@ -8962,13 +8926,9 @@ body,
 .institutional-footer .footer-column a,
 .institutional-footer .footer-column p {
   margin: 0;
-  color: #e4e8e9;
   font-size: 14px;
   line-height: 1.55;
   text-decoration: none;
-}
-.institutional-footer .footer-brand .brand-lab-name {
-  color: #fff;
 }
 .institutional-footer .footer-brand .brand-lab-mark {
   filter: brightness(1.08);
@@ -8978,10 +8938,12 @@ body,
 }
 @media (max-width: 700px) {
   .content-home .news-section,
+.content-home .team-section,
+.content-home .research-directory {
+    min-height: 0;
+  }
   .content-home .infrastructure-section,
-  .content-home .vision-section,
-  .content-home .team-section,
-  .content-home .research-directory {
+.content-home .vision-section {
     min-height: 0;
   }
   .content-home .site-header .brand-lab-mark {
@@ -9011,7 +8973,6 @@ body,
   padding: 56px clamp(24px, 6vw, 88px) 0;
   overflow: hidden;
   border-radius: 22px;
-  background: linear-gradient(135deg, #203641, #274756 58%, #1c303a);
 }
 .content-home .team-section .team-heading {
   min-height: 0;
@@ -9062,7 +9023,6 @@ body,
   place-items: center;
   border: 0;
   border-radius: 0;
-  color: #263e4d;
   background: transparent;
   box-shadow: none;
   transition: transform 0.22s ease, color 0.22s ease;
@@ -9095,7 +9055,6 @@ body,
   position: relative;
   min-height: calc(100svh - 72px);
   padding: clamp(54px, 7vh, 88px) clamp(24px, 8vw, 150px) clamp(70px, 10vh, 120px);
-  background: #f4f7f6;
 }
 .content-home .research-directory .section-heading-only {
   max-width: 1240px;
@@ -9150,7 +9109,6 @@ body,
 .content-home .research-directory .research-item h3 {
   max-width: 1000px;
   margin: 0;
-  color: #253b47;
   font-family: "IBM Plex Sans", "Noto Sans SC", sans-serif;
   font-size: clamp(16px, 1.45vw, 21px);
   font-weight: 480;
@@ -9160,7 +9118,6 @@ body,
 }
 .content-home .research-directory a.research-item:hover {
   padding-left: 14px;
-  background: rgba(223, 233, 231, 0.64);
 }
 .content-home .research-directory a.research-item:hover::after {
   opacity: 1;
@@ -9437,33 +9394,17 @@ body,
   .content-home .vision-infrastructure-statement { margin-top: 150px !important; }
 }
 
-/* Footer: the selected navy-and-teal wordmark needs a light field to stay
-   legible; this also gives the close of each page a quieter, editorial tone. */
+/* Footer geometry is retained; colors are owned by the selected dark theme below. */
 .institutional-footer,
 .content-home .institutional-footer,
 .team-page .institutional-footer {
-  background: #f1f5f4 !important;
   color: #203944;
-}
-.institutional-footer .footer-brand p {
-  color: #52666d !important;
 }
 .institutional-footer .footer-column > span {
   color: #71838a !important;
 }
-.institutional-footer .footer-column a,
-.institutional-footer .footer-column p {
-  color: #29414a !important;
-}
 .institutional-footer .footer-bottom {
   border-top-color: #cedbd9 !important;
-  color: #64777c !important;
-}
-.institutional-footer .footer-bottom span {
-  color: #64777c !important;
-}
-.institutional-footer .footer-brand .brand-lab-name {
-  color: #15171a !important;
 }
 
 /* Collaborator portraits use the source deck's verified order. */
@@ -9481,7 +9422,6 @@ body,
   border-radius: 50%;
   object-fit: cover;
   object-position: center 24%;
-  background: #e1e9e8;
 }
 .team-page .collaborator-grid article:nth-child(2) .collaborator-avatar,
 .team-page .collaborator-grid article:nth-child(5) .collaborator-avatar {
@@ -9557,14 +9497,21 @@ body,
   gap: 10px;
 }
 .brand-lab-lockup .brand-lab-name {
-  color: #15171a;
   font-family: "IBM Plex Sans", "Noto Sans SC", sans-serif;
   font-size: 20px;
   font-weight: 600;
   letter-spacing: -0.035em;
   line-height: 1;
 }
-.brand-symbol-image,
+.brand-symbol-image {
+  display: block;
+  flex: none;
+  width: 64px;
+  height: auto;
+  max-width: 100%;
+  aspect-ratio: 1024 / 672;
+  object-fit: contain;
+}
 .team-brand .brand-symbol-image {
   display: block;
   flex: none;
@@ -9636,27 +9583,18 @@ body,
   }
 }
 
-/* The navy symbol shares the site's light footer surface. */
+/* Footer colors are defined by the shared theme bindings below. */
 .institutional-footer,
 .content-home .institutional-footer,
 .team-page .institutional-footer {
-  background: #f1f5f4 !important;
   color: #203944;
-}
-.institutional-footer .footer-brand p {
-  color: #52666d !important;
 }
 .institutional-footer .footer-column > span {
   color: #71838a !important;
 }
-.institutional-footer .footer-column a,
-.institutional-footer .footer-column p {
-  color: #29414a !important;
-}
 .institutional-footer .footer-bottom,
 .institutional-footer .footer-bottom span {
   border-top-color: #cedbd9 !important;
-  color: #64777c !important;
 }
 
 /* Keep the team masthead aligned with the homepage navigation. */
@@ -9673,7 +9611,6 @@ body,
   justify-content: flex-start;
   border: 0;
   border-radius: 0;
-  color: #183c52;
   background: transparent;
   box-shadow: none;
 }
@@ -9728,18 +9665,16 @@ body,
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f5f7f9;
   border: 1px solid #dce4e8;
   border-radius: 16px;
   overflow: hidden;
 }
 .product-screenshot img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .product-slide figcaption { text-align: center; padding: 23px 12px 0; }
-.product-slide h3 { font-size: clamp(23px, 2vw, 30px); line-height: 1.3; color: #163749; font-weight: 650; letter-spacing: -.035em; }
-.product-slide figcaption p { font-size: 16px; line-height: 1.65; color: #5b6c75; margin: 8px auto 0; }
+.product-slide h3 { font-size: clamp(23px, 2vw, 30px); line-height: 1.3; font-weight: 650; letter-spacing: -.035em; }
+.product-slide figcaption p { font-size: 16px; line-height: 1.65; margin: 8px auto 0; }
 .product-controls { display: flex; align-items: center; justify-content: center; gap: 22px; margin: 24px 20px 0; }
-.product-arrow { display: grid; place-items: center; width: 44px; height: 44px; flex-shrink: 0; border: 1px solid #cedbdf; border-radius: 50%; color: #163749; background: transparent; cursor: pointer; }
-.product-arrow:hover { background: #e5eeef; }
+.product-arrow { display: grid; place-items: center; width: 44px; height: 44px; flex-shrink: 0; border: 1px solid #cedbdf; border-radius: 50%; cursor: pointer; }
 .product-selector { display: flex; gap: 24px; }
 .product-selector button { padding: 12px 0; border-bottom: 2px solid transparent; font-size: 14px; color: #75848d; cursor: pointer; }
 .product-selector button[aria-pressed="true"] { color: #087f85; border-bottom-color: #087f85; }
@@ -9767,7 +9702,6 @@ body,
 }
 .content-home .product-vision .vision-product-heading p {
   margin-top: 12px;
-  color: #60747c;
   font-size: 18px;
 }
 .content-home .product-vision .product-track { overflow: visible; }
@@ -9781,8 +9715,7 @@ body,
 .content-home .product-vision .product-controls { margin-top: 4px; }
 .content-home .product-vision .product-arrow { display: none; }
 .content-home .product-vision .product-selector { gap: 26px; }
-.content-home .product-vision .product-selector button { font-size: 14px; color: #9aa9ae; }
-.content-home .product-vision .product-selector button[aria-pressed="true"] { color: #087f85; }
+.content-home .product-vision .product-selector button { font-size: 14px; }
 @media (max-width: 700px) {
   .content-home .product-vision { padding-top: 28px; padding-bottom: 22px; }
   .content-home .product-vision .vision-product-heading p { font-size: 16px; }
@@ -9801,10 +9734,9 @@ body,
   justify-content: space-between;
   gap: 20px;
   overflow: visible;
-  background: linear-gradient(#fbfcfc, #f2f6f5);
 }
 .vision-product-heading { flex: 0 0 auto; text-align: center; padding: 0 24px; }
-.vision-product-heading h2 { margin: 0; color: #182f39; font-size: 42px; font-weight: 700; line-height: 1.2; }
+.vision-product-heading h2 { margin: 0; font-size: 42px; font-weight: 700; line-height: 1.2; }
 .vision-product-heading p { display: block; margin: 18px auto 0; max-width: 1050px; color: #435e69; font-size: 20px; font-weight: 500; line-height: 1.5; }
 .product-vision .product-showcase { flex: 0 0 auto; }
 .content-home .product-vision .product-slide { flex-basis: min(76vw, calc((100svh - 390px) * 1.85)); }
@@ -9828,4 +9760,235 @@ body,
   .content-home .product-vision .product-slide { flex-basis: 90%; }
   .content-home .product-vision .product-screenshot { height: auto; aspect-ratio: 1.75; }
   .product-vision .product-slide figcaption { min-height: 0; }
+}
+
+
+/* Selected dark brand theme: shared surface, typography and interaction roles. */
+body,
+.site-shell,
+.team-page,
+.content-home {
+  background: var(--background) !important;
+  color: var(--text-body) !important;
+}
+::selection {
+  background: var(--accent);
+  color: var(--primary);
+}
+.content-home .hero,
+.content-home .news-section,
+.team-page .team-page-hero,
+.team-page .team-roster {
+  background: var(--background) !important;
+}
+.content-home .hero-vignette {
+  background: linear-gradient(transparent, var(--background)) !important;
+}
+.content-home .site-header,
+.team-page .team-page-nav {
+  color: var(--foreground) !important;
+}
+.content-home .site-header-scrolled,
+.team-page .team-page-nav,
+.content-home .mobile-menu {
+  background: var(--header-background) !important;
+  border-color: var(--border) !important;
+}
+.brand-lab-lockup .brand-lab-name,
+.content-home h1,
+.content-home .section-title,
+.vision-product-heading h2,
+.team-page h1,
+.team-page h2,
+.team-page h3,
+.content-home .news-record h3,
+.content-home .research-directory .research-item h3,
+.product-slide h3 {
+  color: var(--foreground) !important;
+}
+.content-home .site-nav a,
+.content-home .language-button,
+.content-home .menu-button,
+.team-page .language-button,
+.content-home .mobile-menu a {
+  color: var(--text-body) !important;
+}
+.content-home .site-nav a:hover,
+.content-home .mobile-menu a:hover {
+  color: var(--primary) !important;
+}
+.content-home .site-nav a::after {
+  background: var(--primary) !important;
+}
+.content-home .header-cta,
+.content-home .pill-dark {
+  background: var(--primary) !important;
+  color: var(--background) !important;
+  border-color: var(--primary) !important;
+  box-shadow: none !important;
+}
+.content-home .header-cta:hover,
+.content-home .pill-dark:hover {
+  background: var(--primary-hover) !important;
+  border-color: var(--primary-hover) !important;
+}
+.content-home .pill-button:not(.pill-dark) {
+  background: transparent !important;
+  color: var(--text-body) !important;
+  border-color: var(--border) !important;
+}
+.content-home .pill-button:not(.pill-dark):hover {
+  color: var(--primary) !important;
+  border-color: var(--primary) !important;
+  background: var(--accent) !important;
+}
+.content-home .news-research-link,
+.content-home a.news-record .news-read,
+.team-page .team-back {
+  color: var(--primary) !important;
+}
+.content-home .news-record-pending .news-read {
+  color: var(--muted-foreground) !important;
+}
+.content-home .news-meta,
+.content-home .news-meta time,
+.content-home .news-meta span,
+.content-home .research-item time,
+.content-home .research-directory .research-item > .research-venue {
+  color: var(--muted-foreground) !important;
+}
+.content-home .news-rail-controls button,
+.product-arrow {
+  color: var(--text-body) !important;
+  background: transparent !important;
+  border-color: var(--border) !important;
+}
+.content-home .news-rail-controls button:hover,
+.product-arrow:hover {
+  color: var(--primary) !important;
+  background: var(--accent) !important;
+  border-color: var(--primary) !important;
+}
+.content-home .product-vision {
+  background: linear-gradient(var(--background), var(--surface)) !important;
+}
+.content-home .product-vision .vision-product-heading p,
+.product-slide figcaption p,
+.team-page .team-page-hero p,
+.team-page .member-meta p,
+.team-page .collaborator-grid p,
+.team-page .roster-heading p {
+  color: var(--muted-foreground) !important;
+}
+.product-screenshot {
+  background: var(--surface-raised) !important;
+  border-color: var(--border) !important;
+  box-shadow: 0 12px 34px rgba(1, 46, 120, 0.04) !important;
+}
+.content-home .product-vision .product-selector button {
+  color: var(--muted-foreground) !important;
+}
+.content-home .product-vision .product-selector button[aria-pressed="true"] {
+  color: var(--primary) !important;
+  border-bottom-color: var(--primary) !important;
+}
+.content-home .research-directory,
+.institutional-footer,
+.content-home .institutional-footer,
+.team-page .institutional-footer,
+.team-page .collaborator-section {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+}
+.content-home .research-directory .section-heading-only {
+  border-bottom-color: var(--border) !important;
+}
+.content-home .research-directory .research-item {
+  border-bottom-color: var(--border) !important;
+}
+.content-home .research-directory a.research-item:hover {
+  background: var(--accent) !important;
+}
+.content-home .research-directory a.research-item:hover h3,
+.content-home .research-directory a.research-item::after {
+  color: var(--primary) !important;
+}
+.content-home .team-section {
+  background: var(--team-background) !important;
+}
+.content-home .team-section .section-title,
+.content-home .team-copy p,
+.content-home .team-copy .team-link-button {
+  color: var(--foreground) !important;
+}
+.content-home .closing-vision {
+  background: var(--closing-background) !important;
+}
+.content-home .closing-vision h2,
+.content-home .closing-vision-copy p {
+  color: var(--foreground) !important;
+}
+.institutional-footer .footer-brand p,
+.institutional-footer .footer-column > span,
+.institutional-footer .footer-bottom,
+.institutional-footer .footer-bottom span {
+  color: var(--muted-foreground) !important;
+  border-color: var(--border) !important;
+}
+.institutional-footer .footer-column a,
+.institutional-footer .footer-column p {
+  color: var(--text-body) !important;
+}
+.institutional-footer .footer-column a:hover {
+  color: var(--primary) !important;
+}
+.team-page .member-card,
+.team-page .collaborator-grid article {
+  border-color: var(--border) !important;
+  background: transparent !important;
+}
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--primary) !important;
+  outline-offset: 5px !important;
+}
+.news-preview-caption {
+  background: linear-gradient(transparent, var(--background)) !important;
+}
+.news-preview-caption b,
+.news-preview-caption small {
+  color: var(--foreground) !important;
+}
+.brand-symbol-image {
+  color: var(--primary);
+  filter: none;
+}
+.brand-symbol-image svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.brand-symbol-image path {
+  fill: currentColor;
+}
+.institutional-footer .footer-brand .brand-lab-name {
+  color: var(--foreground) !important;
+}
+.content-home .mobile-menu a,
+.content-home .news-record:not(:last-child),
+.content-home .news-record:hover,
+.team-page .member-grid,
+.team-page .collaborator-grid {
+  border-color: var(--border);
+}
+.team-page .member-avatar,
+.team-page .collaborator-avatar {
+  background: var(--surface-raised);
+  border-color: var(--border);
+}
+.content-home .team-link-button i {
+  border-color: var(--muted-foreground);
+}
+.content-home .team-link-button:hover i {
+  background: var(--accent);
 }

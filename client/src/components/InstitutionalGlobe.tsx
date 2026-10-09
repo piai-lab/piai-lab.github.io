@@ -28,6 +28,9 @@ export default function InstitutionalGlobe({ points, ariaLabel, tone = "ink" }: 
     const context = canvas?.getContext("2d");
     if (!canvas || !context) return;
 
+    const palette = getComputedStyle(canvas);
+    const color = (token: string) => palette.getPropertyValue(token).trim();
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let frame = 0;
     let active = true;
     const resize = () => {
@@ -68,20 +71,20 @@ export default function InstitutionalGlobe({ points, ariaLabel, tone = "ink" }: 
       if (!active) return;
       const width = canvas.clientWidth;
       const height = canvas.clientHeight;
-      if (!drag.current) rotation.current += 0.0021;
+      if (!drag.current && !motion.matches) rotation.current += 0.0021;
       context.clearRect(0, 0, width, height);
 
       const paper = tone === "paper";
       const radius = Math.min(width, height) * (paper ? 0.46 : 0.44);
       const centerX = width * 0.5;
       const centerY = height * 0.5;
-      const grid = paper ? "rgba(30,45,67,.16)" : "rgba(255,255,255,.18)";
-      const rim = paper ? "rgba(30,45,67,.34)" : "rgba(255,255,255,.42)";
+      const grid = color("--globe-grid");
+      const rim = color("--globe-rim");
 
       const globeFill = context.createRadialGradient(centerX - radius * 0.32, centerY - radius * 0.37, radius * 0.08, centerX, centerY, radius);
-      globeFill.addColorStop(0, paper ? "rgba(255,255,255,.96)" : "rgba(54,75,107,.72)");
-      globeFill.addColorStop(0.68, paper ? "rgba(223,231,238,.84)" : "rgba(14,25,42,.84)");
-      globeFill.addColorStop(1, paper ? "rgba(184,198,210,.96)" : "rgba(5,12,22,.96)");
+      globeFill.addColorStop(0, color("--globe-highlight"));
+      globeFill.addColorStop(0.68, color("--globe-midpoint"));
+      globeFill.addColorStop(1, color("--globe-edge"));
       context.fillStyle = globeFill;
       context.beginPath();
       context.arc(centerX, centerY, radius, 0, Math.PI * 2);
@@ -109,31 +112,43 @@ export default function InstitutionalGlobe({ points, ariaLabel, tone = "ink" }: 
         if (location.z <= 0) return;
         const size = Math.max(2.8, Math.min(6, 2.5 + Math.log2((point.weight ?? 1) + 1)));
         const alpha = 0.44 + location.z * 0.56;
-        const color = point.accent ? "255,169,51" : paper ? "25,68,125" : "157,190,247";
-        context.fillStyle = `rgba(${color},${alpha})`;
+        context.globalAlpha = alpha;
+        context.fillStyle = color(point.accent ? "--globe-accent" : "--globe-marker");
         context.beginPath();
         context.arc(location.x, location.y, size, 0, Math.PI * 2);
         context.fill();
         if (point.accent) {
-          context.strokeStyle = paper ? "rgba(255,169,51,.42)" : "rgba(255,199,103,.54)";
+          context.strokeStyle = color("--globe-accent-ring");
           context.beginPath();
           context.arc(location.x, location.y, size + 7, 0, Math.PI * 2);
           context.stroke();
         }
-        context.fillStyle = paper ? `rgba(20,32,49,${alpha})` : `rgba(255,255,255,${alpha})`;
+        context.fillStyle = color("--globe-label");
         context.font = "600 12px 'Noto Sans SC', 'PingFang SC', sans-serif";
         context.fillText(point.label, location.x + size + 7, location.y - size - 3);
       });
-      frame = requestAnimationFrame(draw);
+      context.globalAlpha = 1;
+      frame = motion.matches ? 0 : requestAnimationFrame(draw);
     };
 
+    const redraw = () => { cancelAnimationFrame(frame); draw(); };
+    const onResize = () => { resize(); redraw(); };
+    const onPointerMove = (event: PointerEvent) => {
+      if (!drag.current) return;
+      rotation.current = drag.current.rotation + (event.clientX - drag.current.x) * 0.006;
+      if (motion.matches) redraw();
+    };
+    motion.addEventListener("change", redraw);
+    canvas.addEventListener("pointermove", onPointerMove);
     resize();
-    window.addEventListener("resize", resize);
+    window.addEventListener("resize", onResize);
     draw();
     return () => {
       active = false;
       cancelAnimationFrame(frame);
-      window.removeEventListener("resize", resize);
+      window.removeEventListener("resize", onResize);
+      motion.removeEventListener("change", redraw);
+      canvas.removeEventListener("pointermove", onPointerMove);
     };
   }, [points, tone]);
 
@@ -144,9 +159,6 @@ export default function InstitutionalGlobe({ points, ariaLabel, tone = "ink" }: 
     onPointerDown={(event) => {
       drag.current = { x: event.clientX, rotation: rotation.current };
       event.currentTarget.setPointerCapture(event.pointerId);
-    }}
-    onPointerMove={(event) => {
-      if (drag.current) rotation.current = drag.current.rotation + (event.clientX - drag.current.x) * 0.006;
     }}
     onPointerUp={() => { drag.current = null; }}
     onPointerCancel={() => { drag.current = null; }}

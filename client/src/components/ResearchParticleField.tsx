@@ -58,11 +58,11 @@ void main() { vec4 pos=texture2D(uPosition,uv); vSeeds=seeds; vVelocity=pos.w; v
 const renderFragment = `
 precision highp float;
 varying vec4 vSeeds; varying vec2 vScreenPos; varying vec2 vLocalPos; varying float vScale; varying float vVelocity;
-uniform vec3 uColor1; uniform vec3 uColor2; uniform vec3 uColor3; uniform vec2 uRingPos; uniform float uAlpha; uniform float uTime; uniform int uColorScheme;
+uniform vec3 uColor1; uniform vec3 uColor2; uniform vec3 uColor3; uniform vec2 uRingPos; uniform float uAlpha; uniform float uTime;
 ${simplexNoise}
 float sdRoundBox(in vec2 p,in vec2 b,in vec4 r){r.xy=(p.x>0.0)?r.xy:r.zw;r.x=(p.y>0.0)?r.x:r.y;vec2 q=abs(p)-b+r.x;return min(max(q.x,q.y),0.0)+length(max(q,0.0))-r.x;}
 vec2 rotate(vec2 v,float a){float s=sin(a);float c=cos(a);return mat2(c,s,-s,c)*v;}
-void main(){float noiseAngle=snoise(vec3(vLocalPos*10.+vec2(18.4924,72.9744),uTime*.85));float noiseColor=snoise(vec3(vLocalPos*2.+vec2(74.664,91.556),uTime*.5));noiseColor=(noiseColor+1.)*.5;float angle=atan(vLocalPos.y-uRingPos.y,vLocalPos.x-uRingPos.x);vec2 uv=gl_PointCoord.xy-vec2(.5);uv.y*=-1.;uv=rotate(uv,-angle+(noiseAngle*.5));float progress=smoothstep(0.,.75,pow(noiseColor,2.));float h=.8;vec3 color=mix(mix(uColor1,uColor2,progress/h),mix(uColor2,uColor3,(progress-h)/(1.-h)),step(h,progress));float rounded=sdRoundBox(uv,vec2(.5,.2),vec4(.25));rounded=smoothstep(.1,0.,rounded);float a=uAlpha*rounded*smoothstep(.1,.2,vScale);if(a<.01)discard;color=clamp(color,0.,1.);color=mix(color,color*clamp(vVelocity,0.,1.),float(uColorScheme));gl_FragColor=vec4(color,clamp(a,0.,1.));}`;
+void main(){float noiseAngle=snoise(vec3(vLocalPos*10.+vec2(18.4924,72.9744),uTime*.85));float noiseColor=snoise(vec3(vLocalPos*2.+vec2(74.664,91.556),uTime*.5));noiseColor=(noiseColor+1.)*.5;float angle=atan(vLocalPos.y-uRingPos.y,vLocalPos.x-uRingPos.x);vec2 uv=gl_PointCoord.xy-vec2(.5);uv.y*=-1.;uv=rotate(uv,-angle+(noiseAngle*.5));float progress=smoothstep(0.,.75,pow(noiseColor,2.));float h=.8;vec3 color=mix(mix(uColor1,uColor2,progress/h),mix(uColor2,uColor3,(progress-h)/(1.-h)),step(h,progress));float rounded=sdRoundBox(uv,vec2(.5,.2),vec4(.25));rounded=smoothstep(.1,0.,rounded);float a=uAlpha*rounded*smoothstep(.1,.2,vScale);if(a<.01)discard;color=clamp(color,0.,1.);gl_FragColor=vec4(color,clamp(a,0.,1.));}`;
 
 export default function ResearchParticleField({ tone = "paper" }: { tone?: ParticleTone }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -121,7 +121,9 @@ export default function ResearchParticleField({ tone = "paper" }: { tone?: Parti
     const geometry = new THREE.BufferGeometry(); const uv = new Float32Array(count * 2); const seed = new Float32Array(count * 4);
     for (let index = 0; index < count; index += 1) { const x = index % size; const y = Math.floor(index / size); uv[index * 2] = x / size; uv[index * 2 + 1] = y / size; seed[index * 4] = Math.random(); seed[index * 4 + 1] = Math.random(); seed[index * 4 + 2] = Math.random(); seed[index * 4 + 3] = Math.random(); }
     geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(count * 3), 3)); geometry.setAttribute("uv", new THREE.BufferAttribute(uv, 2)); geometry.setAttribute("seeds", new THREE.BufferAttribute(seed, 4));
-    const renderMaterial = new THREE.ShaderMaterial({ uniforms: { uPosition: { value: posTexture }, uTime: { value: 0 }, uColor1: { value: new THREE.Color(isMorph ? "#676A72" : isDark ? "#7189ff" : "#2c64ed") }, uColor2: { value: new THREE.Color(isMorph ? "#FF4641" : isDark ? "#3074f9" : "#f84242") }, uColor3: { value: new THREE.Color(isMorph ? "#346BF1" : isDark ? "#000000" : "#ffcf03") }, uAlpha: { value: 1 }, uRingPos: { value: new THREE.Vector2() }, uParticleScale: { value: sourceConfig.particleScale }, uPixelRatio: { value: pixelRatio }, uColorScheme: { value: isDark ? 0 : 1 } }, vertexShader: renderVertex, fragmentShader: renderFragment, transparent: true, depthTest: false, depthWrite: false });
+    const palette = getComputedStyle(canvas);
+    const color = (token: string) => new THREE.Color(palette.getPropertyValue(token).trim());
+    const renderMaterial = new THREE.ShaderMaterial({ uniforms: { uPosition: { value: posTexture }, uTime: { value: 0 }, uColor1: { value: color("--particle-one") }, uColor2: { value: color("--particle-two") }, uColor3: { value: color("--particle-three") }, uAlpha: { value: Number(palette.getPropertyValue("--particle-opacity")) }, uRingPos: { value: new THREE.Vector2() }, uParticleScale: { value: sourceConfig.particleScale }, uPixelRatio: { value: pixelRatio } }, vertexShader: renderVertex, fragmentShader: renderFragment, transparent: true, depthTest: false, depthWrite: false });
     const particleMesh = new THREE.Points(geometry, renderMaterial); particleMesh.scale.set(5, 5, 5); scene.add(particleMesh);
     const raycaster = new THREE.Raycaster(); const mouse = new THREE.Vector2(); const intersectionPoint = new THREE.Vector3(); const raycastPlane = new THREE.Mesh(new THREE.PlaneGeometry(12.5, 12.5), new THREE.MeshBasicMaterial({ visible: false, side: THREE.DoubleSide })); scene.add(raycastPlane);
     const ringPos = new THREE.Vector2(); const cursorPos = new THREE.Vector2(); const clock = new THREE.Clock(); let previousTime = 0; let everRendered = false; let active = true; let pointerInside = false; let animation = 0;
@@ -129,8 +131,9 @@ export default function ResearchParticleField({ tone = "paper" }: { tone?: Parti
     const onMove = (event: PointerEvent) => { const rect = canvas.getBoundingClientRect(); mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1; mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1; pointerInside = mouse.x >= -1 && mouse.x <= 1 && mouse.y >= -1 && mouse.y <= 1; };
     const onLeave = () => { pointerInside = false; };
     const observer = new IntersectionObserver((entries) => { active = entries[0]?.isIntersecting ?? false; }, { threshold: 0 }); observer.observe(canvas);
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const render = () => {
-      animation = requestAnimationFrame(render); if (!active) return;
+      animation = motion.matches ? 0 : requestAnimationFrame(render); if (!active) return;
       const elapsed = clock.getElapsedTime(); const dt = elapsed - previousTime; previousTime = elapsed;
       const idleX = (Math.sin(elapsed * .66 + 94.234) - .5) * .4; const idleY = (Math.sin(elapsed * .75 + 21.028) - .5) * .2;
       cursorPos.set(idleX, idleY);
@@ -142,8 +145,10 @@ export default function ResearchParticleField({ tone = "paper" }: { tone?: Parti
       const swap = rt1; rt1 = rt2; rt2 = swap; everRendered = true;
       void dt;
     };
+    const onMotionChange = () => { cancelAnimationFrame(animation); animation = requestAnimationFrame(render); };
+    motion.addEventListener("change", onMotionChange);
     resize(); window.addEventListener("resize", resize); canvas.addEventListener("pointermove", onMove, { passive: true }); canvas.addEventListener("pointerleave", onLeave, { passive: true }); animation = requestAnimationFrame(render);
-    return () => { observer.disconnect(); window.removeEventListener("resize", resize); canvas.removeEventListener("pointermove", onMove); canvas.removeEventListener("pointerleave", onLeave); cancelAnimationFrame(animation); geometry.dispose(); renderMaterial.dispose(); simMaterial.dispose(); posTexture.dispose(); rt1.dispose(); rt2.dispose(); raycastPlane.geometry.dispose(); (raycastPlane.material as THREE.Material).dispose(); renderer.dispose(); renderer.forceContextLoss(); };
+    return () => { motion.removeEventListener("change", onMotionChange); observer.disconnect(); window.removeEventListener("resize", resize); canvas.removeEventListener("pointermove", onMove); canvas.removeEventListener("pointerleave", onLeave); cancelAnimationFrame(animation); geometry.dispose(); renderMaterial.dispose(); simMaterial.dispose(); posTexture.dispose(); rt1.dispose(); rt2.dispose(); raycastPlane.geometry.dispose(); (raycastPlane.material as THREE.Material).dispose(); renderer.dispose(); renderer.forceContextLoss(); };
   }, [shouldInitialize, tone]);
   return <canvas ref={canvasRef} className={`particle-field particle-field-${tone}`} aria-hidden="true" />;
 }
@@ -155,26 +160,54 @@ export default function ResearchParticleField({ tone = "paper" }: { tone?: Parti
  */
 const morphSimFragment = `
 precision highp float;
-uniform sampler2D uPosition; uniform sampler2D uBase; uniform sampler2D uTarget; uniform float uTime; uniform float uHover;
+uniform sampler2D uPosition; uniform sampler2D uBase; uniform sampler2D uTarget;
+uniform float uTime; uniform float uHover; uniform float uDelta;
 vec2 hash(vec2 p){return fract(sin(vec2(dot(p,vec2(127.1,311.7)),dot(p,vec2(269.5,183.3))))*43758.5453);}
 void main(){
-  vec2 uv=gl_FragCoord.xy/vec2(256.0); vec4 previous=texture2D(uPosition,uv); vec2 base=texture2D(uBase,uv).xy; vec2 target=texture2D(uTarget,uv).xy;
-  vec2 desired=mix(base,target,uHover); vec2 delta=desired-previous.xy; float distanceToTarget=length(delta); vec2 direction=delta/max(distanceToTarget,.0001);
-  vec2 drift=(hash(uv+uTime*.001)-.5)*.004; vec2 nextPos=previous.xy+direction*min(distanceToTarget,.026)*.12+drift;
-  float life=fract(hash(uv).x*7.0+uTime*.065); float targetScale=smoothstep(.0,.18,life)*(1.0-smoothstep(.74,1.0,life));
-  targetScale+=smoothstep(.72,.08,distanceToTarget)*uHover*.82; float nextScale=mix(previous.z,targetScale,.09); float velocity=mix(previous.w,1.0-smoothstep(.015,.52,distanceToTarget),.12);
+  vec2 uv=gl_FragCoord.xy/vec2(256.0);
+  vec4 previous=texture2D(uPosition,uv); vec2 base=texture2D(uBase,uv).xy;
+  vec2 target=texture2D(uTarget,uv).xy; vec2 seed=hash(uv);
+  vec2 drift=vec2(sin(uTime*.37+seed.x*6.283),cos(uTime*.29+seed.y*6.283))*.0025;
+  vec2 desired=mix(base,target,uHover)+drift;
+  float approach=1.-exp(-uDelta*3.6);
+  vec2 nextPos=mix(previous.xy,desired,approach);
+  float breathing=.68+.32*sin(uTime*.48+seed.x*6.283);
+  float nextScale=mix(previous.z,breathing,1.-exp(-uDelta*3.));
+  float velocity=1.-smoothstep(.015,.32,length(desired-nextPos));
   gl_FragColor=vec4(nextPos,nextScale,velocity);
 }`;
 
 const morphRenderVertex = `
 precision highp float;
-uniform sampler2D uPosition; uniform float uPixelRatio; uniform float uParticleScale; varying float vScale; varying float vVelocity; varying vec2 vPosition;
-void main(){vec4 p=texture2D(uPosition,uv);vScale=p.z;vVelocity=p.w;vPosition=p.xy;vec4 view=modelViewMatrix*vec4(p.xy,0.,1.);gl_Position=projectionMatrix*view;gl_PointSize=(1.2+p.z*8.5)*uPixelRatio*uParticleScale;}`;
+uniform sampler2D uPosition; uniform sampler2D uTarget;
+uniform float uPixelRatio; uniform float uParticleScale; uniform float uTime; uniform vec2 uPointer;
+varying float vScale; varying float vWave; varying vec2 vTarget;
+void main(){
+  vec4 p=texture2D(uPosition,uv);vec2 target=texture2D(uTarget,uv).xy;
+  float phase=abs(target.x)*8.5-target.y*3.-uTime*.85;
+  vWave=pow(.5+.5*cos(phase),8.);vScale=p.z;vTarget=target;
+  float depth=sin(phase*.7)*.012;
+  vec2 parallax=uPointer*depth*.28;
+  vec4 view=modelViewMatrix*vec4(p.xy+parallax,depth,1.);
+  gl_Position=projectionMatrix*view;
+  gl_PointSize=clamp((1.1+p.z*.9+vWave*.28)*uParticleScale,.85,2.4)*uPixelRatio;
+}`;
 
 const morphRenderFragment = `
 precision highp float;
-uniform vec3 uColor1;uniform vec3 uColor2;uniform vec3 uColor3;uniform float uTime;varying float vScale;varying float vVelocity;varying vec2 vPosition;
-void main(){vec2 p=gl_PointCoord-.5;float circle=smoothstep(.5,.38,length(p));if(circle<.02)discard;float mixValue=clamp(.5+.5*sin(vPosition.x*5.3+vPosition.y*4.1+uTime*.45),0.,1.);vec3 color=mix(uColor1,uColor2,mixValue);color=mix(color,uColor3,smoothstep(.72,1.,mixValue));float alpha=circle*smoothstep(.02,.21,vScale)*(.38+.62*vVelocity);gl_FragColor=vec4(color,alpha);}`;
+uniform vec3 uColor1;uniform vec3 uColor2;uniform vec3 uColor3;
+varying float vScale;varying float vWave;varying vec2 vTarget;
+void main(){
+  float radius=length(gl_PointCoord-.5);
+  float core=1.-smoothstep(.16,.48,radius);if(core<.015)discard;
+  vec3 color=mix(uColor2,uColor1,.28+.3*vScale);
+  color=mix(color,uColor3,vWave*.88);
+  // A quiet central band protects the overlaid lab name and statement.
+  float textBand=1.-smoothstep(.045,.24,abs(vTarget.y+.045));
+  float alpha=core*(.46+vScale*.25+vWave*.27)*(1.-textBand*.46);
+  gl_FragColor=vec4(color,alpha);
+  #include <colorspace_fragment>
+}`;
 
 function sampleBrandSilhouette() {
   const source = new DOMParser().parseFromString(symbolSvg, "image/svg+xml");
@@ -187,15 +220,21 @@ function sampleBrandSilhouette() {
     shape: new Path2D(path.getAttribute("d") || ""),
     fillRule: path.getAttribute("fill-rule") === "evenodd" ? "evenodd" as const : "nonzero" as const,
   }));
-  // One isotropic grid keeps both axes faithful to the canonical viewBox.
+  // Jittered cells avoid scanline patterns while preserving the canonical path.
   const step = width / 256;
   const points: [number, number][] = [];
   for (let y = top + step / 2; y < top + height; y += step) {
     for (let x = left + step / 2; x < left + width; x += step) {
-      if (paths.some(path => context.isPointInPath(path.shape, x, y, path.fillRule))) {
-        points.push([(x - left - width / 2) / (width / 2), (y - top - height / 2) / (width / 2)]);
+      const px = x + (Math.random() - .5) * step;
+      const py = y + (Math.random() - .5) * step;
+      if (paths.some(path => context.isPointInPath(path.shape, px, py, path.fillRule))) {
+        points.push([(px - left - width / 2) / (width / 2), (py - top - height / 2) / (width / 2)]);
       }
     }
+  }
+  for (let index = points.length - 1; index > 0; index -= 1) {
+    const other = Math.floor(Math.random() * (index + 1));
+    [points[index], points[other]] = [points[other], points[index]];
   }
   return points.length ? { points, aspect: height / width } : null;
 }
@@ -206,6 +245,7 @@ export function MorphingParticleField() {
   const [reducedMotion, setReducedMotion] = useState(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   const [unavailable, setUnavailable] = useState(false);
   const [ready, setReady] = useState(false);
+  const [compact, setCompact] = useState<boolean | null>(null);
 
   useEffect(() => {
     const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -219,7 +259,11 @@ export function MorphingParticleField() {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    const container = canvas?.parentElement;
+    if (!canvas || !container) return;
+    const resizeObserver = new ResizeObserver(() => setCompact(container.clientWidth < 700));
+    resizeObserver.observe(container);
+    setCompact(container.clientWidth < 700);
     const observer = new IntersectionObserver(([entry]) => {
       if (entry?.isIntersecting) {
         setShouldInitialize(true);
@@ -227,13 +271,13 @@ export function MorphingParticleField() {
       }
     }, { threshold: 0.01 });
     observer.observe(canvas);
-    return () => observer.disconnect();
-  }, [reducedMotion]);
+    return () => { observer.disconnect(); resizeObserver.disconnect(); };
+  }, [reducedMotion, compact]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const container = canvas?.parentElement;
-    if (!canvas || !container || !shouldInitialize || reducedMotion || unavailable) return;
+    if (!canvas || !container || !shouldInitialize || reducedMotion || unavailable || compact === null) return;
     setReady(false);
     let silhouette: ReturnType<typeof sampleBrandSilhouette>;
     try {
@@ -249,7 +293,7 @@ export function MorphingParticleField() {
     // Do not let a lost/exhausted WebGL context take down the whole React tree.
     let renderer: THREE.WebGLRenderer;
     try {
-      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "high-performance", preserveDrawingBuffer: true, stencil: false, precision: "highp" });
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "high-performance", preserveDrawingBuffer: false, stencil: false, precision: "highp" });
     } catch {
       setUnavailable(true);
       return;
@@ -260,16 +304,16 @@ export function MorphingParticleField() {
       setUnavailable(true);
       return;
     }
-    const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+    const pixelRatio = Math.min(window.devicePixelRatio || 1, compact ? 1.5 : 2);
     renderer.setPixelRatio(pixelRatio);
-    renderer.setClearColor(0x121317, 0);
+    renderer.setClearColor(0x000000, 0);
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(40, 1, .1, 1000);
     camera.position.z = 8.8;
     const size = 256;
     const length = size * size;
-    const samples = new PoissonDiskSampling({ shape: [500, 500], minDistance: 8.6667, maxDistance: 10.2, tries: 20 }).fill() as number[][];
-    const count = Math.min(samples.length, length);
+    const samples = new PoissonDiskSampling({ shape: [500, 500], minDistance: compact ? 6.35 : 5, maxDistance: compact ? 7.4 : 6, tries: 20 }).fill() as number[][];
+    const count = Math.min(samples.length, compact ? 4800 : 8000, length);
     const baseData = new Float32Array(length * 4);
     const targetData = new Float32Array(length * 4);
     for (let index = 0; index < count; index += 1) {
@@ -292,21 +336,24 @@ export function MorphingParticleField() {
     let rt2 = new THREE.WebGLRenderTarget(size, size, targets);
     const simScene = new THREE.Scene();
     const simCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-    const simMaterial = new THREE.ShaderMaterial({ uniforms: { uPosition: { value: baseTexture }, uBase: { value: baseTexture }, uTarget: { value: targetTexture }, uTime: { value: 0 }, uHover: { value: .72 } }, vertexShader: simVertex, fragmentShader: morphSimFragment });
+    const simMaterial = new THREE.ShaderMaterial({ uniforms: { uPosition: { value: baseTexture }, uBase: { value: baseTexture }, uTarget: { value: targetTexture }, uTime: { value: 0 }, uHover: { value: .98 }, uDelta: { value: 1 / 60 } }, vertexShader: simVertex, fragmentShader: morphSimFragment });
     const simMesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), simMaterial);
     simScene.add(simMesh);
     const geometry = new THREE.BufferGeometry();
     const uv = new Float32Array(count * 2);
-    for (let index = 0; index < count; index += 1) { uv[index * 2] = (index % size) / size; uv[index * 2 + 1] = Math.floor(index / size) / size; }
+    for (let index = 0; index < count; index += 1) { uv[index * 2] = ((index % size) + .5) / size; uv[index * 2 + 1] = (Math.floor(index / size) + .5) / size; }
     geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(count * 3), 3));
     geometry.setAttribute("uv", new THREE.BufferAttribute(uv, 2));
-    const renderMaterial = new THREE.ShaderMaterial({ uniforms: { uPosition: { value: baseTexture }, uPixelRatio: { value: pixelRatio }, uParticleScale: { value: .60 }, uColor1: { value: new THREE.Color("#e7f0ff") }, uColor2: { value: new THREE.Color("#bcd8eb") }, uColor3: { value: new THREE.Color("#ffffff") }, uTime: { value: 0 } }, vertexShader: morphRenderVertex, fragmentShader: morphRenderFragment, transparent: true, depthTest: false, depthWrite: false });
+    const palette = getComputedStyle(canvas);
+    const color = (token: string) => new THREE.Color(palette.getPropertyValue(token).trim());
+    const renderMaterial = new THREE.ShaderMaterial({ uniforms: { uPosition: { value: baseTexture }, uTarget: { value: targetTexture }, uPointer: { value: new THREE.Vector2() }, uPixelRatio: { value: pixelRatio }, uParticleScale: { value: .60 }, uColor1: { value: color("--morph-one") }, uColor2: { value: color("--morph-two") }, uColor3: { value: color("--morph-three") }, uTime: { value: 0 } }, vertexShader: morphRenderVertex, fragmentShader: morphRenderFragment, transparent: true, depthTest: false, depthWrite: false });
     const mesh = new THREE.Points(geometry, renderMaterial);
     scene.add(mesh);
-    const clock = new THREE.Clock();
     let previous = 0;
+    let elapsed = 0;
     let hover = .72;
     let targetHover = .72;
+    const pointer = new THREE.Vector2();
     let active = true;
     let rendered = false;
     let raf = 0;
@@ -321,51 +368,75 @@ export function MorphingParticleField() {
       const scale = Math.min(4.5, visibleHeight * camera.aspect * .84 / 2, visibleHeight * .78 / (2 * silhouette.aspect));
       mesh.scale.set(scale, -scale, scale);
       renderMaterial.uniforms.uPixelRatio.value = pixelRatio;
-      renderMaterial.uniforms.uParticleScale.value = Math.max(.34, Math.min(.83, width / 1200 * .83));
+      renderMaterial.uniforms.uParticleScale.value = Math.max(.64, Math.min(1, width / 1100));
     };
-    const onMove = () => { targetHover = 1; };
-    const onLeave = () => { targetHover = .72; };
-    const onContextLost = () => setUnavailable(true);
-    const observer = new IntersectionObserver((entries) => { active = entries[0]?.isIntersecting ?? false; }, { threshold: 0 });
-    observer.observe(canvas);
-    const render = () => {
-      raf = requestAnimationFrame(render);
-      if (!active) return;
-      const elapsed = clock.getElapsedTime();
-      const delta = Math.min(.05, elapsed - previous);
-      previous = elapsed;
-      targetHover = Math.max(.58, targetHover - delta * .075);
-      hover += (targetHover - hover) * .045;
+    const onMove = (event: PointerEvent) => {
+      targetHover = 1;
+      if (!compact) {
+        const rect = canvas.getBoundingClientRect();
+        pointer.set((event.clientX - rect.left) / rect.width * 2 - 1, -((event.clientY - rect.top) / rect.height * 2 - 1));
+      }
+    };
+    const onLeave = () => { targetHover = .72; pointer.set(0, 0); };
+    const stop = () => { cancelAnimationFrame(raf); raf = 0; };
+    const render = (now: number) => {
+      raf = 0;
+      if (!active || document.hidden) return;
+      const delta = Math.min(1 / 30, Math.max(0, (now - previous) / 1000));
+      previous = now;
+      elapsed += delta;
+      hover += (targetHover - hover) * (1 - Math.exp(-delta * 3));
+      renderMaterial.uniforms.uPointer.value.lerp(pointer, 1 - Math.exp(-delta * 2));
       simMaterial.uniforms.uPosition.value = rendered ? rt1.texture : baseTexture;
       simMaterial.uniforms.uTime.value = elapsed;
-      // Keep the emblem recognizable without hover, including on touch screens.
-      simMaterial.uniforms.uHover.value = Math.min(1, .84 + (hover + Math.sin(elapsed * .8) * .06) * .16);
+      simMaterial.uniforms.uDelta.value = delta;
+      simMaterial.uniforms.uHover.value = .96 + hover * .035 + Math.sin(elapsed * .4) * .004;
       renderer.setRenderTarget(rt2);
       renderer.clear();
       renderer.render(simScene, simCamera);
       renderer.setRenderTarget(null);
-      renderMaterial.uniforms.uPosition.value = rendered ? rt2.texture : baseTexture;
+      renderMaterial.uniforms.uPosition.value = rt2.texture;
       renderMaterial.uniforms.uTime.value = elapsed;
       renderer.clear();
       renderer.render(scene, camera);
       if (!rendered) setReady(true);
-      const swap = rt1;
-      rt1 = rt2;
-      rt2 = swap;
+      const swap = rt1; rt1 = rt2; rt2 = swap;
       rendered = true;
+      raf = requestAnimationFrame(render);
     };
+    const start = () => {
+      if (raf || !active || document.hidden) return;
+      previous = performance.now();
+      raf = requestAnimationFrame(render);
+    };
+    const onVisibility = () => { if (document.hidden) stop(); else start(); };
+    const onContextLost = (event: Event) => { event.preventDefault(); stop(); setUnavailable(true); };
+    const observer = new IntersectionObserver(([entry]) => {
+      active = entry?.isIntersecting ?? false;
+      if (active) start(); else stop();
+    }, { threshold: 0 });
+    const resizeObserver = new ResizeObserver(resize);
     resize();
-    window.addEventListener("resize", resize);
+    observer.observe(canvas);
+    resizeObserver.observe(container);
+    document.addEventListener("visibilitychange", onVisibility);
     canvas.addEventListener("pointermove", onMove, { passive: true });
     canvas.addEventListener("pointerleave", onLeave, { passive: true });
     canvas.addEventListener("webglcontextlost", onContextLost);
-    raf = requestAnimationFrame(render);
-    return () => { observer.disconnect(); window.removeEventListener("resize", resize); canvas.removeEventListener("pointermove", onMove); canvas.removeEventListener("pointerleave", onLeave); canvas.removeEventListener("webglcontextlost", onContextLost); cancelAnimationFrame(raf); geometry.dispose(); simMesh.geometry.dispose(); simMaterial.dispose(); renderMaterial.dispose(); baseTexture.dispose(); targetTexture.dispose(); rt1.dispose(); rt2.dispose(); renderer.dispose(); renderer.forceContextLoss(); };
-  }, [shouldInitialize, reducedMotion, unavailable]);
+    start();
+    return () => {
+      stop(); observer.disconnect(); resizeObserver.disconnect();
+      document.removeEventListener("visibilitychange", onVisibility);
+      canvas.removeEventListener("pointermove", onMove); canvas.removeEventListener("pointerleave", onLeave);
+      canvas.removeEventListener("webglcontextlost", onContextLost);
+      geometry.dispose(); simMesh.geometry.dispose(); simMaterial.dispose(); renderMaterial.dispose();
+      baseTexture.dispose(); targetTexture.dispose(); rt1.dispose(); rt2.dispose(); renderer.dispose(); renderer.forceContextLoss();
+    };
+  }, [shouldInitialize, reducedMotion, unavailable, compact]);
 
   const showFallback = reducedMotion || unavailable || !ready;
   return <>
-    <canvas key={reducedMotion ? "static" : "animated"} ref={canvasRef} className="particle-field particle-field-morph" style={{ visibility: showFallback ? "hidden" : "visible", opacity: .28 }} aria-hidden="true" />
+    <canvas key={`${reducedMotion ? "static" : "animated"}-${compact}`} ref={canvasRef} className="particle-field particle-field-morph" style={{ visibility: showFallback ? "hidden" : "visible", opacity: .7 }} aria-hidden="true" />
     {showFallback && <img src={symbolUrl} alt="" aria-hidden="true" style={{ position: "absolute", left: "8%", top: "11%", width: "84%", height: "78%", objectFit: "contain", filter: "brightness(0) invert(1)", opacity: .28, pointerEvents: "none" }} />}
   </>;
 }

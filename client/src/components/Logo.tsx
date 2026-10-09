@@ -1,16 +1,18 @@
-import symbol from "@/assets/piai-lab-symbol.svg";
+import symbol from "@/assets/piai-lab-symbol.svg?raw";
+
+// Trusted local SVG: preserve the approved paths; CSS supplies the surface color.
+const decorativeSymbol = symbol
+  .replace(/\s(?:role|aria-labelledby)="[^"]*"/g, "")
+  .replace(/<title\b[^>]*>[\s\S]*?<\/title>/g, "");
 
 /** The approved symbol, paired with the lab name in navigation and footers. */
 export default function Logo() {
   return (
     <span className="brand-lockup brand-lab-lockup">
-      <img
+      <span
         className="brand-symbol-image"
-        src={symbol}
-        alt=""
-        width={1024}
-        height={672}
-        draggable={false}
+        aria-hidden="true"
+        dangerouslySetInnerHTML={{ __html: decorativeSymbol }}
       />
       <span className="brand-lab-name">πAI Lab</span>
     </span>
