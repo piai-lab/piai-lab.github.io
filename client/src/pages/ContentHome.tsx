@@ -485,7 +485,7 @@ export default function ContentHome() {
             <p>
               {zh
                 ? "πAI Lab 是依托广州广东智慧医学国际研究院开展的公共研究与开放技术计划，扎根广州。我们探索人工智能如何参与科学发现，初期聚焦生物医学，并与不同学科的合作者在真实研究场景中持续检验和建设。"
-                : "πAI Lab is a public research and open-technology initiative based at the Guangdong Institute of Intelligent Medicine in Guangzhou. Rooted in Guangzhou, we explore how AI can participate in scientific discovery, initially focusing on biomedical research and testing ideas in real settings with collaborators across disciplines."}
+                : "πAI Lab is a public research and open-technology initiative based at the International Academy of Phronesis Medicine (Guangdong) in Guangzhou. Rooted in Guangzhou, we explore how AI can participate in scientific discovery, initially focusing on biomedical research and testing ideas in real settings with collaborators across disciplines."}
             </p>
             <a href="/team" className="team-link-button">
               <span>{zh ? "认识团队" : "Meet the team"}</span>
