@@ -5,20 +5,13 @@
 import { useEffect, useRef, useState } from "react";
 import ProductShowcase from "@/components/ProductShowcase";
 import Logo from "@/components/Logo";
-import {
-  ArrowDown,
-  ArrowLeft,
-  ArrowRight,
-  ArrowUpRight,
-  Menu,
-  X,
-} from "lucide-react";
+import { ArrowDown, ArrowRight, ArrowUpRight, Menu, X } from "lucide-react";
 import InstitutionalGlobe, {
   type GlobePoint,
 } from "@/components/InstitutionalGlobe";
-import ResearchParticleField, {
-  MorphingParticleField,
-} from "@/components/ResearchParticleField";
+import ResearchParticleField from "@/components/ResearchParticleField";
+import { MorphingParticleField } from "@/components/ClosingParticleField";
+import { contactEmail } from "@/lib/site";
 
 type Lang = "zh" | "en";
 type NewsItem = {
@@ -30,7 +23,12 @@ type NewsItem = {
   previewSubtitle: string;
   previewImage: string;
 };
-type ResearchItem = { date: string; title: string; href: string; venue?: string };
+type ResearchItem = {
+  date: string;
+  title: string;
+  href: string;
+  venue?: string;
+};
 
 const assets = {
   visionArtwork: "/vision/knowledge-generation-artwork.png",
@@ -38,8 +36,8 @@ const assets = {
 
 const nav = [
   { zh: "动态", en: "News", href: "#news" },
-  { zh: "愿景", en: "Vision", href: "#vision" },
   { zh: "研究", en: "Research", href: "#research" },
+  { zh: "科研工具", en: "Tools", href: "#vision" },
   { zh: "团队", en: "Team", href: "/team" },
 ];
 
@@ -56,7 +54,21 @@ function HeroTitle({ zh }: { zh: boolean }) {
   const title = zh ? "让人类知识增长十倍" : "Grow human knowledge tenfold";
   return (
     <h1 aria-label={title}>
-      <span className="hero-title-line">{title}</span>
+      <span className="hero-title-line">
+        {zh ? (
+          <>
+            让人类知识
+            <br />
+            <em>增长十倍</em>
+          </>
+        ) : (
+          <>
+            Grow human
+            <br />
+            knowledge <em>tenfold.</em>
+          </>
+        )}
+      </span>
     </h1>
   );
 }
@@ -73,24 +85,10 @@ function NewsPreview({ item }: { item: NewsItem }) {
   );
 }
 
-function NewsRail({
-  items,
-  label,
-  zh,
-}: {
-  items: NewsItem[];
-  label: string;
-  zh: boolean;
-}) {
-  const railRef = useRef<HTMLDivElement>(null);
-  const move = (direction: -1 | 1) =>
-    railRef.current?.scrollBy({
-      left: direction * Math.max(320, railRef.current.clientWidth * 0.72),
-      behavior: "smooth",
-    });
+function NewsRail({ items, zh }: { items: NewsItem[]; zh: boolean }) {
   return (
     <div className="news-rail-shell">
-      <div className="news-rail" ref={railRef}>
+      <div className="news-rail">
         {items.map(item => {
           const content = (
             <>
@@ -133,22 +131,6 @@ function NewsRail({
         })}
       </div>
       <div className="news-rail-footer">
-        <div className="news-rail-controls" aria-label={label}>
-          <button
-            type="button"
-            onClick={() => move(-1)}
-            aria-label="查看上一组动态"
-          >
-            <ArrowLeft size={17} />
-          </button>
-          <button
-            type="button"
-            onClick={() => move(1)}
-            aria-label="查看下一组动态"
-          >
-            <ArrowRight size={17} />
-          </button>
-        </div>
         <a className="news-research-link" href="#research">
           {zh ? "查看全部研究" : "View all research"}
           <ArrowRight size={15} />
@@ -162,29 +144,35 @@ export default function ContentHome() {
   const [lang, setLang] = useState<Lang>("zh");
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [heroReady, setHeroReady] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
   const zh = lang === "zh";
 
   useEffect(() => {
-    const frame = requestAnimationFrame(() => setHeroReady(true));
     const onScroll = () => setScrolled(window.scrollY > 18);
-    const observer = new IntersectionObserver(
-      entries =>
-        entries.forEach(entry =>
-          entry.target.classList.toggle("is-visible", entry.isIntersecting)
-        ),
-      { threshold: 0.08, rootMargin: "0px 0px -4%" }
-    );
-    document
-      .querySelectorAll(".content-section")
-      .forEach(section => observer.observe(section));
+    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", onScroll);
-      observer.disconnect();
-    };
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+        menuButtonRef.current?.focus();
+      }
+    };
+    const desktop = window.matchMedia("(min-width: 761px)");
+    const onDesktop = () => {
+      if (desktop.matches) setMenuOpen(false);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    desktop.addEventListener("change", onDesktop);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      desktop.removeEventListener("change", onDesktop);
+    };
+  }, [menuOpen]);
 
   const news: NewsItem[] = zh
     ? [
@@ -253,34 +241,40 @@ export default function ContentHome() {
           date: "2026.08",
           title:
             "KnowMeBenchV2: Evidence-Grounded Person-Centric Long-Video Understanding",
-          href: "", venue: "EMNLP 2026",
+          href: "",
+          venue: "EMNLP 2026",
         },
         {
           date: "2026.08",
           title:
             "MemGovern: Enhancing Code Agents through Learning from Governed Human Experiences",
-          href: "", venue: "EMNLP 2026",
+          href: "",
+          venue: "EMNLP 2026",
         },
         {
           date: "2026.08",
           title: "Controlled Self-Evolution for Algorithmic Code Optimization",
-          href: "", venue: "EMNLP 2026",
+          href: "",
+          venue: "EMNLP 2026",
         },
         {
           date: "2026.07",
           title:
             "Knowme-bench: Benchmarking person understanding for lifelong digital companions",
-          href: "", venue: "ACL 2026",
+          href: "",
+          venue: "ACL 2026",
         },
         {
           date: "2026.07",
           title: "LiveCANNBench: Benchmark SWE AI Coding for Ascend CANN",
-          href: "", venue: "ACL 2026",
+          href: "",
+          venue: "ACL 2026",
         },
         {
           date: "2024.12",
           title: "π-HuB: the proteomic navigator of the human body",
-          href: "https://www.nature.com/articles/s41586-024-08280-5", venue: "Nature",
+          href: "https://www.nature.com/articles/s41586-024-08280-5",
+          venue: "Nature",
         },
       ]
     : [
@@ -288,46 +282,59 @@ export default function ContentHome() {
           date: "AUG 2026",
           title:
             "KnowMeBenchV2: Evidence-Grounded Person-Centric Long-Video Understanding",
-          href: "", venue: "EMNLP 2026",
+          href: "",
+          venue: "EMNLP 2026",
         },
         {
           date: "AUG 2026",
           title:
             "MemGovern: Enhancing Code Agents through Learning from Governed Human Experiences",
-          href: "", venue: "EMNLP 2026",
+          href: "",
+          venue: "EMNLP 2026",
         },
         {
           date: "AUG 2026",
           title: "Controlled Self-Evolution for Algorithmic Code Optimization",
-          href: "", venue: "EMNLP 2026",
+          href: "",
+          venue: "EMNLP 2026",
         },
         {
           date: "JUL 2026",
           title:
             "Knowme-bench: Benchmarking person understanding for lifelong digital companions",
-          href: "", venue: "ACL 2026",
+          href: "",
+          venue: "ACL 2026",
         },
         {
           date: "JUL 2026",
           title: "LiveCANNBench: Benchmark SWE AI Coding for Ascend CANN",
-          href: "", venue: "ACL 2026",
+          href: "",
+          venue: "ACL 2026",
         },
         {
           date: "DEC 2024",
           title: "π-HuB: the proteomic navigator of the human body",
-          href: "https://www.nature.com/articles/s41586-024-08280-5", venue: "Nature",
+          href: "https://www.nature.com/articles/s41586-024-08280-5",
+          venue: "Nature",
         },
       ];
 
   return (
-    <main className="site-shell content-home">
+    <main className="site-shell content-home" lang={zh ? "zh-CN" : "en"}>
       <header
         className={`site-header ${scrolled ? "site-header-scrolled" : ""}`}
       >
-        <a href="#top" className="brand-link" aria-label="πAI Lab 首页">
+        <a
+          href="#top"
+          className="brand-link"
+          aria-label={zh ? "πAI Lab 首页" : "πAI Lab home"}
+        >
           <Logo />
         </a>
-        <nav className="site-nav" aria-label="主导航">
+        <nav
+          className="site-nav"
+          aria-label={zh ? "主导航" : "Main navigation"}
+        >
           {nav.map(item => (
             <a href={item.href} key={item.href}>
               {zh ? item.zh : item.en}
@@ -347,14 +354,29 @@ export default function ContentHome() {
           </a>
           <button
             className="menu-button"
+            ref={menuButtonRef}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-navigation"
             onClick={() => setMenuOpen(!menuOpen)}
-            aria-label={menuOpen ? "关闭导航" : "打开导航"}
+            aria-label={
+              zh
+                ? menuOpen
+                  ? "关闭导航"
+                  : "打开导航"
+                : menuOpen
+                  ? "Close navigation"
+                  : "Open navigation"
+            }
           >
             {menuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
         {menuOpen && (
-          <div className="mobile-menu">
+          <nav
+            className="mobile-menu"
+            id="mobile-navigation"
+            aria-label={zh ? "移动导航" : "Mobile navigation"}
+          >
             {nav.map(item => (
               <a
                 href={item.href}
@@ -364,26 +386,43 @@ export default function ContentHome() {
                 {zh ? item.zh : item.en}
               </a>
             ))}
-          </div>
+          </nav>
         )}
       </header>
 
-      <section
-        className={`hero content-hero ${heroReady ? "hero-ready" : ""}`}
-        id="top"
-      >
-        <ResearchParticleField />
+      <section className="hero content-hero" id="top">
+        <div className="hero-art">
+          <ResearchParticleField />
+        </div>
         <div className="hero-vignette" />
         <div className="hero-content">
+          <p className="hero-kicker">
+            {zh
+              ? "人工智能 · 科学发现"
+              : "INTELLIGENCE FOR SCIENTIFIC DISCOVERY"}
+          </p>
           <HeroTitle zh={zh} />
+          <p className="hero-intro">
+            {zh
+              ? "让人工智能以可靠高效的方式参与知识生成"
+              : "Enabling the genesis of new knowledge through reliable, efficient AI"}
+          </p>
           <div className="hero-actions">
-            <a href="#news" className="pill-button pill-dark">
-              {zh ? "查看动态" : "View news"}
-              <ArrowDown size={17} />
+            <a href="#research" className="pill-button pill-dark">
+              <span className="action-label">
+                {zh ? "进入研究" : "Explore research"}
+              </span>
+              <span className="action-arrow" aria-hidden="true">
+                <ArrowUpRight size={18} strokeWidth={1.65} />
+              </span>
             </a>
-            <a href="#research" className="pill-button">
-              {zh ? "进入研究" : "Explore research"}
-              <ArrowRight size={17} />
+            <a href="#news" className="pill-button pill-outline">
+              <span className="action-label">
+                {zh ? "查看动态" : "View news"}
+              </span>
+              <span className="action-arrow" aria-hidden="true">
+                <ArrowDown size={17} strokeWidth={1.65} />
+              </span>
             </a>
           </div>
         </div>
@@ -393,21 +432,7 @@ export default function ContentHome() {
         <div className="section-heading-only section-heading-centered">
           <h2 className="section-title">{zh ? "动态" : "News"}</h2>
         </div>
-        <NewsRail
-          items={news}
-          label={zh ? "动态轨道控制" : "News rail controls"}
-          zh={zh}
-        />
-      </section>
-
-      <section className="product-vision" id="vision">
-        <div className="vision-product-heading">
-          <h2>{zh ? "愿景" : "Vision"}</h2>
-          <p>
-            {zh ? "让人工智能以可靠高效的方式参与知识生成" : "Enabling the genesis of new knowledge through reliable, efficient AI"}
-          </p>
-        </div>
-        <ProductShowcase zh={zh} />
+        <NewsRail items={news} zh={zh} />
       </section>
 
       <section className="research-directory content-section" id="research">
@@ -425,16 +450,30 @@ export default function ContentHome() {
                 key={item.title}
               >
                 <time>{item.date}</time>
-                <h3>{item.title}</h3><span className="research-venue">{item.venue}</span>
+                <h3>{item.title}</h3>
+                <span className="research-venue">{item.venue}</span>
               </a>
             ) : (
               <div className="research-item research-pending" key={item.title}>
                 <time>{item.date}</time>
-                <h3>{item.title}</h3><span className="research-venue">{item.venue}</span>
+                <h3>{item.title}</h3>
+                <span className="research-venue">{item.venue}</span>
               </div>
             )
           )}
         </div>
+      </section>
+
+      <section className="product-vision" id="vision">
+        <div className="vision-product-heading">
+          <h2>{zh ? "科研工具" : "Research tools"}</h2>
+          <p>
+            {zh
+              ? "从研究问题到科学产出"
+              : "From research questions to scientific work"}
+          </p>
+        </div>
+        <ProductShowcase zh={zh} />
       </section>
 
       <section className="team-section content-section" id="team">
@@ -470,7 +509,7 @@ export default function ContentHome() {
       </section>
 
       <section className="closing-vision content-section" id="closing">
-        <MorphingParticleField />
+        <MorphingParticleField zh={zh} />
         <div className="closing-vision-copy">
           <p>πAI Lab</p>
           <h2>
@@ -494,7 +533,7 @@ export default function ContentHome() {
           <div className="footer-column">
             <span>{zh ? "网站导航" : "NAVIGATION"}</span>
             <a href="#news">{zh ? "动态" : "News"}</a>
-            <a href="#vision">{zh ? "愿景" : "Vision"}</a>
+            <a href="#vision">{zh ? "科研工具" : "Research tools"}</a>
             <a href="#research">{zh ? "研究" : "Research"}</a>
           </div>
           <div className="footer-column">
@@ -509,7 +548,7 @@ export default function ContentHome() {
           </div>
           <div className="footer-column">
             <span>{zh ? "联系" : "CONTACT"}</span>
-            <a href="mailto:zaoqu.liu@iapm.com">zaoqu.liu@iapm.com</a>
+            <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
             <p>{zh ? "广州，中国" : "Guangzhou, China"}</p>
             <a href="/team">{zh ? "团队与协作" : "Team & collaboration"}</a>
           </div>

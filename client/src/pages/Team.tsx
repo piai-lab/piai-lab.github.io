@@ -2,7 +2,8 @@
  * πAI Lab 团队页。
  * 视觉规则：研究机构名册语言，使用真实团队头像与明确组织关系；排印克制、标题居中、页脚与首页统一，不使用海报式大字或产品化口吻。
  */
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { contactEmail } from "@/lib/site";
 import Logo from "@/components/Logo";
 
 type Lang = "zh" | "en";
@@ -18,6 +19,7 @@ const members = [
   {
     nameZh: "刘灶渠",
     nameEn: "Zaoqu Liu",
+    founder: true,
     roleZh: "生物医学多模态基础模型科学家",
     roleEn: "Biomedical Multimodal Foundation Model Scientist",
     avatar: "/team/zaoqu.webp",
@@ -124,23 +126,14 @@ const collaborators = [
 export default function Team() {
   const [lang, setLang] = useState<Lang>("zh");
   const zh = lang === "zh";
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      entries =>
-        entries.forEach(entry =>
-          entry.target.classList.toggle("is-visible", entry.isIntersecting)
-        ),
-      { threshold: 0.08, rootMargin: "0px 0px -4%" }
-    );
-    document
-      .querySelectorAll(".team-page-section")
-      .forEach(section => observer.observe(section));
-    return () => observer.disconnect();
-  }, []);
   return (
     <main className="site-shell team-page" lang={zh ? "zh-CN" : "en"}>
       <header className="team-page-nav">
-        <a className="team-brand" href="/" aria-label={zh ? "返回首页" : "Back to home"}>
+        <a
+          className="team-brand"
+          href="/"
+          aria-label={zh ? "返回首页" : "Back to home"}
+        >
           <Logo />
         </a>
         <button
@@ -176,6 +169,11 @@ export default function Team() {
               />
               <div className="member-meta">
                 <h3>{zh ? member.nameZh : member.nameEn}</h3>
+                {member.founder && (
+                  <p className="member-founder">
+                    {zh ? "Founder · 创始人" : "Founder"}
+                  </p>
+                )}
                 <p>{zh ? member.roleZh : member.roleEn}</p>
               </div>
             </article>
@@ -222,7 +220,7 @@ export default function Team() {
           <div className="footer-column">
             <span>{zh ? "网站导航" : "NAVIGATION"}</span>
             <a href="/#news">{zh ? "动态" : "News"}</a>
-            <a href="/#vision">{zh ? "愿景" : "Vision"}</a>
+            <a href="/#vision">{zh ? "科研工具" : "Tools"}</a>
             <a href="/#research">{zh ? "研究" : "Research"}</a>
           </div>
           <div className="footer-column">
@@ -237,7 +235,7 @@ export default function Team() {
           </div>
           <div className="footer-column">
             <span>{zh ? "联系" : "CONTACT"}</span>
-            <a href="mailto:zaoqu.liu@iapm.com">zaoqu.liu@iapm.com</a>
+            <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
             <p>{zh ? "广州，中国" : "Guangzhou, China"}</p>
             <a href="/team">{zh ? "团队与协作" : "Team & collaboration"}</a>
           </div>
