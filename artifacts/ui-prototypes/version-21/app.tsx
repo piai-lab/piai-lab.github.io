@@ -49,7 +49,7 @@ function App(){
   window.addEventListener('scroll',track,{passive:true});window.addEventListener('resize',track);track();
   return()=>{window.removeEventListener('scroll',track);window.removeEventListener('resize',track);if(frame)cancelAnimationFrame(frame)}
  },[]);
- const nav=[['research',t('研究方向','Research')],['work',t('研究成果','Selected work')],['people',t('团队','People')]];
+ const nav=[['research',t('研究方向','Research')],['work',t('研究成果','Selected work')],['people',t('团队','Team')]];
  const navLinks=nav.map(([id,label])=><a key={id} href={'#'+id} aria-current={(section===id||(id==='research'&&['infrastructure','discovery'].includes(section)))?'location':undefined} onClick={e=>{e.preventDefault();go(id)}}>{label}</a>);
  return <div className={'biomedical starlight-site research-site frontier-site '+(reduced?'reduced-motion':'')}>
  <StarlightBackdrop reduced={reduced} theme={theme}/><SiteMotion reduced={reduced} paused={false}/>
@@ -86,9 +86,10 @@ function App(){
  </section>
  <section className="work section" id="work"><div className="section-heading"><p className="eyebrow">{t('02 / 代表成果','02 / SELECTED WORK')}</p><span>{t('论文与研究系统','Publications & systems')}</span></div><div className="work-title"><h2>{t('代表成果','Selected work')}</h2><p>{t('智能体方法、研究系统与科学应用','Agent methods, research systems and scientific applications')}</p></div><div className="papers">{papers.map((p,i)=><a className="paper" key={p[0]} href={p[3]} target="_blank" rel="noreferrer"><span className="paper-index">0{i+1}</span><div><h3>{p[0]}</h3><p>{p[1]}</p></div><span className="paper-venue">{p[2]}</span><FileText size={20} aria-hidden="true"/></a>)}</div>
  <div className="systems-heading"><h3>{t('工具与系统','Tools & systems')}</h3><p>{t('让研究能力成为可用的工具','Research capabilities, made usable')}</p></div><div className="systems-grid">{systems.map((s,i)=><article key={s[0]}><div className="system-title"><div className="system-name">{React.createElement([Layers3,BookOpen,PenTool,ChartNoAxesCombined][i],{size:21,'aria-hidden':true})}<h4>{s[0]}</h4></div>{s[3]?<a href={s[3]} target="_blank" rel="noreferrer" aria-label={t('查看 '+s[0]+' 开源项目','View '+s[0]+' on GitHub')}><Github size={19}/></a>:null}</div><p className="system-kind">{t(s[1],['Agent workspace','Scientific knowledge','Scientific illustration','Data visualization'][i])}</p><p>{t(s[2].replace(/。$/,''),['A shared workspace for agent runtimes, projects, conversations and research history','Organizing literature, evidence and research leads around scientific questions','Scientific illustrations that communicate mechanisms and research ideas','Charts and visualization tools for research data'][i])}</p></article>)}</div></section>
- <section className="people section" id="people">
-  <div className="section-heading"><p className="eyebrow">{t('03 / 团队','03 / PEOPLE')}</p><span>{t('团队与合作者','People & collaborators')}</span></div>
-  <div className="people-heading"><h2>{t('一起探索的人','People behind the work')}</h2><p>{t('连接不同学科的视角，共同推进科学发现','Different disciplines, a shared pursuit of discovery')}</p></div>
+ <section className="people section" id="people" aria-label={t('团队与合作者','Team and collaborators')}>
+  <div className="section-heading"><p className="eyebrow">{t('03 / 团队','03 / TEAM')}</p><span>{t('团队与合作者','Team & collaborators')}</span></div>
+  <section className="people-group" aria-labelledby="team-heading">
+  <div className="people-heading"><h2 id="team-heading">{t('团队成员','Team')}</h2><p>{t('连接不同学科的视角，共同推进科学发现','Different disciplines, a shared pursuit of discovery')}</p></div>
   <div className="people-grid">
    {data.members.map(p=>{
     const isFounder=p.nameEn==='Zaoqu Liu',isPresident=p.nameEn==='Fuchu He';
@@ -96,8 +97,14 @@ function App(){
     const content=<><div className="portrait"><img src={data.assets[p.avatar as keyof typeof data.assets]} alt={en?p.nameEn:p.nameZh} loading="lazy"/></div><div className="person-name"><h3>{en?p.nameEn:p.nameZh}{profileHref&&<ArrowUpRight size={16} aria-hidden="true"/>}</h3>{!en&&<p className="person-alias">{p.nameEn}</p>}{isFounder&&<p className="person-role founder">{t('创始人','Founder')}</p>}{isPresident&&<p className="person-role">{t('广东智慧医学国际研究院院长','President, IAPM')}</p>}<p className="person-role">{isFounder?t('生物医学多模态大模型科学家','Biomedical Multimodal Large Model Scientist'):(en?p.roleEn:p.roleZh)}</p></div></>;
     return <article key={p.nameEn}>{profileHref?<a className="person-profile" href={profileHref} target={isPresident?'_blank':undefined} rel={isPresident?'noopener noreferrer':undefined} aria-label={isFounder?t('刘灶渠的个人主页','Zaoqu Liu’s personal website'):t('贺福初院士的 π-HuB 官方介绍（新窗口）','Fuchu He’s π-HuB profile (opens in a new tab)')}>{content}</a>:content}</article>
    })}
-   {data.collaborators.map(p=><article key={p.en}><div className="portrait"><img src={data.assets[p.avatar as keyof typeof data.assets]} alt={en?p.en:p.zh} loading="lazy"/></div><div className="person-name"><h3>{en?p.en:p.zh}</h3>{!en&&<p>{p.en}</p>}<p className="person-role">{t('合作者','Collaborator')}</p><p className="person-affiliation">{en?p.affiliationEn:p.affiliationZh}</p></div></article>)}
   </div>
+  </section>
+  <section className="people-group" aria-labelledby="collaborators-heading">
+  <div className="people-heading"><h2 id="collaborators-heading">{t('合作者','Collaborators')}</h2></div>
+  <div className="people-grid">
+   {data.collaborators.map(p=><article key={p.en}><div className="portrait"><img src={data.assets[p.avatar as keyof typeof data.assets]} alt={en?p.en:p.zh} loading="lazy"/></div><div className="person-name"><h3>{en?p.en:p.zh}</h3>{!en&&<p>{p.en}</p>}<p className="person-affiliation">{en?p.affiliationEn:p.affiliationZh}</p></div></article>)}
+  </div>
+  </section>
  </section>
  </main>
  <footer id="contact" className="section"><div className="section-heading"><p className="eyebrow">{t('04 / 联系合作','04 / CONTACT')}</p><span>πAI LAB</span></div><div className="contact-layout"><h2>{t('让科学发现','Advance discovery')}<br/><span>{t('继续向前','together')}</span></h2><div className="contact-details"><p>{t('欢迎围绕科学基础设施、自主发现与智能体方法开展学术交流和研究合作','For research collaborations and academic exchange in scientific infrastructure, autonomous discovery and agent methods')}</p><a href="mailto:liuzaoqu@163.com"><Mail size={18} aria-hidden="true"/>liuzaoqu@163.com</a></div></div><div className="footer-meta"><a className="brand" href="#home" aria-label={t('πAI Lab 首页','πAI Lab home')} onClick={e=>{e.preventDefault();go('home')}}><Logo/></a><span>© 2026 πAI Lab</span><a href="https://github.com/piai-lab" target="_blank" rel="noreferrer"><Github size={16} aria-hidden="true"/>GitHub</a><a href="#home" onClick={e=>{e.preventDefault();go('home')}}>{t('返回顶部','Back to top')}<ArrowUp size={16} aria-hidden="true"/></a></div></footer>

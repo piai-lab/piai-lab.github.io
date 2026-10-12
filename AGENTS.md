@@ -40,7 +40,7 @@
 ## 人物、成果与链接
 
 - 人员名单、成员/合作者分类及现有成果归属由用户确认，沿用；不凭公开作者顺序推断实验室归属，不为排版删改人员或论文。
-- 人物默认全部展开，照片保持统一尺寸和裁切规则。保留姓名、Founder、职位和必要单位信息，不能为了简洁把角色删光。
+- 导航用 Team / 团队；正文将 Team / 团队成员与 Collaborators / 合作者分为两个明确区块，不混排、不用切换标签隐藏其中一组。人物默认全部展开，照片保持统一尺寸和裁切规则。保留姓名、Founder、职位和必要单位信息，不能为了简洁把角色删光。
 - Zaoqu Liu / 刘灶渠为 Founder；正式职位为“生物医学多模态大模型科学家 / Biomedical Multimodal Large Model Scientist”。照片、姓名、Founder 和职位所在整张人物卡均链接至官网内 **`/people/zaoqu-liu/`**，同页进入并沿用当前语言与主题。
 - 官网内个人页以 `client/public/people/zaoqu-liu/` 为唯一维护入口，允许必要的站内路径与元信息适配；`docs/` 与原型目录的副本由构建生成，不手动重复修改。**原 `zaoqu-liu.github.io` 仓库与已发布个人站保持不动**。英文姓名无需再追加中文；中文界面正常显示中文姓名。
 - 贺福初整卡链接用户指定的 [π-HuB 官方页面](https://www.pi-hub.org.cn/news/news/%2091)，在姓名下先显示“广东智慧医学国际研究院院长 / President, IAPM”，再显示“中国科学院院士 / Academician of the Chinese Academy of Sciences”。使用原网站的人物照片，不擅自生成替代照片或修改服装。新的肖像生成或替换需有针对该照片的明确要求。

@@ -7,7 +7,7 @@
 ## 当前事实
 
 - 分支：`feat/lab-v21-design-handoff`；基底 `origin/main` 的 `1c605d2`。原 `fix/standalone-copy-punctuation` 已由 PR #6 合并，新分支不重复引入它。
-- 候选源码提交：`beed1a11505a2fcc83d71d067a40d1983d2338f4`；交接在后续文档提交中。接手时用 `git status --short`、`git log -3 --oneline` 核对实际 HEAD，不把此处源码 SHA 当作永远不变的分支头。
+- 当前候选以本分支 HEAD 的 `version-21/` 和构建 HTML 为准，续接时先核对 `git status --short`、`git log -3 --oneline`。对应 [Draft PR #7](https://github.com/piai-lab/piai-lab.github.io/pull/7)，未合并、未部署。
 - 第 20 版为用户更新的只读基底；第 21 版已构建并做过浏览器检查，**没有用户最终视觉验收或生产采纳的结论**。浏览器偶然打开第 18 版不意味着设计基底退回 18。
 - 新增 `client/public/people/zaoqu-liu/` 与派生的 `docs/people/zaoqu-liu/`；原 `client/src/`、`docs/index.html` 和部署工作流未改。Pages 实际发布 `docs/`，21 仍是独立候选，不能将其视为官网首页已上线。
 - 候选依赖、必要素材和许可已提交；其余历史 `artifacts/` 草稿仍留在原工作区，未提交、未删除，新 clone 不依赖它们。没有新 worktree。
@@ -26,9 +26,9 @@
 | 自主发现 | `version-21/autonomous-discovery.tsx`、`version-21/discovery-observatory.js`、`discovery-model.mjs` |
 | 星空 / 入场 | `version-21/starlight-backdrop.tsx` / `version-21/site-motion.tsx` |
 | 人员与照片 / 许可 | `discovery-data.json` / `THIRD_PARTY_NOTICES.txt` |
-| 最近实际截图 | `piai-21-dark.png` / `piai-21-light.png` / `piai-21-people.png` |
+| 最近实际截图 | `piai-21-dark.png` / `piai-21-light.png` / `piai-21-people.png` / `piai-21-team-groups.png` |
 
-21 沿用 20 的左文右周天、内容顺序、5 篇成果、4 个系统、9 名成员和 6 位合作者；统一字级、深青/暖白/铜色材质，提供中英文、深浅主题、人物整卡主页链接。场景主题由 App 传入现有 renderer，不重建时钟。
+21 沿用 20 的左文右周天、内容顺序、5 篇成果、4 个系统、9 名成员和 6 位合作者；最新调整将 Team / 团队成员和 Collaborators / 合作者分成两个同级、全展开区块，导航用 Team，保留 `#people` 链接；统一字级、深青/暖白/铜色材质，提供中英文、深浅主题、人物整卡主页链接。场景主题由 App 传入现有 renderer，不重建时钟。
 
 网络是**用户选定图片 + Three.js 局部网面/光点运动的 2.5D 实现**，不是完整三维几何。Wisdom 居中，四周为 Data、Information、Knowledge、Model；不要用早期 Tool 分类覆盖此较新裁决。贴图为生成概念图，自主发现为合成主动学习演示，均不能宣传为实测发现。
 
@@ -52,10 +52,11 @@ python3 -m http.server 4318 --bind 127.0.0.1 --directory artifacts/ui-prototypes
 
 打开 `http://127.0.0.1:4318/piai-redesign-21.html#home`。默认英文/深色；`?lang=zh`、`?theme=light`、`?motion=reduce` 可直达对应状态。`?frame=720` 仅用于周天定帧检查，正常演示必须移除。已有服务占用端口时复用或换端口，不杀未知进程。
 
-- 本轮从上述提交 `git archive` 到临时目录，仅复用已有 `node_modules`，重新构建成功，输出逐字节一致；**未在全新依赖安装环境复验**。本机系统 Node 有动态库故障，本次使用已有 Codex Node，不改系统设置。
-- 21 HTML SHA256：`c3850527c1a6387c65c9325709c0d8650ae9b9bbbebc2f41e822965dd39f06b5`
+- 此前从 `beed1a11505a2fcc83d71d067a40d1983d2338f4` 的 `git archive` 到临时目录，仅复用已有 `node_modules`，重新构建成功，输出逐字节一致；**未在全新依赖安装环境复验**。本机系统 Node 有动态库故障，本次使用已有 Codex Node，不改系统设置。
+- 21 HTML SHA256：`149162c58741dd64702dfba8be2c4170ebf2ac4f49ec4f001c8fd05691c94716`
 - 20 HTML SHA256：`2ecc861a40152b40e546d82546dbb3de180831656ca29c6d33545613cdf7741f`，未改
 - 上轮真实浏览器覆盖中英文、深浅主题、桌面/平板/355–390 CSS 像素窄屏、菜单焦点、主页链接、缩放、reduced motion 和主题切换时钟连续性，无横向溢出或控制台错误；修正了发现轨迹穿字和边缘裁切。本轮追加验证最终人物卡、个人页同标签进入、中文/浅色切换与返回官网，桌面及 355 CSS 像素窄屏无横向溢出，首屏可见图片加载正常，未见控制台错误。
+- 人物分组后重新构建 21，并实测桌面英文深色、手机中文浅色：9/6 人完整，两组照片同尺寸、同裁切，无横向溢出或控制台错误。桌面 6 列、中屏 3 列、手机 2 列；原人物角色和链接保留。
 - Vite production build 通过，个人页随 public 正确复制；现有主 bundle 超过 500 kB 的提示仍在。本次不涉及完整生产首页替换。
 - 截图是定帧画面，不能代表整段动效或用户审美认可。标题和周天字形仍有系统字体回退，跨系统一致性尚未验证。
 - 自写源码空白检查通过；冻结 HTML 内的上游 shader 和原样许可仍含原始空白，未为格式检查改写基底。临时构建目录已清理。
