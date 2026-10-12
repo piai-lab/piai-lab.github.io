@@ -56,7 +56,8 @@ python3 -m http.server 4318 --bind 127.0.0.1 --directory artifacts/ui-prototypes
 
 打开 `http://127.0.0.1:4318/piai-redesign-22.html`。`?lang=zh`、`?theme=light`、`?motion=reduce` 直达对应状态。本机 Homebrew Node 缺动态库，使用 `~/.local/zcode-node/node-v24.14.0-darwin-arm64/bin`。
 
-- 22 HTML SHA256：`e4ba8a7e1f8abc609aacae399de5a9158ebc073d3bec88bc380c262a88ffc139`；21 `149162c5…1c94716`、20 `2ecc861a…7741f` 未变。
+- **细节审阅（v22）**：中英文人物职位、合作者单位、方向导语与新闻说明按词组换行（`ph()` + 全局 `.keep`），不再从词中断开；自主发现减弱候选探针列与后验光晕，镜头略上移；联系区轨道缩小、降低不透明度并加径向遮罩，避免压住标题；页脚图标线宽统一 1.5；新增 `--spark` 光点色以适配浅色。
+- 22 HTML SHA256：`f05c639b1a28373fce7d8d41bab42e0c05050b58cfed5788dd994412e9d76200`；21 `149162c5…1c94716`、20 `2ecc861a…7741f` 未变。
 - 2026-10-12 用 Playwright + 系统 Chrome 实测：桌面 1440 与手机 360/390，中英文 × 深浅；周天 1/7/13/19/25 秒定帧，25 秒与 1 秒姿态一致、无停顿；`?motion=reduce` 停在静止帧；主题切换不重置周天时钟、不累积画布（4 个 canvas）；355/375/390/768/1440 无横向溢出；无控制台错误。
 - 链接：Founder 整卡 → `/people/zaoqu-liu/?lang=&theme=`，返回 `piai-redesign-22.html` 并延续语言与主题；贺福初 → π-HuB 指定页；邮箱 mailto；Haros → GitHub。
 - 截图为定帧，不代表整段动效或用户审美认可。未在全新依赖安装环境复验构建。

@@ -186,7 +186,7 @@ function render(now){
   const halfHeight=mobile?6.2:3.45;
   const distance=halfHeight/Math.tan(THREE.MathUtils.degToRad(camera.fov/2));
   camera.position.set(.65*Math.sin(phase),1.1+.2*Math.sin(phase),distance);
-  camera.lookAt(mobile?-.15:0,mobile?0:-.18,0);camera.updateMatrixWorld();world.updateMatrixWorld(true);
+  camera.lookAt(mobile?-.15:0,mobile?0:-.62,0);camera.updateMatrixWorld();world.updateMatrixWorld(true);
   let round=t<5?0:t<10?1:t<14.5?2:t<19?3:4;
   const start=round<4?START[round]:19,end=round<4?END[round]:24.7;
   if(round!==fanIndex){
@@ -219,13 +219,13 @@ function render(now){
   launcher.position.set(-5,launchY,0);launcherCore.position.copy(launcher.position);
   launcher.material.opacity=fade*(1-reveal)*.8;launcherCore.material.opacity=fade*(1-reveal);
   // Candidate probes: size is the predictive disagreement the system measured there.
-  ports.forEach((o,i)=>{const score=trial.maxScore>1e-10?clamp(trial.scores[i]/trial.maxScore):0;const selected=i===trial.candidate;o.material.color.setHex(selected?palette.gold:palette.ice);o.material.opacity=fade*(1-reveal)*(selected?.95:.18+.5*score);o.scale.setScalar(selected?.2:.05+.17*score);});
+  ports.forEach((o,i)=>{const score=trial.maxScore>1e-10?clamp(trial.scores[i]/trial.maxScore):0;const selected=i===trial.candidate;o.material.color.setHex(selected?palette.gold:palette.ice);o.material.opacity=fade*(1-reveal)*(selected?.9:.04+.34*score*score);o.scale.setScalar(selected?.18:.035+.12*score);});
   const sa=stats[Math.min(round,4)],sb=stats[Math.min(round+1,4)],k=round<4?blend:0;
   const light2=theme==='light';
   bodies.forEach((o,d)=>{const m=sa[d][0]+(sb[d][0]-sa[d][0])*k,sd=sa[d][1]+(sb[d][1]-sa[d][1])*k;
     const sure=clamp(1-sd*2.4);
     o.core.scale.setScalar(.18+.42*m*(.5+.5*sure));o.core.material.opacity=fade*(light2?.6:1)*(.3+.7*sure);
-    const r=.18+sd*2.2;o.halo.scale.setScalar(r*2.6);o.halo.material.opacity=fade*(light2?.1:.22)*(.4+.6*sure);
+    const r=.18+sd*2.2;o.halo.scale.setScalar(r*2.1);o.halo.material.opacity=fade*(light2?.035:.09)*(.4+.6*sure);
     o.ring.material.opacity=0;});
   if(round!==lastStage){$('narrative').textContent=dict().captions[round];lastStage=round;}
   renderer.render(scene,camera);frameCount++;

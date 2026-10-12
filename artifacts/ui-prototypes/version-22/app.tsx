@@ -1,4 +1,4 @@
-import React,{useEffect,useRef,useState,useSyncExternalStore} from 'react';
+import React,{Fragment,useEffect,useRef,useState,useSyncExternalStore} from 'react';
 import {createRoot} from 'react-dom/client';
 import {ArrowUpRight,ArrowUp,ArrowDown,Menu,X,Sun,Moon,Mail,Github,BookOpen} from 'lucide-react';
 import {Sheet,SheetTrigger,SheetContent,SheetTitle,SheetDescription} from '../../../client/src/components/ui/sheet';
@@ -25,10 +25,10 @@ function PlatformIcon({id}:{id:string}){const p=platforms.find(x=>x.id===id)!;re
 const news:[string,string,string,string,string,string][]=[
  ['2026.10.10','OmniKnowledge released','OmniKnowledge 发布','','','omniknowledge'],
  ['2026.09.20','OmniScholar released','OmniScholar 发布','','','omnischolar'],
- ['2026.09.18','PathWeaver submitted to ICLR 2027','PathWeaver 投稿 ICLR 2027','Our work explores how explicit reasoning graphs can enhance diagnostic reasoning in pathology vision-language models','探索显式推理图如何增强病理视觉语言模型的诊断推理',''],
- ['2026.09.16','OmniFigure submitted to ICLR 2027','OmniFigure 投稿 ICLR 2027','We explore a unified representation for data visualization, aiming to describe different visualization forms within a common framework','探索数据可视化的统一表示，在同一框架内描述不同的可视化形式',''],
+ ['2026.09.18','PathWeaver submitted to ICLR 2027','PathWeaver 投稿 ICLR 2027','Our work explores how explicit reasoning graphs can enhance diagnostic reasoning in pathology vision-language models','探索显式推理图|如何增强病理视觉语言模型的|诊断推理',''],
+ ['2026.09.16','OmniFigure submitted to ICLR 2027','OmniFigure 投稿 ICLR 2027','We explore a unified representation for data visualization, aiming to describe different visualization forms within a common framework','探索数据可视化的统一表示，|在同一框架内描述不同的可视化形式',''],
  ['2026.09.15','AI4S News released','AI4S News 发布','','','ai4s-news'],
- ['2026.09.01','Founded πAI Lab','πAI Lab 成立','Advancing AI-ready scientific infrastructure and autonomous scientific discovery','推进 AI-ready 科学基础设施与自主科学发现','']
+ ['2026.09.01','Founded πAI Lab','πAI Lab 成立','Advancing AI-ready scientific infrastructure and autonomous scientific discovery','推进 AI-ready 科学基础设施|与自主科学发现','']
 ];
 
 function ClosingOrbit({reduced}:{reduced:boolean}){
@@ -36,10 +36,26 @@ function ClosingOrbit({reduced}:{reduced:boolean}){
  useEffect(()=>{const svg=ref.current;if(!svg)return;if(reduced){svg.pauseAnimations();svg.setCurrentTime(6);return}svg.unpauseAnimations();const io=new IntersectionObserver(([e])=>e?.isIntersecting?svg.unpauseAnimations():svg.pauseAnimations());io.observe(svg);return()=>io.disconnect()},[reduced]);
  const rings=[[-16,300,62,36],[14,250,96,48],[38,210,128,60]];
  return <svg ref={ref} className="contact-orbit" viewBox="-320 -170 640 340" aria-hidden="true" focusable="false">
-  <defs><linearGradient id="orbit-fade" x1="0" x2="1"><stop offset="0" stopColor="var(--accent)" stopOpacity="0"/><stop offset=".5" stopColor="var(--accent)" stopOpacity=".5"/><stop offset="1" stopColor="var(--copper)" stopOpacity=".12"/></linearGradient><radialGradient id="orbit-spark"><stop offset="0" stopColor="var(--ink)"/><stop offset=".35" stopColor="var(--accent)" stopOpacity=".55"/><stop offset="1" stopColor="var(--accent)" stopOpacity="0"/></radialGradient></defs>
+  <defs><linearGradient id="orbit-fade" x1="0" x2="1"><stop offset="0" stopColor="var(--accent)" stopOpacity="0"/><stop offset=".5" stopColor="var(--accent)" stopOpacity=".34"/><stop offset="1" stopColor="var(--copper)" stopOpacity=".1"/></linearGradient><radialGradient id="orbit-spark"><stop offset="0" stopColor="var(--spark)"/><stop offset=".35" stopColor="var(--accent)" stopOpacity=".45"/><stop offset="1" stopColor="var(--accent)" stopOpacity="0"/></radialGradient></defs>
   {rings.map(([tilt,rx,ry,dur],i)=><g key={i} transform={`rotate(${tilt})`}><path id={'orbit-'+i} d={`M${-rx} 0A${rx} ${ry} 0 1 0 ${rx} 0A${rx} ${ry} 0 1 0 ${-rx} 0`} fill="none" stroke="url(#orbit-fade)" strokeWidth="1"/><circle r="9" fill="url(#orbit-spark)"><animateMotion dur={dur+'s'} begin={-i*11+'s'} repeatCount="indefinite"><mpath href={'#orbit-'+i}/></animateMotion></circle></g>)}
  </svg>
 }
+const phrases:Record<string,string>={
+ '中山大学副教授':'中山大学|副教授',
+ '德克萨斯大学休斯顿健康科学中心博士后研究员':'德克萨斯大学|休斯顿健康科学中心|博士后研究员',
+ '美的 AI 研究院 AI Agent 算法负责人':'美的 AI 研究院 |AI Agent 算法负责人',
+ '上海交通大学硕士生':'上海交通大学|硕士生',
+ '中国科学院计算技术研究所硕士生':'中国科学院|计算技术研究所|硕士生',
+ '中国科学院自动化研究所硕士生':'中国科学院|自动化研究所|硕士生',
+ '广东智慧医学国际研究院院长':'广东智慧医学|国际研究院院长',
+ '生物医学多模态大模型科学家':'生物医学多模态|大模型科学家',
+ 'Associate Professor, Sun Yat-sen University':'Associate Professor, |Sun Yat-sen University',
+ 'Academician of the Chinese Academy of Sciences':'Academician of the |Chinese Academy of Sciences',
+ "Master's Student, Institute of Computing Technology, Chinese Academy of Sciences":"Master's Student, |Institute of Computing Technology, |Chinese Academy of Sciences",
+ "Master's Student, Institute of Automation, Chinese Academy of Sciences":"Master's Student, |Institute of Automation, |Chinese Academy of Sciences",
+ 'Postdoctoral Researcher, The University of Texas Health Science Center at Houston':'Postdoctoral Researcher, |The University of Texas |Health Science Center at Houston'
+};
+const ph=(text:string)=>{const v=phrases[text]??text;return v.includes('|')?v.split('|').map((x,i)=><Fragment key={i}><span className="keep">{x.trimEnd()}</span>{/\s$/.test(x)?' ':null}</Fragment>):v};
 const sectionIds=['home','research','infrastructure','discovery','news','people','contact'];
 const initialTheme = (): 'dark'|'light' => document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
 const languageFromUrl=()=>new URLSearchParams(location.search).get('lang')!=='zh';
@@ -90,21 +106,21 @@ function App(){
   <section className="research-direction infrastructure-direction" id="infrastructure" aria-labelledby="infrastructure-heading">
    <header className="direction-opening section">
     <div className="direction-name"><p className="direction-kicker">{t('研究方向','Research')}</p><h2 id="infrastructure-heading">{en?<>AI-ready scientific<br/>infrastructure</>:<>AI-ready<br/>科学基础设施</>}</h2></div>
-    <p className="direction-intro">{t('贯通数据、模型、工具与知识，让智能体能够查找、调用和核验，为科学推理、计算与验证提供共同基础','We connect data, models, tools and knowledge so that agents can find, use and verify them, giving scientific reasoning, computation and validation common ground')}</p>
+    <p className="direction-intro">{ph(t('贯通数据、模型、工具与知识，|让智能体能够查找、调用和核验，|为科学推理、计算与验证提供共同基础','We connect data, models, tools and knowledge so that agents can find, use and verify them, giving scientific reasoning, computation and validation common ground'))}</p>
    </header>
    <ModelInfrastructure en={en} reduced={reduced} theme={theme}/>
   </section>
   <section className="research-direction discovery-direction" id="discovery" aria-labelledby="discovery-heading">
    <header className="direction-opening section">
     <div className="direction-name"><h2 id="discovery-heading">{en?<>Autonomous<br/>scientific discovery</>:<>自主科学发现</>}</h2></div>
-    <p className="direction-intro">{t('研究智能体如何自主选择实验、用证据检验预测、修正解释，让科学探究形成闭环','We study how agents can choose experiments, test predictions against evidence and revise their explanations, closing the loop of inquiry')}</p>
+    <p className="direction-intro">{ph(t('研究智能体如何自主选择实验、|用证据检验预测、修正解释，|让科学探究形成闭环','We study how agents can choose experiments, test predictions against evidence and revise their explanations, closing the loop of inquiry'))}</p>
    </header>
    <AutonomousDiscovery en={en} reduced={reduced} theme={theme}/>
   </section>
  </section>
  <section className="news section" id="news" aria-labelledby="news-heading">
   <div className="section-title"><h2 id="news-heading">{t('新闻与动态','News & Events')}</h2></div>
-  <ol className="news-list">{news.map(([date,title,titleZh,line,lineZh,platform])=>{const p=platforms.find(x=>x.id===platform);const body=<><time dateTime={date.replaceAll('.','-')}>{date}</time><div><h3>{en?title:titleZh}</h3>{line&&<p>{en?line:lineZh}</p>}</div>{p?<><PlatformIcon id={p.id}/><ArrowUpRight size={18} aria-hidden="true"/></>:null}</>;return <li key={date} className="news-item">{p?<a href={p.url} target="_blank" rel="noopener noreferrer">{body}</a>:<div>{body}</div>}</li>})}</ol>
+  <ol className="news-list">{news.map(([date,title,titleZh,line,lineZh,platform])=>{const p=platforms.find(x=>x.id===platform);const body=<><time dateTime={date.replaceAll('.','-')}>{date}</time><div><h3>{en?title:titleZh}</h3>{line&&<p>{en?line:ph(lineZh)}</p>}</div>{p?<><PlatformIcon id={p.id}/><ArrowUpRight size={18} aria-hidden="true"/></>:null}</>;return <li key={date} className="news-item">{p?<a href={p.url} target="_blank" rel="noopener noreferrer">{body}</a>:<div>{body}</div>}</li>})}</ol>
   <div className="platforms"><h3>{t('平台','Platforms')}</h3><ul>{platforms.map(p=><li key={p.id}><a href={p.url} target="_blank" rel="noopener noreferrer"><PlatformIcon id={p.id}/><span>{p.name}</span><ArrowUpRight size={16} aria-hidden="true"/></a></li>)}</ul></div>
  </section>
  <section className="people section" id="people" aria-label={t('团队与合作者','Team and collaborators')}>
@@ -114,7 +130,7 @@ function App(){
    {data.members.map(p=>{
     const isFounder=p.nameEn==='Zaoqu Liu',isPresident=p.nameEn==='Fuchu He';
     const profileHref=isFounder?`/people/zaoqu-liu/?lang=${en?'en':'zh'}&theme=${theme}`:isPresident?'https://www.pi-hub.org.cn/news/news/%2091':null;
-    const content=<><div className="portrait"><img src={data.assets[p.avatar as keyof typeof data.assets]} alt={en?p.nameEn:p.nameZh} loading="lazy"/></div><div className="person-name"><h3>{en?p.nameEn:p.nameZh}{profileHref&&<ArrowUpRight size={15} aria-hidden="true"/>}</h3>{!en&&<p className="person-alias">{p.nameEn}</p>}{isFounder&&<p className="person-role founder">{t('创始人','Founder')}</p>}{isPresident&&<p className="person-role">{t('广东智慧医学国际研究院院长','President, IAPM')}</p>}<p className="person-role">{isFounder?t('生物医学多模态大模型科学家','Biomedical Multimodal Large Model Scientist'):(en?p.roleEn:p.roleZh)}</p></div></>;
+    const content=<><div className="portrait"><img src={data.assets[p.avatar as keyof typeof data.assets]} alt={en?p.nameEn:p.nameZh} loading="lazy"/></div><div className="person-name"><h3>{en?p.nameEn:p.nameZh}{profileHref&&<ArrowUpRight size={15} aria-hidden="true"/>}</h3>{!en&&<p className="person-alias">{p.nameEn}</p>}{isFounder&&<p className="person-role founder">{t('创始人','Founder')}</p>}{isPresident&&<p className="person-role">{ph(t('广东智慧医学国际研究院院长','President, IAPM'))}</p>}<p className="person-role">{ph(isFounder?t('生物医学多模态大模型科学家','Biomedical Multimodal Large Model Scientist'):(en?p.roleEn:p.roleZh))}</p></div></>;
     return <article key={p.nameEn}>{profileHref?<a className="person-profile" href={profileHref} target={isPresident?'_blank':undefined} rel={isPresident?'noopener noreferrer':undefined} aria-label={isFounder?t('刘灶渠的个人主页','Zaoqu Liu’s personal website'):t('贺福初院士的 π-HuB 官方介绍（新窗口）','Fuchu He’s π-HuB profile (opens in a new tab)')}>{content}</a>:content}</article>
    })}
   </div>
@@ -122,7 +138,7 @@ function App(){
   <section className="people-group" aria-labelledby="collaborators-heading">
   <div className="people-heading"><h2 id="collaborators-heading">{t('合作者','Collaborators')}</h2></div>
   <div className="people-grid">
-   {data.collaborators.map(p=><article key={p.en}><div className="portrait"><img src={data.assets[p.avatar as keyof typeof data.assets]} alt={en?p.en:p.zh} loading="lazy"/></div><div className="person-name"><h3>{en?p.en:p.zh}</h3>{!en&&<p className="person-alias">{p.en}</p>}<p className="person-affiliation">{en?p.affiliationEn:p.affiliationZh}</p></div></article>)}
+   {data.collaborators.map(p=><article key={p.en}><div className="portrait"><img src={data.assets[p.avatar as keyof typeof data.assets]} alt={en?p.en:p.zh} loading="lazy"/></div><div className="person-name"><h3>{en?p.en:p.zh}</h3>{!en&&<p className="person-alias">{p.en}</p>}<p className="person-affiliation">{ph(en?p.affiliationEn:p.affiliationZh)}</p></div></article>)}
   </div>
   </section>
  </section>
