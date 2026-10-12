@@ -1,0 +1,7 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "",
+  "buildCommand": "echo 'docs/ is prebuilt by artifacts/ui-prototypes/build-22.mjs'",
+  "outputDirectory": "docs"
+}

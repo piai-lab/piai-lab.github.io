@@ -1,0 +1,5 @@
+.celestial-wheel{position:relative;isolation:isolate;width:100%;height:100%;overflow:hidden;outline:none}
+.celestial-wheel:focus-visible{outline:1px solid #a0dacb60;outline-offset:-5px;border-radius:4px}
+.celestial-wheel-canvas{position:absolute;inset:0;mask-image:linear-gradient(transparent,#000 7%,#000 94%,transparent)}
+.celestial-wheel-canvas canvas{display:block;width:100%;height:100%;touch-action:pan-y}
+.celestial-wheel-still{position:absolute;inset:0;width:100%;height:100%;color:#d5e2df;pointer-events:none}
