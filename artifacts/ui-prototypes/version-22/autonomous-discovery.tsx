@@ -51,7 +51,6 @@ export default function AutonomousDiscovery({ en = true, reduced, theme }: Props
     <div className="discovery-experiment">
       <div className="discovery-render" data-discovery="scene" role="img" aria-label={t('两个隐藏的力使粒子轨迹弯曲；智能体选择探测位置，每次观测排除矛盾的解释，最终用学到的力预测未测轨迹', 'Two hidden forces bend particle paths; the agent chooses where to probe, each observation rules out contradicting explanations, and the learned forces predict unmeasured paths')}/>
       {!ready && <StaticField theme={theme}/>}
-      <div className="discovery-readout" aria-hidden="true"><span className="discovery-count" data-discovery="count">961</span><span className="discovery-count-label" data-discovery="count-label">{t('种解释仍然成立', 'explanations still fit')}</span></div>
       <p className="discovery-narrative" data-discovery="narrative" aria-live="off">{t('隐藏的力让轨迹弯曲，许多解释都还说得通', 'Hidden forces bend the path, and many explanations still fit')}</p>
     </div>
     <p className="discovery-disclosure">{t('合成主动学习演示 · 4 次自主探测 · 6 条未参与拟合的轨迹', 'Synthetic active learning · 4 autonomous probes · 6 held-out trajectories')}</p>

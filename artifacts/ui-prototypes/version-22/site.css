@@ -60,9 +60,9 @@ main{overflow:clip}.section{padding-inline:var(--pad)}
 .autonomous-discovery{margin-top:48px}
 .autonomous-discovery .discovery-render,.autonomous-discovery .discovery-static{inset:0 0 64px;height:auto}
 .discovery-narrative{font:400 clamp(18px,1.6vw,23px)/1.5 var(--serif);color:var(--ink);letter-spacing:-.01em;bottom:4px;transition:opacity .4s}
-.discovery-readout{position:absolute;right:0;bottom:6px;z-index:2;display:flex;flex-direction:column;align-items:flex-end;gap:6px;pointer-events:none}
-.discovery-count{font:300 clamp(48px,5vw,76px)/.9 var(--serif);letter-spacing:-.03em;color:var(--ink);font-variant-numeric:tabular-nums lining-nums}
-.discovery-count-label{font-size:12px;letter-spacing:.06em;color:var(--muted)}
+
+
+
 .discovery-disclosure{font-size:11px;color:var(--muted);padding-top:14px}.people-grid .person-role{text-wrap:balance}.discovery-dot{background:var(--copper);box-shadow:none}
 /* Work and people share one opening: a heading, an optional single line. */
 .work{padding-top:var(--section)}.people{padding-top:var(--section)}
@@ -136,6 +136,6 @@ html[lang=zh-CN] .hero h1{letter-spacing:.01em;line-height:1.14}html[lang=zh-CN]
  .contact-layout{display:block;padding:72px 0 72px}.contact-layout h2{font-size:42px}.contact-orbit{left:-40%;top:24%;width:150%;opacity:.45}.system-glyph{width:52px;height:52px;margin-bottom:16px}.contact-details{margin-top:24px}.contact-details p{font-size:16px}
  .footer-meta{flex-wrap:wrap;gap:8px 22px;padding:18px 0 24px;font-size:11px}.footer-meta>span{width:100%}
 }
-@media(max-width:760px){.autonomous-discovery .discovery-render,.autonomous-discovery .discovery-static{inset:0 0 176px}.autonomous-discovery .discovery-narrative{bottom:86px}.discovery-readout{left:0;right:auto;bottom:0;align-items:flex-start;gap:4px}.discovery-count{font-size:48px}.discovery-count-label{font-size:11px}}
+@media(max-width:760px){.autonomous-discovery .discovery-render,.autonomous-discovery .discovery-static{inset:0 0 120px}.autonomous-discovery .discovery-narrative{bottom:34px}}
 .manual-reduced{scroll-behavior:auto}.manual-reduced *,.manual-reduced *:before,.manual-reduced *:after{animation:none!important;transition:none!important}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation:none!important;transition:none!important}}

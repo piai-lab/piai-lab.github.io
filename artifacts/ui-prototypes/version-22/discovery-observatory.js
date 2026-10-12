@@ -167,13 +167,12 @@ function applyTheme() {
 // The exact same trial paths are used by the renderer and the inference audit.
 const START=[0,5,10,14.5],END=[5,10,14.5,19];
 const text = {
-  en:{unit:'explanations still fit',error:'error on six unmeasured paths · baseline 3.18',captions:['Hidden forces bend the path, and many explanations still fit','The agent probes where the explanations disagree most','Each observation rules out the explanations it contradicts','One more measurement tests what remains','The learned forces predict six paths never measured']},
-  zh:{unit:'种解释仍然成立',error:'六条未测轨迹的预测误差 · 基线 3.18',captions:['隐藏的力让轨迹弯曲，许多解释都还说得通','智能体在解释分歧最大的地方继续探测','每一次观测，都排除与它矛盾的解释','再测一次，检验留下来的解释','学到的力，预测六条从未测过的轨迹']}
+  en:{captions:['Hidden forces bend the path, and many explanations still fit','The agent probes where the explanations disagree most','Each observation rules out the explanations it contradicts','One more measurement tests what remains','The learned forces predict six paths never measured']},
+  zh:{captions:['隐藏的力让轨迹弯曲，许多解释都还说得通','智能体在解释分歧最大的地方继续探测','每一次观测，都排除与它矛盾的解释','再测一次，检验留下来的解释','学到的力，预测六条从未测过的轨迹']}
 };
 const dict=()=>text[en?'en':'zh'];
-let lastStage=-1,countText='',unitFinal=null;
-const remaining=[experiment.summary.priorCandidates,...experiment.trials.map(t=>t.remaining)],mae=experiment.summary.heldOutMAE.toFixed(2);
-function language(){lastStage=-1;unitFinal=null;}
+let lastStage=-1;
+function language(){lastStage=-1;}
 function label(element,point,labelText,opacity,dy=-16){
   const v=world.localToWorld(new THREE.Vector3(...point)).project(camera);
   element.textContent=labelText;element.style.left=`${el.offsetLeft+clamp((v.x+1)*width/2,58,width-58)}px`;element.style.top=`${el.offsetTop+clamp((1-v.y)*height/2+dy,24,height-8)}px`;element.style.opacity=String(opacity);
@@ -228,12 +227,7 @@ function render(now){
     o.core.scale.setScalar(.18+.42*m*(.5+.5*sure));o.core.material.opacity=fade*(light2?.6:1)*(.3+.7*sure);
     const r=.18+sd*2.2;o.halo.scale.setScalar(r*2.6);o.halo.material.opacity=fade*(light2?.1:.22)*(.4+.6*sure);
     o.ring.material.opacity=0;});
-  if(round!==lastStage){$('narrative').textContent=dict().captions[round];lastStage=round;countText='';}
-  const final=round===4;
-  const n=final?0:Math.exp(Math.log(remaining[round])*(1-blend)+Math.log(remaining[round+1])*blend);
-  const value=final?mae:String(Math.round(n));
-  if(value!==countText){countText=value;$('count').textContent=value;}
-  if(final!==unitFinal){unitFinal=final;$('count-label').textContent=final?dict().error:dict().unit;}
+  if(round!==lastStage){$('narrative').textContent=dict().captions[round];lastStage=round;}
   renderer.render(scene,camera);frameCount++;
   el.dataset.time=t.toFixed(3);el.dataset.stage=String(round);el.dataset.frames=String(frameCount);el.dataset.state=disposed?'disposed':document.hidden?'hidden':!visible?'offscreen':reduced?'reduced':'running';
 }
