@@ -11,11 +11,11 @@ import SiteMotion from './site-motion';
 import data from '../discovery-data.json';
 
 const papers=[
- ['KnowMe-Bench','Benchmarking Person Understanding for Lifelong Digital Companions','ACL 2026','https://aclanthology.org/2026.acl-long.1394/'],
- ['LiveCANNBench','Benchmark SWE AI Coding for Ascend CANN','Findings of ACL 2026','https://aclanthology.org/2026.findings-acl.1143/'],
- ['MemGovern','Enhancing Code Agents through Learning from Governed Human Experiences','arXiv · 2026','https://arxiv.org/abs/2601.06789'],
- ['Controlled Self-Evolution','for Algorithmic Code Optimization','arXiv · 2026','https://arxiv.org/abs/2601.07348'],
- ['π-HuB','The proteomic navigator of the human body','Nature · Perspective · 2024','https://www.nature.com/articles/s41586-024-08280-5']
+ ['KnowMe-Bench','Benchmarking Person Understanding for Lifelong Digital Companions','ACL','https://aclanthology.org/2026.acl-long.1394/','2026'],
+ ['LiveCANNBench','Benchmark SWE AI Coding for Ascend CANN','Findings of ACL','https://aclanthology.org/2026.findings-acl.1143/','2026'],
+ ['MemGovern','Enhancing Code Agents through Learning from Governed Human Experiences','arXiv','https://arxiv.org/abs/2601.06789','2026'],
+ ['Controlled Self-Evolution','for Algorithmic Code Optimization','arXiv','https://arxiv.org/abs/2601.07348','2026'],
+ ['π-HuB','The proteomic navigator of the human body','Nature · Perspective','https://www.nature.com/articles/s41586-024-08280-5','2024']
 ];
 const systems=[
  ['Haros','智能体工作台','连接 Codex、Claude Code 等智能体运行环境，在同一界面管理项目、对话与工作记录。','https://github.com/piai-lab/Haros'],
@@ -107,7 +107,7 @@ function App(){
  </section>
  <section className="work section" id="work" aria-labelledby="work-heading">
   <div className="work-title"><h2 id="work-heading">{t('研究成果','Selected work')}</h2><p>{t('智能体方法、研究系统与科学应用','Agent methods, research systems and scientific applications')}</p></div>
-  <div className="papers">{papers.map(p=><a className="paper" key={p[0]} href={p[3]} target="_blank" rel="noreferrer"><div><h3>{p[0]}</h3><p>{p[1]}</p></div><span className="paper-venue">{p[2]}</span><ArrowUpRight size={18} aria-hidden="true"/></a>)}</div>
+  <div className="papers">{[...new Set(papers.map(p=>p[4]))].map(year=><div className="paper-year-group" key={year}><p className="paper-year">{year}</p><div>{papers.filter(p=>p[4]===year).map(p=><a className="paper" key={p[0]} href={p[3]} target="_blank" rel="noreferrer"><div><h3>{p[0]}</h3><p>{p[1]}</p></div><span className="paper-venue">{p[2]}</span><ArrowUpRight size={18} aria-hidden="true"/></a>)}</div></div>)}</div>
   <h3 className="systems-heading">{t('研究系统','Research systems')}</h3>
   <div className="systems-grid">{systems.map((s,i)=><article key={s[0]}><svg className="system-glyph" viewBox="0 0 64 64" aria-hidden="true" focusable="false">{glyphs[i]}</svg><div className="system-title"><h4>{s[0]}</h4>{s[3]?<a href={s[3]} target="_blank" rel="noreferrer" aria-label={t('查看 '+s[0]+' 开源项目','View '+s[0]+' on GitHub')}><Github size={17}/></a>:null}</div><p className="system-kind">{t(s[1],systemKinds[i])}</p><p>{en?systemNotes[i]:systemNotesZh[i]}</p></article>)}</div>
  </section>
