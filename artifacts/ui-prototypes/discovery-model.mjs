@@ -56,7 +56,7 @@ export function makeExperiment() {
     const sum = raw.reduce((a, b) => a + b, 0);
     weights = raw.map(v => v / sum);
     const after = estimate();
-    trials.push({round, candidate: best, y, scores, score: scores[best], maxScore: Math.max(...scores), before, after, actual, predicted, revised: trace(after, y), error: Math.abs(terminal(predicted) - measurement), weights: weights.slice(), remaining: weights.filter(w => w > .002).length, weights: weights.slice()});
+    trials.push({round, candidate: best, y, scores, score: scores[best], maxScore: Math.max(...scores), before, after, actual, predicted, revised: trace(after, y), error: Math.abs(terminal(predicted) - measurement), weights: weights.slice(), remaining: weights.filter(w => w > .002).length});
   }
   const learned = estimate();
   const heldOutY = [-2.17, -1.37, -.67, .43, 1.13, 2.03];

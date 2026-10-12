@@ -1,6 +1,6 @@
 import React,{useEffect,useRef,useState,useSyncExternalStore} from 'react';
 import {createRoot} from 'react-dom/client';
-import {ArrowUpRight,ArrowUp,ArrowDown,Menu,X,Sun,Moon,Mail,Github,Layers3,BookOpen,PenTool,ChartNoAxesCombined} from 'lucide-react';
+import {ArrowUpRight,ArrowUp,ArrowDown,Menu,X,Sun,Moon,Mail,Github} from 'lucide-react';
 import {Sheet,SheetTrigger,SheetContent,SheetTitle,SheetDescription} from '../../../client/src/components/ui/sheet';
 import Logo from '../../../client/src/components/Logo';
 import CelestialWheel from './celestial-replica/view';
@@ -23,6 +23,23 @@ const systems=[
  ['OmniSketch','科学图示','以科研图示呈现科学机制与研究思路。',''],
  ['OmniPlotter','数据可视化','面向研究数据的科学图表与可视化工具。','']
 ];
+
+// Line glyphs share the wheel's orbit language; each draws what its system does.
+const glyphs=[
+ <><ellipse cx="32" cy="32" rx="25" ry="9" transform="rotate(-24 32 32)"/><ellipse cx="32" cy="32" rx="25" ry="9" transform="rotate(30 32 32)"/><circle cx="32" cy="32" r="5"/><circle className="node" cx="11" cy="42" r="2.2"/><circle className="node" cx="52" cy="45" r="2.2"/><circle className="node warm" cx="48" cy="17" r="2.2"/></>,
+ <><path d="M12 44L24 20L40 28L52 14M24 20L30 50L40 28L50 46M12 44L30 50"/><circle className="node" cx="12" cy="44" r="2.2"/><circle className="node" cx="24" cy="20" r="2.2"/><circle className="node warm" cx="40" cy="28" r="2.8"/><circle className="node" cx="52" cy="14" r="2.2"/><circle className="node" cx="30" cy="50" r="2.2"/><circle className="node" cx="50" cy="46" r="2.2"/></>,
+ <><path d="M10 46C22 46 20 18 32 18S42 46 54 46"/><path className="faint" d="M10 46L20 28M54 46L44 28"/><circle className="node" cx="20" cy="28" r="2"/><circle className="node" cx="44" cy="28" r="2"/><circle className="node warm" cx="32" cy="18" r="2.8"/></>,
+ <><path className="faint" d="M10 12V52H56"/><path d="M14 46C22 44 24 34 31 32S41 26 44 20S50 14 54 13"/><circle className="node" cx="22" cy="42" r="2"/><circle className="node" cx="31" cy="32" r="2"/><circle className="node" cx="44" cy="20" r="2"/><circle className="node warm" cx="54" cy="13" r="2.8"/></>
+];
+function ClosingOrbit({reduced}:{reduced:boolean}){
+ const ref=useRef<SVGSVGElement>(null);
+ useEffect(()=>{const svg=ref.current;if(!svg)return;if(reduced){svg.pauseAnimations();svg.setCurrentTime(6);return}svg.unpauseAnimations();const io=new IntersectionObserver(([e])=>e?.isIntersecting?svg.unpauseAnimations():svg.pauseAnimations());io.observe(svg);return()=>io.disconnect()},[reduced]);
+ const rings=[[-16,300,62,36],[14,250,96,48],[38,210,128,60]];
+ return <svg ref={ref} className="contact-orbit" viewBox="-320 -170 640 340" aria-hidden="true" focusable="false">
+  <defs><linearGradient id="orbit-fade" x1="0" x2="1"><stop offset="0" stopColor="var(--accent)" stopOpacity="0"/><stop offset=".5" stopColor="var(--accent)" stopOpacity=".5"/><stop offset="1" stopColor="var(--copper)" stopOpacity=".12"/></linearGradient><radialGradient id="orbit-spark"><stop offset="0" stopColor="var(--ink)"/><stop offset=".35" stopColor="var(--accent)" stopOpacity=".55"/><stop offset="1" stopColor="var(--accent)" stopOpacity="0"/></radialGradient></defs>
+  {rings.map(([tilt,rx,ry,dur],i)=><g key={i} transform={`rotate(${tilt})`}><path id={'orbit-'+i} d={`M${-rx} 0A${rx} ${ry} 0 1 0 ${rx} 0A${rx} ${ry} 0 1 0 ${-rx} 0`} fill="none" stroke="url(#orbit-fade)" strokeWidth="1"/><circle r="9" fill="url(#orbit-spark)"><animateMotion dur={dur+'s'} begin={-i*11+'s'} repeatCount="indefinite"><mpath href={'#orbit-'+i}/></animateMotion></circle></g>)}
+ </svg>
+}
 const sectionIds=['home','research','infrastructure','discovery','work','people','contact'];
 const initialTheme = (): 'dark'|'light' => document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
 const languageFromUrl=()=>new URLSearchParams(location.search).get('lang')!=='zh';
@@ -92,7 +109,7 @@ function App(){
   <div className="work-title"><h2 id="work-heading">{t('研究成果','Selected work')}</h2><p>{t('智能体方法、研究系统与科学应用','Agent methods, research systems and scientific applications')}</p></div>
   <div className="papers">{papers.map(p=><a className="paper" key={p[0]} href={p[3]} target="_blank" rel="noreferrer"><div><h3>{p[0]}</h3><p>{p[1]}</p></div><span className="paper-venue">{p[2]}</span><ArrowUpRight size={18} aria-hidden="true"/></a>)}</div>
   <h3 className="systems-heading">{t('研究系统','Research systems')}</h3>
-  <div className="systems-grid">{systems.map((s,i)=><article key={s[0]}><div className="system-title">{React.createElement([Layers3,BookOpen,PenTool,ChartNoAxesCombined][i],{size:20,'aria-hidden':true})}<h4>{s[0]}</h4>{s[3]?<a href={s[3]} target="_blank" rel="noreferrer" aria-label={t('查看 '+s[0]+' 开源项目','View '+s[0]+' on GitHub')}><Github size={17}/></a>:null}</div><p className="system-kind">{t(s[1],systemKinds[i])}</p><p>{en?systemNotes[i]:systemNotesZh[i]}</p></article>)}</div>
+  <div className="systems-grid">{systems.map((s,i)=><article key={s[0]}><svg className="system-glyph" viewBox="0 0 64 64" aria-hidden="true" focusable="false">{glyphs[i]}</svg><div className="system-title"><h4>{s[0]}</h4>{s[3]?<a href={s[3]} target="_blank" rel="noreferrer" aria-label={t('查看 '+s[0]+' 开源项目','View '+s[0]+' on GitHub')}><Github size={17}/></a>:null}</div><p className="system-kind">{t(s[1],systemKinds[i])}</p><p>{en?systemNotes[i]:systemNotesZh[i]}</p></article>)}</div>
  </section>
  <section className="people section" id="people" aria-label={t('团队与合作者','Team and collaborators')}>
   <section className="people-group" aria-labelledby="team-heading">
@@ -114,7 +131,7 @@ function App(){
   </section>
  </section>
  </main>
- <footer id="contact" className="section" aria-labelledby="contact-heading"><div className="contact-layout"><h2 id="contact-heading">{t('欢迎研究合作','Open to collaboration')}</h2><div className="contact-details"><p>{en?'Academic exchange and joint research on scientific infrastructure, autonomous discovery and agent methods':<>围绕科学基础设施、自主发现与智能体方法，<span className="keep">开展学术交流与联合研究</span></>}</p><a href="mailto:liuzaoqu@163.com"><Mail size={18} aria-hidden="true"/>liuzaoqu@163.com</a></div></div><div className="footer-meta"><span>© 2026 πAI Lab</span><a href="https://github.com/piai-lab" target="_blank" rel="noreferrer"><Github size={16} aria-hidden="true"/>GitHub</a><a href="#home" onClick={e=>{e.preventDefault();go('home')}}>{t('返回顶部','Back to top')}<ArrowUp size={16} aria-hidden="true"/></a></div></footer>
+ <footer id="contact" className="section" aria-labelledby="contact-heading"><div className="contact-layout"><ClosingOrbit reduced={reduced}/><h2 id="contact-heading">{t('欢迎研究合作','Open to collaboration')}</h2><div className="contact-details"><p>{en?'Academic exchange and joint research on scientific infrastructure, autonomous discovery and agent methods':<>围绕科学基础设施、自主发现与智能体方法，<span className="keep">开展学术交流与联合研究</span></>}</p><a href="mailto:liuzaoqu@163.com"><Mail size={18} aria-hidden="true"/>liuzaoqu@163.com</a></div></div><div className="footer-meta"><span>© 2026 πAI Lab</span><a href="https://github.com/piai-lab" target="_blank" rel="noreferrer"><Github size={16} aria-hidden="true"/>GitHub</a><a href="#home" onClick={e=>{e.preventDefault();go('home')}}>{t('返回顶部','Back to top')}<ArrowUp size={16} aria-hidden="true"/></a></div></footer>
  </div>
 }
 createRoot(document.getElementById('root')!).render(<App/>);

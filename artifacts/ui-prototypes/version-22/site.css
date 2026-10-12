@@ -91,6 +91,24 @@ footer.section{padding-top:var(--section);padding-bottom:0}
 .contact-details p{max-width:500px;text-wrap:pretty;font-size:17px;line-height:1.8;color:var(--soft)}
 .contact-details>a{display:inline-flex;align-items:center;gap:12px;min-height:44px;margin-top:14px;margin-bottom:-6px;border-bottom:1px solid var(--line);font-size:16px;color:var(--ink)}.contact-details>a svg{color:var(--accent);stroke-width:1.5}.contact-details>a:hover{color:var(--accent);border-color:var(--accent)}
 .footer-meta{display:flex;align-items:center;gap:32px;padding:24px 0 28px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}.footer-meta>span{margin-right:auto;white-space:nowrap}.footer-meta>a{display:inline-flex;align-items:center;gap:8px;min-height:44px}.footer-meta a:hover{color:var(--accent)}
+/* Lower sections share the wheel's light: a trace that runs along rules, orbit glyphs and a closing orbit. */
+.paper:after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:1px;background:linear-gradient(90deg,transparent,var(--accent) 30%,var(--copper) 70%,transparent);transform:scaleX(0);transform-origin:left;transition:transform 700ms var(--ease);pointer-events:none}
+.paper:hover:after,.paper:focus-visible:after{transform:scaleX(1)}
+.paper h3{transition:color var(--fast),transform var(--flow) var(--ease)}.paper:hover h3{transform:translateX(6px)}
+.paper-venue{font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.systems-grid article{position:relative}
+.system-glyph{display:block;width:64px;height:64px;margin-bottom:22px;overflow:visible;fill:none;stroke:var(--accent);stroke-width:1.1;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
+.system-glyph .faint{stroke:var(--muted);opacity:.55}.system-glyph .node{fill:var(--night);stroke:var(--accent);stroke-width:1.2}.system-glyph .node.warm{fill:var(--copper);stroke:none;filter:drop-shadow(0 0 4px var(--copper))}
+.system-glyph>*{stroke-dasharray:180;stroke-dashoffset:0;transition:stroke-dashoffset 1.1s var(--ease)}
+.systems-grid article:hover .system-glyph>:not(.node){animation:glyph-draw 1.4s var(--ease)}
+@keyframes glyph-draw{from{stroke-dashoffset:180}to{stroke-dashoffset:0}}
+.portrait{position:relative;box-shadow:inset 0 0 0 1px var(--line)}
+.portrait:after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(180deg,transparent 62%,color-mix(in srgb,var(--night) 38%,transparent));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 14%,transparent)}
+.person-profile .portrait:after{transition:box-shadow var(--flow)}.person-profile:hover .portrait:after{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 60%,transparent),inset 0 -40px 60px -30px color-mix(in srgb,var(--accent) 30%,transparent)}
+.contact-layout{position:relative;isolation:isolate;overflow:hidden;padding-top:136px;padding-bottom:136px}
+.contact-orbit{position:absolute;z-index:-1;left:-4%;top:50%;width:min(780px,62%);height:auto;transform:translateY(-50%);overflow:visible;pointer-events:none;opacity:.9}
+.contact-layout h2{font-size:clamp(48px,5.2vw,80px)}
+html[data-theme=light] .contact-orbit{opacity:.75}
 /* Portal surfaces consume the same root palette, including light mode. */
 .bio-menu{position:fixed;right:0;top:0;bottom:0;z-index:100;width:88%;max-width:360px;padding:30px;background:var(--surface-raised);border-left:1px solid var(--line);color:var(--ink);box-shadow:-12px 0 50px #0002;overflow-y:auto;overscroll-behavior:contain}
 .bio-menu [data-slot=sheet-title]{margin:0}.bio-menu [data-slot=sheet-description]{font-size:13px;line-height:1.8;color:var(--muted);margin-top:20px}.bio-menu nav{display:flex;flex-direction:column;gap:8px;margin-top:36px}.bio-menu nav a{padding:16px 0;font-size:17px;border-bottom:1px solid var(--line);color:var(--soft)}.bio-menu>button{position:absolute;top:22px;right:16px;width:44px;height:44px;display:grid;place-items:center}.bio-menu>button:last-child{display:none}
@@ -115,7 +133,7 @@ html[lang=zh-CN] .hero h1{letter-spacing:.01em;line-height:1.14}html[lang=zh-CN]
  .paper{grid-template-columns:minmax(0,1fr) 20px;gap:6px 14px;padding:24px 0}.paper h3{font-size:23px;overflow-wrap:anywhere}.paper p{font-size:14px;margin-top:6px}.paper-venue{grid-column:1;text-align:left;font-size:12px;margin-top:4px}.paper>svg{grid-column:2;grid-row:1;align-self:start;margin-top:6px}
  .systems-heading{padding-top:64px;padding-bottom:16px;font-size:11px}.systems-grid{grid-template-columns:1fr}.systems-grid article,.systems-grid article+article,.systems-grid article:nth-child(3){padding:22px 0 20px;border-left:0;margin-top:0}.systems-grid article+article{border-top:1px solid var(--line)}
  .people-group+.people-group{margin-top:72px}.people-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:32px 16px}.people-grid h3{font-size:17px}.people-grid p{font-size:12px;line-height:1.65}.person-name{margin-top:13px}
- .contact-layout{display:block;padding:44px 0 60px}.contact-details{margin-top:24px}.contact-details p{font-size:16px}
+ .contact-layout{display:block;padding:72px 0 72px}.contact-layout h2{font-size:42px}.contact-orbit{left:-40%;top:24%;width:150%;opacity:.45}.system-glyph{width:52px;height:52px;margin-bottom:16px}.contact-details{margin-top:24px}.contact-details p{font-size:16px}
  .footer-meta{flex-wrap:wrap;gap:8px 22px;padding:18px 0 24px;font-size:11px}.footer-meta>span{width:100%}
 }
 @media(max-width:760px){.autonomous-discovery .discovery-render,.autonomous-discovery .discovery-static{inset:0 0 176px}.autonomous-discovery .discovery-narrative{bottom:86px}.discovery-readout{left:0;right:auto;bottom:0;align-items:flex-start;gap:4px}.discovery-count{font-size:48px}.discovery-count-label{font-size:11px}}
