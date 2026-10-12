@@ -2,12 +2,12 @@
 
 ## 目标与边界
 
-从第 21 版出发完成第 22 版候选，保留 20/21 对照。稳定偏好、已否决方向和产品事实只见 [AGENTS.md](AGENTS.md)。授权包含推送本分支并更新 Draft PR，不包含合并或发布。原 `zaoqu-liu.github.io` 仓库与线上个人站不改。
+从第 21 版出发完成第 22 版候选，保留 20/21 对照。稳定偏好、已否决方向和产品事实只见 [AGENTS.md](AGENTS.md)。2026-10-12 用户要求把本分支效果部署到 piai-lab.github.io 与 piailab.cn，因此 PR #7 合并入 main 上线；之后的改动仍按“分支 → PR → 合并即发布”处理。原 `zaoqu-liu.github.io` 仓库与线上个人站不改。
 
 ## 当前事实
 
-- 分支：`feat/lab-v21-design-handoff`，对应 [Draft PR #7](https://github.com/piai-lab/piai-lab.github.io/pull/7)，未合并、未部署。续接时先核对 `git status --short`、`git log -3 --oneline`。
-- 当前候选为 `piai-redesign-22.html`。**用户尚未对 22 做最终视觉验收**；20/21 文件未改。
+- 分支：`feat/lab-v21-design-handoff`，经 [PR #7](https://github.com/piai-lab/piai-lab.github.io/pull/7) squash 合并入 main；push 到 main 即触发 Pages workflow 与 Vercel 生产部署。回退用 revert 合并提交。续接时先核对 `git status --short`、`git log -3 --oneline`。
+- 线上首页即 `piai-redesign-22.html`（用户要求部署）；20/21 文件未改。
 - GitHub Pages 与 Vercel（piailab.cn，`vercel.json` 指定直接发布 `docs/`、跳过安装与构建）都发布 `docs/`。`node artifacts/ui-prototypes/build-22.mjs` 同时把 22 写为 `docs/index.html`，同步 `docs/team/` 照片，`docs/404.html` 回到首页；旧 Vite 首页的 `docs/assets/` 与 `docs/team/index.html` 已删除。不要手改 `docs/index.html`。其余历史 `artifacts/` 草稿留在工作区，未提交、未删除。
 
 ## 入口
