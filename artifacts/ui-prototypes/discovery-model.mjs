@@ -56,7 +56,7 @@ export function makeExperiment() {
     const sum = raw.reduce((a, b) => a + b, 0);
     weights = raw.map(v => v / sum);
     const after = estimate();
-    trials.push({round, candidate: best, y, scores, score: scores[best], maxScore: Math.max(...scores), before, after, actual, predicted, revised: trace(after, y), error: Math.abs(terminal(predicted) - measurement), remaining: weights.filter(w => w > .002).length});
+    trials.push({round, candidate: best, y, scores, score: scores[best], maxScore: Math.max(...scores), before, after, actual, predicted, revised: trace(after, y), error: Math.abs(terminal(predicted) - measurement), weights: weights.slice(), remaining: weights.filter(w => w > .002).length, weights: weights.slice()});
   }
   const learned = estimate();
   const heldOutY = [-2.17, -1.37, -.67, .43, 1.13, 2.03];
@@ -65,7 +65,7 @@ export function makeExperiment() {
     const z = (i % 3 - 1) * .6;
     return {y, z, actual: actual.map(p => [p[0], p[1], z]), predicted: predicted.map(p => [p[0], p[1], z]), error: Math.abs(terminal(predicted) - terminal(actual)), baselineError: Math.abs(terminal(baseline) - terminal(actual))};
   });
-  return {trials, heldOut, candidates, learned, summary: {
+  return {trials, heldOut, candidates, learned, hypotheses, summary: {
     model: 'Two-parameter transverse force field; synthetic observations',
     priorCandidates: hypotheses.length,
     measuredProbeInputs: trials.map(t => t.y),

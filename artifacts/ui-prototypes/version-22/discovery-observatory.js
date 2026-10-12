@@ -98,58 +98,56 @@ function showBeam(b,p,opacity,t){
   for(let i=0;i<15;i++){const fraction=Math.max(0,p-i*.009);const v=b.curve.getPoint(fraction);a.setXYZ(i,v.x,v.y,v.z);}
   a.needsUpdate=true;b.grains.material.opacity=active*.8;
 }
-const trials=experiment.trials.map(t=>({actual:beam(t.actual),predicted:line(t.predicted,'ice',.5,true),expected:sprite(.14,'ice'),gap:line([t.predicted.at(-1),t.actual.at(-1)],'gold',0,true)}));
-trials.forEach((o,i)=>o.expected.position.set(...experiment.trials[i].predicted.at(-1)));
-const validation=experiment.heldOut.map(t=>({actual:beam(t.actual),predicted:line(t.predicted,'ice',0,true),end:sprite(.18,'mint')}));
-validation.forEach((o,i)=>o.end.position.set(...experiment.heldOut[i].predicted.at(-1)));
+// Observations stay as gold beams. Predictions are no longer one dashed line:
+// every explanation the posterior still allows is drawn, so evidence visibly
+// narrows the fan from many paths to one bundle. Paths are rank-matched so the
+// contraction is continuous.
+const trials=experiment.trials.map(t=>({actual:beam(t.actual)}));
+const validation=experiment.heldOut.map(t=>({actual:beam(t.actual)}));
 const ports=experiment.candidates.map(y=>{const point=sprite(.09,'ice');point.position.set(-5,y,0);return point;});
 const launcher=sprite(.4,'white'), launcherCore=sprite(.1,'gold');
-const launchRail=line([[-5,-2.55,0],[-5,2.55,0]],'ice',.1);
-const choices=experiment.candidates.map(y=>line([[-5.22,y,0],[-5.04,y,0]],'ice',.2));
-// Background lines are predictions of the current learned model, not observations.
-// A single shader morphs the whole prediction family as each observation updates it.
-const fieldModels=[[0,0],...experiment.trials.map(t=>t.after)];
-const fields=fieldModels.map(model=>{
-  const positions=[];
-  for(const z of [-.68,0,.68])for(let j=0;j<23;j++){
-    const path=trace(model,-2.3+j*4.6/22,z);
-    for(let k=0;k<STEPS;k++)positions.push(...path[k],...path[k+1]);
-  }
-  return new Float32Array(positions);
-});
-const fieldGeometry=geo(new THREE.BufferGeometry());
-fieldGeometry.setAttribute('position',new THREE.BufferAttribute(fields[0].slice(),3));fieldGeometry.setAttribute('nextPosition',new THREE.BufferAttribute(fields[1].slice(),3));
+const K=72,P=22,ROW=(STEPS+1)*3,hypotheses=experiment.hypotheses;
+const prior=hypotheses.map(()=>1/hypotheses.length);
+function resample(weights){const out=[],total=weights.reduce((a,b)=>a+b,0);let c=weights[0],i=0;for(let k=0;k<K;k++){const target=(k+.5)/K*total;while(c<target&&i<weights.length-1){i++;c+=weights[i];}out.push(i);}return out;}
+function fan(weights,starts,depths){
+  const picks=resample(weights);
+  const mean=[0,1].map(d=>picks.reduce((s,i)=>s+hypotheses[i][d],0)/K);
+  const rows=picks.map((h,j)=>{const y0=starts[j%starts.length],base=depths[j%depths.length];const path=trace(hypotheses[h],y0);const spread=Math.max(-1.3,Math.min(1.3,((hypotheses[h][0]-mean[0])-(hypotheses[h][1]-mean[1]))*1.4));return {key:j%starts.length*100+path.at(-1)[1],path:path.map(([x,y])=>[x,y,base+spread*((x+5)/10)**1.3])};});
+  rows.sort((a,b)=>a.key-b.key);
+  const paths=new Float32Array(K*ROW),lines=new Float32Array(K*STEPS*6);
+  rows.forEach(({path},j)=>{path.forEach((q,k)=>paths.set(q,j*ROW+k*3));for(let k=0;k<STEPS;k++)lines.set([...path[k],...path[k+1]],(j*STEPS+k)*6);});
+  return {paths,lines};
+}
+const fans=experiment.trials.map((t,i)=>[fan(i?experiment.trials[i-1].weights:prior,[t.y],[0]),fan(t.weights,[t.y],[0])]);
+const finalFan=fan(experiment.trials.at(-1).weights,experiment.heldOut.map(h=>h.y),experiment.heldOut.map(h=>h.z));
+fans.push([finalFan,finalFan]);
+const fanGeometry=geo(new THREE.BufferGeometry());
+fanGeometry.setAttribute('position',new THREE.BufferAttribute(fans[0][0].lines.slice(),3));fanGeometry.setAttribute('nextPosition',new THREE.BufferAttribute(fans[0][1].lines.slice(),3));
 const fieldMaterial=mat(new THREE.ShaderMaterial({transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
-  uniforms:{mixAmount:{value:0},alpha:{value:0},clock:{value:0},ink:{value:new THREE.Vector3(...palette.field)}},
+  uniforms:{mixAmount:{value:0},alpha:{value:0},reach:{value:0},ink:{value:new THREE.Vector3(...palette.field)}},
   vertexShader:'attribute vec3 nextPosition;uniform float mixAmount;varying vec3 p;void main(){p=mix(position,nextPosition,mixAmount);gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);}',
-  fragmentShader:'uniform float alpha;uniform float clock;uniform vec3 ink;varying vec3 p;void main(){float edge=smoothstep(-4.8,-2.5,p.x)*(1.-smoothstep(2.6,5.,p.x));float thread=.78+.22*cos(p.x*1.3-clock);gl_FragColor=vec4(ink,alpha*edge*thread);}'
+  fragmentShader:'uniform float alpha;uniform float reach;uniform vec3 ink;varying vec3 p;void main(){float drawn=1.-smoothstep(reach-.6,reach,p.x);float tail=.55+.45*smoothstep(-5.,0.,p.x);gl_FragColor=vec4(ink,alpha*drawn*tail);}'
 }));
-const field=new THREE.LineSegments(fieldGeometry,fieldMaterial);field.frustumCulled=false;world.add(field);let fieldIndex=-1;
-// A translucent ruled surface uses the same model predictions as the fine ribs.
-// It adds material depth without adding a different physical object or metaphor.
-const sheetModels=fields.map(source=>{
- const out=[];
- for(let j=0;j<23;j++)for(let k=0;k<=STEPS;k++){
-  const q=(23+j)*STEPS*6+Math.min(k,STEPS-1)*6+(k===STEPS?3:0);
-  out.push(source[q],source[q+1],source[q+2]);
- }
- return new Float32Array(out);
-});
-const sheetGeometry=geo(new THREE.BufferGeometry());
-sheetGeometry.setAttribute('position',new THREE.BufferAttribute(sheetModels[0].slice(),3));sheetGeometry.setAttribute('nextPosition',new THREE.BufferAttribute(sheetModels[1].slice(),3));
-const sheetIndices=[];for(let j=0;j<22;j++)for(let k=0;k<STEPS;k++){const a=j*(STEPS+1)+k,b=a+STEPS+1;sheetIndices.push(a,b,a+1,a+1,b,b+1);}sheetGeometry.setIndex(sheetIndices);
-const sheetMaterial=mat(new THREE.ShaderMaterial({transparent:true,depthWrite:false,side:THREE.DoubleSide,blending:THREE.AdditiveBlending,
- uniforms:{mixAmount:{value:0},alpha:{value:0},clock:{value:0},ink:{value:new THREE.Vector3(...palette.sheet)}},
- vertexShader:'attribute vec3 nextPosition;uniform float mixAmount;varying vec3 p;void main(){p=mix(position,nextPosition,mixAmount);gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);}',
- fragmentShader:'uniform float alpha;uniform float clock;uniform vec3 ink;varying vec3 p;void main(){float edge=smoothstep(-5.,-2.4,p.x)*(1.-smoothstep(2.9,5.,p.x));float silk=.48+.35*cos(p.y*2.-p.x*.3);gl_FragColor=vec4(ink,alpha*edge*silk);}'
-}));const sheet=new THREE.Mesh(sheetGeometry,sheetMaterial);sheet.frustumCulled=false;world.add(sheet);
-const processPath=$('flow-active'),processLength=processPath.getTotalLength();
-
-// Quiet material depth: calibrated sampling planes, without frames or HUDs.
-const specks=[];let seed=854;
-const random=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);
-for(let i=0;i<180;i++)specks.push((random()-.5)*32,(random()-.5)*17,-4-random()*9);
-const stars=new THREE.Points(geo(new THREE.BufferGeometry().setAttribute('position',new THREE.Float32BufferAttribute(specks,3))),mat(new THREE.PointsMaterial({map:glow,color:palette.star,size:.05,transparent:true,opacity:.3,depthWrite:false}),'star'));
+const fanLines=new THREE.LineSegments(fanGeometry,fieldMaterial);fanLines.frustumCulled=false;world.add(fanLines);let fanIndex=-1;
+const particleGeometry=geo(new THREE.BufferGeometry().setAttribute('position',new THREE.Float32BufferAttribute(new Float32Array(K*P*3),3)));
+const particleMaterial=mat(new THREE.PointsMaterial({map:glow,size:.085,color:palette.ice,transparent:true,depthWrite:false,opacity:0,blending:THREE.AdditiveBlending}),'ice');
+const particles=new THREE.Points(particleGeometry,particleMaterial);particles.frustumCulled=false;world.add(particles);
+const offsets=Array.from({length:K},(_,j)=>((j*.6180339887)%1));
+function flowParticles(before,after,blend,reach,t){
+  const a=particleGeometry.attributes.position;
+  for(let n=0;n<K*P;n++){
+    const j=n%K,k=Math.floor(n/K),u=(k/P+offsets[j]+t*.085)%1,q=u*STEPS,i=Math.min(STEPS-1,Math.floor(q)),f=q-i,o=j*ROW+i*3;
+    for(let d=0;d<3;d++){const b0=before[o+d]+(before[o+3+d]-before[o+d])*f,b1=after[o+d]+(after[o+3+d]-after[o+d])*f;a.array[n*3+d]=b0+(b1-b0)*blend;}
+    if(a.array[n*3]>reach)a.array[n*3+1]=1e4;
+  }
+  a.needsUpdate=true;
+}
+// The two hidden force centres. Their glow is the posterior mean strength; the
+// faint halo around each is the posterior spread, so it tightens with evidence.
+const CENTERS=[[-1.45,.85],[1.25,-.8]];
+function moments(weights){return [0,1].map(d=>{let m=0,v=0;weights.forEach((w,i)=>m+=w*hypotheses[i][d]);weights.forEach((w,i)=>v+=w*(hypotheses[i][d]-m)**2);return [m,Math.sqrt(v)];});}
+const stats=[moments(prior),...experiment.trials.map(t=>moments(t.weights))];
+const bodies=CENTERS.map(([x,y])=>{const core=sprite(.3,'gold'),halo=sprite(1,'ice'),ring=new THREE.Mesh(geo(new THREE.RingGeometry(.985,1,96)),mat(new THREE.MeshBasicMaterial({color:palette.ice,transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending}),'ice'));core.position.set(x,y,0);halo.position.set(x,y,-.01);ring.position.set(x,y,0);world.add(ring);return {core,halo,ring};});
 function applyTheme() {
   palette = palettes[theme];
   renderer.setClearColor(palette.background,0);
@@ -164,19 +162,18 @@ function applyTheme() {
     }
   });
   fieldMaterial.uniforms.ink.value.set(...palette.field);
-  sheetMaterial.uniforms.ink.value.set(...palette.sheet);
-  stars.material.opacity = theme === 'light' ? .16 : .3;
   el.dataset.theme = theme;
 }
 // The exact same trial paths are used by the renderer and the inference audit.
 const START=[0,5,10,14.5],END=[5,10,14.5,19];
 const text = {
-  en:{nextStep:'New question',predictStep:'Predict',experimentStep:'Experiment',compareStep:'Compare',refineStep:'Refine',prediction:'Prediction',observation:'Observation',titles:['An unexpected turn','Choosing the next experiment','An explanation taking shape','Putting the model to the test','One model, new predictions'],captions:['The particle takes a different path than predicted','The system selects where competing explanations disagree most','New evidence changes the model and its predictions','Another measurement checks what the model has learned','Six held-out trajectories test the learned model'],launch:'Probe selected',deviation:'Prediction differs',align:'Prediction checked',verify:'UNSEEN TRAJECTORIES',sample:'OBSERVATION',},
-  zh:{nextStep:'新的问题',predictStep:'提出预测',experimentStep:'自主实验',compareStep:'对照证据',refineStep:'修正模型',prediction:'预测轨迹',observation:'观测轨迹',titles:['运动偏离了预测','系统自己选择下一次探测','新证据改变了原来的解释','用新的测量继续检验','同一个模型，预测新的轨迹'],captions:['粒子的实际运动，与预先画出的轨迹不同','系统自动选择不同解释分歧最大的位置进行探测','新的观测结果，让预测轨迹随之修正','再次探测，检验修正后的解释','用六条未参与拟合的轨迹，检验模型的预测'],launch:'选定探测位置',deviation:'预测出现偏差',align:'检验新预测',verify:'未参与拟合的轨迹',sample:'观测',}
+  en:{unit:'explanations still fit',error:'error on six unmeasured paths · baseline 3.18',captions:['Hidden forces bend the path, and many explanations still fit','The agent probes where the explanations disagree most','Each observation rules out the explanations it contradicts','One more measurement tests what remains','The learned forces predict six paths never measured']},
+  zh:{unit:'种解释仍然成立',error:'六条未测轨迹的预测误差 · 基线 3.18',captions:['隐藏的力让轨迹弯曲，许多解释都还说得通','智能体在解释分歧最大的地方继续探测','每一次观测，都排除与它矛盾的解释','再测一次，检验留下来的解释','学到的力，预测六条从未测过的轨迹']}
 };
 const dict=()=>text[en?'en':'zh'];
-let lastStage=-1;
-function language(){host.querySelectorAll('[data-text]').forEach(e=>e.textContent=dict()[e.dataset.text]);lastStage=-1;}
+let lastStage=-1,countText='',unitFinal=null;
+const remaining=[experiment.summary.priorCandidates,...experiment.trials.map(t=>t.remaining)],mae=experiment.summary.heldOutMAE.toFixed(2);
+function language(){lastStage=-1;unitFinal=null;}
 function label(element,point,labelText,opacity,dy=-16){
   const v=world.localToWorld(new THREE.Vector3(...point)).project(camera);
   element.textContent=labelText;element.style.left=`${el.offsetLeft+clamp((v.x+1)*width/2,58,width-58)}px`;element.style.top=`${el.offsetTop+clamp((1-v.y)*height/2+dy,24,height-8)}px`;element.style.opacity=String(opacity);
@@ -186,79 +183,57 @@ function render(now){
   const fade=S(0,.22,t)*(1-S(25.25,26,t));
   const reveal=S(18.7,21,t)*(1-S(24.7,26,t));
   world.scale.set(mobile?1:camera.aspect*.53,mobile?Math.min(1.4,camera.aspect*1.45):.80,1.4);
-  world.rotation.set(.035*Math.sin(phase),-.07+.10*Math.sin(phase),mobile?-Math.PI/2:-.028+.018*Math.sin(phase));
-  const halfHeight=mobile?5.8:3.28;
+  world.rotation.set(.06*Math.sin(phase),-.10+.16*Math.sin(phase),mobile?-Math.PI/2:-.028+.018*Math.sin(phase));
+  const halfHeight=mobile?6.2:3.45;
   const distance=halfHeight/Math.tan(THREE.MathUtils.degToRad(camera.fov/2));
   camera.position.set(.65*Math.sin(phase),1.1+.2*Math.sin(phase),distance);
-  camera.lookAt(mobile?-.15:0,mobile?0:-.56,0);camera.updateMatrixWorld();world.updateMatrixWorld(true);
+  camera.lookAt(mobile?-.15:0,mobile?0:-.18,0);camera.updateMatrixWorld();world.updateMatrixWorld(true);
   let round=t<5?0:t<10?1:t<14.5?2:t<19?3:4;
-  let modelIndex=0,modelBlend=0;
-  for(let i=0;i<END.length;i++)if(t>=END[i]-.8){modelIndex=i;modelBlend=S(END[i]-.8,END[i]-.08,t);}
-  if(t>=24.7){modelIndex=4;modelBlend=S(24.7,26,t);}
-  const nextIndex=modelIndex===4?0:modelIndex+1;
-  if(modelIndex!==fieldIndex){
-    for(const [geometry,models] of [[fieldGeometry,fields],[sheetGeometry,sheetModels]]) {
-      for(const [name,index] of [['position',modelIndex],['nextPosition',nextIndex]]) {
-        geometry.attributes[name].array.set(models[index]);geometry.attributes[name].needsUpdate=true;
-      }
-    }
-    fieldIndex=modelIndex;
+  const start=round<4?START[round]:19,end=round<4?END[round]:24.7;
+  if(round!==fanIndex){
+    fanGeometry.attributes.position.array.set(fans[round][0].lines);fanGeometry.attributes.nextPosition.array.set(fans[round][1].lines);
+    fanGeometry.attributes.position.needsUpdate=fanGeometry.attributes.nextPosition.needsUpdate=true;fanIndex=round;
   }
-  fieldMaterial.uniforms.mixAmount.value=modelBlend;
-  fieldMaterial.uniforms.alpha.value=.025+fade*(.045+.075*S(3.8,5.1,t));fieldMaterial.uniforms.clock.value=phase*2;
-  sheetMaterial.uniforms.mixAmount.value=modelBlend;sheetMaterial.uniforms.alpha.value=fade*.045*S(3.8,5.1,t);sheetMaterial.uniforms.clock.value=phase;
+  const blend=round<4?S(end-1.6,end-.35,t):0;
+  const envelope=fade*S(start,start+.5,t)*(round<4?1-S(end-.25,end+.05,t):1);
+  const reach=-5+10.6*S(start+.1,start+(round<4?1.6:2.2),t);
+  const light=theme==='light';
+  fieldMaterial.uniforms.mixAmount.value=blend;fieldMaterial.uniforms.reach.value=reach;
+  fieldMaterial.uniforms.alpha.value=envelope*(light?.09:.075);
+  particleMaterial.opacity=envelope*(light?.55:.9);
+  flowParticles(fans[round][0].paths,fans[round][1].paths,blend,reach,t);
   for(let i=0;i<trials.length;i++){
-    const o=trials[i],start=START[i],end=END[i],local=t-start;
-    const live=t>=start&&t<end;
-    const past=t>=end;
-    const p=clamp((local-.55)/(end-start-1.45));
-    const a=fade*(live?1:past?.18*(1-reveal):0);
-    showBeam(o.actual,p,a,t);
-    const appear=S(start,start+.45,t),retire=1-S(end-.12,end+.12,t);
-    const refine=S(end-.80,end-.12,t),attr=o.predicted.geometry.attributes.position;
-    for(let k=0;k<=STEPS;k++){const p0=experiment.trials[i].predicted[k],p1=experiment.trials[i].revised[k];attr.setXYZ(k,THREE.MathUtils.lerp(p0[0],p1[0],refine),THREE.MathUtils.lerp(p0[1],p1[1],refine),p0[2]);}
-    attr.needsUpdate=true;o.predicted.computeLineDistances();o.predicted.material.color.setHex(refine>.02?palette.mint:palette.ice);
-    o.predicted.material.opacity=fade*.60*appear*retire;
-    o.predicted.geometry.setDrawRange(0,Math.floor(STEPS*clamp(local/.6))+1);
-    o.expected.material.opacity=fade*.70*appear*retire;
-    o.gap.material.opacity=fade*S(end-1.1,end-.65,t)*retire*.65;
+    const o=trials[i],s0=START[i],e0=END[i];
+    const live=t>=s0&&t<e0,past=t>=e0;
+    const p=clamp((t-s0-1.2)/(e0-s0-3.2));
+    showBeam(o.actual,p,fade*(live?1:past?.16*(1-reveal):0),t);
   }
   for(let i=0;i<validation.length;i++){
-    const v=validation[i],start=19+i*.29,local=t-start;
-    const p=clamp((local-.55)/3.3),a=fade*S(start,start+.4,t);
-    v.predicted.material.opacity=a*.52;
-    v.predicted.geometry.setDrawRange(0,Math.floor(STEPS*clamp(local/.65))+1);
-    showBeam(v.actual,p,a*.76,t);
-    v.end.material.opacity=a*S(start+3.3,start+3.8,t)*.85;
-    if(p>=1){
-      // Continue one compact packet along the tested path, without stopping time.
-      const q=((t-start-3.85)*.43)%1;
-      if(q>=0){const pos=at(v.actual.points,q);v.actual.light.position.copy(pos);v.actual.core.position.copy(pos);v.actual.light.material.opacity=a*.7;v.actual.core.material.opacity=a*.8;}
-    }
+    const v=validation[i],s0=19+i*.29,local=t-s0;
+    const p=clamp((local-1.2)/3.1),a=fade*S(s0+.8,s0+1.2,t);
+    showBeam(v.actual,p,a*.8,t);
+    if(p>=1){const q=((t-s0-4.3)*.43)%1;if(q>=0){const pos=at(v.actual.points,q);v.actual.light.position.copy(pos);v.actual.core.position.copy(pos);v.actual.light.material.opacity=a*.7;v.actual.core.material.opacity=a*.8;}}
   }
   const which=Math.min(round,3),trial=experiment.trials[which];
   const prevY=which?experiment.trials[which-1].y:trial.y;
   const launchY=THREE.MathUtils.lerp(prevY,trial.y,S(START[which],START[which]+.6,t));
   launcher.position.set(-5,launchY,0);launcherCore.position.copy(launcher.position);
   launcher.material.opacity=fade*(1-reveal)*.8;launcherCore.material.opacity=fade*(1-reveal);
-  ports.forEach((o,i)=>{const selected=i===trial.candidate;o.material.opacity=fade*(1-reveal)*(selected?.8:.20);o.scale.setScalar(selected?.14:.07);});
-  choices.forEach((o,i)=>{const score=trial.maxScore>1e-10?clamp(trial.scores[i]/trial.maxScore):0;const selected=i===trial.candidate;const points=o.geometry.attributes.position;points.setXYZ(0,-5.06-.08-.35*score,experiment.candidates[i],0);points.needsUpdate=true;o.material.opacity=fade*(1-reveal)*(selected?.8:.1+.33*score);o.material.color.setHex(selected?palette.gold:palette.ice);});
-  launchRail.material.opacity=.12*fade*(1-reveal);
-  const end=END[which],check=S(end-1.15,end-.85,t)*(1-S(end-.2,end+.1,t));
-  label($('launch-label'),[-5,launchY,0],dict().launch,fade*(1-reveal)*S(START[which]+.3,START[which]+.7,t),-23);
-  label($('error-label'),trial.actual.at(-1),trial.error>.2?dict().deviation:dict().align,check*fade,-20);
-  if(round!==lastStage){
-    $('process-3').querySelector('[data-text]').textContent=round===4?dict().nextStep:dict().refineStep;
-    $('scene-title').textContent=dict().titles[round];$('narrative').textContent=dict().captions[round];
-    $('probe-id').textContent=round===4?dict().verify:`${dict().sample} ${String(round+1).padStart(2,'0')} / 04`;
-
-    lastStage=round;
-  }
-  let step,flow;
-  if(round<4){const local=t-START[round],len=END[round]-START[round];const knots=[0,.55,len-.90,len-.55,len];const positions=[0,.145,.290,.435,1];step=local<knots[1]?0:local<knots[2]?1:local<knots[3]?2:3;flow=THREE.MathUtils.lerp(positions[step],positions[step+1],S(knots[step],knots[step+1],local));}
-  else{const local=t-19;step=local<.65?0:local<4.8?1:local<5.7?2:3;const knots=[0,.65,4.8,5.7,7],positions=[0,.145,.290,.435,1];flow=THREE.MathUtils.lerp(positions[step],positions[step+1],S(knots[step],knots[step+1],local));}
-  for(let i=0;i<4;i++)$('process-'+i).setAttribute('aria-current',String(i===step));
-  processPath.setAttribute('stroke-dashoffset',String(-flow));const processPoint=processPath.getPointAtLength(flow*processLength);$('flow-dot').setAttribute('cx',processPoint.x);$('flow-dot').setAttribute('cy',processPoint.y);
+  // Candidate probes: size is the predictive disagreement the system measured there.
+  ports.forEach((o,i)=>{const score=trial.maxScore>1e-10?clamp(trial.scores[i]/trial.maxScore):0;const selected=i===trial.candidate;o.material.color.setHex(selected?palette.gold:palette.ice);o.material.opacity=fade*(1-reveal)*(selected?.95:.18+.5*score);o.scale.setScalar(selected?.2:.05+.17*score);});
+  const sa=stats[Math.min(round,4)],sb=stats[Math.min(round+1,4)],k=round<4?blend:0;
+  const light2=theme==='light';
+  bodies.forEach((o,d)=>{const m=sa[d][0]+(sb[d][0]-sa[d][0])*k,sd=sa[d][1]+(sb[d][1]-sa[d][1])*k;
+    const sure=clamp(1-sd*2.4);
+    o.core.scale.setScalar(.18+.42*m*(.5+.5*sure));o.core.material.opacity=fade*(light2?.6:1)*(.3+.7*sure);
+    const r=.18+sd*2.2;o.halo.scale.setScalar(r*2.6);o.halo.material.opacity=fade*(light2?.1:.22)*(.4+.6*sure);
+    o.ring.material.opacity=0;});
+  if(round!==lastStage){$('narrative').textContent=dict().captions[round];lastStage=round;countText='';}
+  const final=round===4;
+  const n=final?0:Math.exp(Math.log(remaining[round])*(1-blend)+Math.log(remaining[round+1])*blend);
+  const value=final?mae:String(Math.round(n));
+  if(value!==countText){countText=value;$('count').textContent=value;}
+  if(final!==unitFinal){unitFinal=final;$('count-label').textContent=final?dict().error:dict().unit;}
   renderer.render(scene,camera);frameCount++;
   el.dataset.time=t.toFixed(3);el.dataset.stage=String(round);el.dataset.frames=String(frameCount);el.dataset.state=disposed?'disposed':document.hidden?'hidden':!visible?'offscreen':reduced?'reduced':'running';
 }
@@ -278,7 +253,7 @@ function setState(next){
   }
   render(0);schedule();
 }
-function onContextLost(e){e.preventDefault();dispose();el.dataset.state='unavailable';$('scene-title').textContent=dict().titles[4];$('narrative').textContent=dict().captions[4];$('probe-id').textContent=dict().verify;onError?.();}
+function onContextLost(e){e.preventDefault();dispose();el.dataset.state='unavailable';$('narrative').textContent=dict().captions[4];onError?.();}
 function dispose(){
   if(disposed)return;disposed=true;cancel();ro?.disconnect();io?.disconnect();
   document.removeEventListener('visibilitychange',onVisibility);
