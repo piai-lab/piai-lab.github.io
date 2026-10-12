@@ -13,8 +13,8 @@ for (const output of ['docs', 'artifacts/ui-prototypes']) {
     const file = path.join(destination, 'index.html');
     fs.writeFileSync(file, fs.readFileSync(file, 'utf8').replaceAll(
       'data-lab-home="/" href="/"',
-      'data-lab-home="/piai-redesign-21.html" href="/piai-redesign-21.html"',
+      'data-lab-home="/piai-redesign-22.html" href="/piai-redesign-22.html"',
     ));
   }
 }
-console.log('Built founder profile for Pages and the v21 preview');
+console.log('Built founder profile for Pages and the current (v22) preview');

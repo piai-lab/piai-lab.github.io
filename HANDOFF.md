@@ -2,100 +2,64 @@
 
 ## 目标与边界
 
-从第 21 版继续全局优化，交付更协调、有质感且可操作的下一版候选。稳定偏好、已否决方向和产品事实只见 [AGENTS.md](AGENTS.md)。本轮授权包含保存第 21 版、官网内接入个人页、更新两张人物卡、推送分支与建立 Draft PR，不包含合并或发布。原 `zaoqu-liu.github.io` 仓库与线上个人站不改；官网内副本按用户新要求接入。
+从第 21 版出发完成第 22 版候选，保留 20/21 对照。稳定偏好、已否决方向和产品事实只见 [AGENTS.md](AGENTS.md)。授权包含推送本分支并更新 Draft PR，不包含合并或发布。原 `zaoqu-liu.github.io` 仓库与线上个人站不改。
 
 ## 当前事实
 
-- 分支：`feat/lab-v21-design-handoff`；基底 `origin/main` 的 `1c605d2`。原 `fix/standalone-copy-punctuation` 已由 PR #6 合并，新分支不重复引入它。
-- 当前候选以本分支 HEAD 的 `version-21/` 和构建 HTML 为准，续接时先核对 `git status --short`、`git log -3 --oneline`。对应 [Draft PR #7](https://github.com/piai-lab/piai-lab.github.io/pull/7)，未合并、未部署。
-- 第 20 版为用户更新的只读基底；第 21 版已构建并做过浏览器检查，**没有用户最终视觉验收或生产采纳的结论**。浏览器偶然打开第 18 版不意味着设计基底退回 18。
-- 新增 `client/public/people/zaoqu-liu/` 与派生的 `docs/people/zaoqu-liu/`；原 `client/src/`、`docs/index.html` 和部署工作流未改。Pages 实际发布 `docs/`，21 仍是独立候选，不能将其视为官网首页已上线。
-- 候选依赖、必要素材和许可已提交；其余历史 `artifacts/` 草稿仍留在原工作区，未提交、未删除，新 clone 不依赖它们。没有新 worktree。
+- 分支：`feat/lab-v21-design-handoff`，对应 [Draft PR #7](https://github.com/piai-lab/piai-lab.github.io/pull/7)，未合并、未部署。续接时先核对 `git status --short`、`git log -3 --oneline`。
+- 当前候选为 `piai-redesign-22.html`。**用户尚未对 22 做最终视觉验收**；20/21 文件未改。
+- Pages 实际发布 `docs/`；22 仍是独立原型，不等于官网首页上线。其余历史 `artifacts/` 草稿留在工作区，未提交、未删除。
 
-## 入口与实际实现
+## 入口
 
-以下路径均相对 `artifacts/ui-prototypes/`：
+以下路径相对 `artifacts/ui-prototypes/`：
 
 | 用途 | 入口 |
 | --- | --- |
-| 当前候选 / 对照 | `piai-redesign-21.html` / `piai-redesign-20.html` |
-| 构建 / 页面与文案 | `build-21.mjs` / `version-21/app.tsx` |
-| 全站布局、字级和主题 | `version-21/site.css` |
-| 周天 | `version-21/celestial-replica/`；运动学为 `celestial-replica/kinematics.js`，24 秒循环 |
-| 资源网络 | `version-21/model-dikw/` |
-| 自主发现 | `version-21/autonomous-discovery.tsx`、`version-21/discovery-observatory.js`、`discovery-model.mjs` |
-| 星空 / 入场 | `version-21/starlight-backdrop.tsx` / `version-21/site-motion.tsx` |
-| 人员与照片 / 许可 | `discovery-data.json` / `THIRD_PARTY_NOTICES.txt` |
-| 最近实际截图 | `piai-21-dark.png` / `piai-21-light.png` / `piai-21-people.png` / `piai-21-team-groups.png` |
+| 当前候选 / 对照 | `piai-redesign-22.html` / `piai-redesign-21.html`、`piai-redesign-20.html` |
+| 构建 / 页面与文案 | `build-22.mjs` / `version-22/app.tsx` |
+| 全站布局、字级和主题 | `version-22/site.css` |
+| 唯一星空 | `version-22/starlight-backdrop.tsx` |
+| 周天 | `version-22/celestial-replica/`；24 秒循环 |
+| 资源网络 | `version-22/model-dikw/` |
+| 自主发现 | `version-22/autonomous-discovery.tsx`、`version-22/discovery-observatory.js` |
+| 截图证据 | `piai-22-dark.png`、`piai-22-light.png`、`piai-22-compare-dark.png`、`piai-22-compare-light.png`、`piai-22-wheel-loop.png` |
 
-21 沿用 20 的左文右周天、内容顺序、5 篇成果、4 个系统、9 名成员和 6 位合作者；最新调整将 Team / 团队成员和 Collaborators / 合作者分成两个同级、全展开区块，导航用 Team，保留 `#people` 链接；统一字级、深青/暖白/铜色材质，提供中英文、深浅主题、人物整卡主页链接。场景主题由 App 传入现有 renderer，不重建时钟。
+## 第 22 版做了什么
 
-网络是**用户选定图片 + Three.js 局部网面/光点运动的 2.5D 实现**，不是完整三维几何。Wisdom 居中，四周为 Data、Information、Knowledge、Model；不要用早期 Tool 分类覆盖此较新裁决。贴图为生成概念图，自主发现为合成主动学习演示，均不能宣传为实测发现。
+- **一个空间**：星空只由 `starlight-backdrop` 绘制，三层视差、缓慢呼吸，覆盖全站；周天、资源网络、自主发现删除各自星点并改为透明合成，不再出现场景“星空方框”。
+- **首屏**：保留左文右周天。标题 Towards autonomous science / 迈向自主科学（用户提出 towards 方向后选定）；副句 “We build AI-ready scientific infrastructure and study agents that carry inquiry from hypothesis to evidence / 构建 AI-ready 科学基础设施，研究智能体如何从假设走向证据”。删去眉标、摘要列表和底栏。
+- **去重复**：删除使命段、研究编号与章节横栏；品牌名只留导航 logo、页脚版权和文档标题。
+- **结尾**：Open to collaboration / 欢迎研究合作，一句合作范围 + mailto。替换已否决的“让科学发现继续向前”。
+- **浅色主题**：用户否决暖黄后改为冷灰白（`#f3f5f7`）+ 深青 `#1d5964` + 墨蓝 `#26476b`，四个场景同步。
+- **色彩职责**：铜金在深色里只表示“观测 / 证据”（自主发现）与周天金属；Founder、系统类别改用 accent / muted。
+- **节奏**：章节间距收为 `clamp(112px,9.5vw,144px)`；研究系统四列标题对齐；自主发现图形与标题拉开、手机端隐藏走位异常的流程点。
 
-## 官网内个人页
+## 已知未决
 
-- 唯一维护源：`client/public/people/zaoqu-liu/`，12 个静态文件。源来自个人站提交 `942051ddc9fa4b1927d4839a3e051dc88afc2a45`；2026-10-12 下载的线上首页与该本地首页 SHA256 均为 `b6b5c8d8ab94fdcc2698bb3ff7f6b14d0134d18991e8652b305c97d78042f354`。原个人仓库工作树保持干净。
-- 仅适配 canonical、站内返回链接及语言/主题延续，不改原页面的文案、布局或动效。个人内容与肖像不属于实验室 MIT 授权；原第三方许可及此边界已随页保留。
-- `node scripts/build-founder-profile.mjs` 从唯一源生成 `docs/people/zaoqu-liu/` 和原型旁的预览副本；`build-21.mjs` 已调用该步骤。不要手改两份产物。Vite 正常构建也会复制 public 到 `dist/public/`。
-- Zaoqu 整卡同页进入 `/people/zaoqu-liu/?lang=…&theme=…`。个人页返回链接在 Pages 指向 `/`，在原型中指向 `/piai-redesign-21.html`，均延续语言和主题。
-- 贺福初整卡外链用户最终指定的 `https://www.pi-hub.org.cn/news/news/%2091`（HTTP 200）；英文身份是 **President, IAPM**，下一行保留 **Academician of the Chinese Academy of Sciences**。这取代先前百度百科链接和全拼机构称谓。
+- 团队成员 8 张照片为米黄底，在冷色浅色主题中偏暖；合作者照片底色不一。按约定未改照片，需用户决定是否统一处理。
+- 资源网络为生成概念图 + 局部网面运动的 2.5D 实现；自主发现为合成主动学习演示，均不能宣传为实测发现。
+- 标题字体有系统回退，跨系统一致性未验证。
 
 ## 运行与验证
 
-在仓库根、可用的 Node.js 22+ 环境运行：
-
 ```sh
 pnpm install --frozen-lockfile
-node artifacts/ui-prototypes/build-21.mjs
+node artifacts/ui-prototypes/build-22.mjs
 python3 -m http.server 4318 --bind 127.0.0.1 --directory artifacts/ui-prototypes
 ```
 
-打开 `http://127.0.0.1:4318/piai-redesign-21.html#home`。默认英文/深色；`?lang=zh`、`?theme=light`、`?motion=reduce` 可直达对应状态。`?frame=720` 仅用于周天定帧检查，正常演示必须移除。已有服务占用端口时复用或换端口，不杀未知进程。
+打开 `http://127.0.0.1:4318/piai-redesign-22.html`。`?lang=zh`、`?theme=light`、`?motion=reduce` 直达对应状态。本机 Homebrew Node 缺动态库，使用 `~/.local/zcode-node/node-v24.14.0-darwin-arm64/bin`。
 
-- 此前从 `beed1a11505a2fcc83d71d067a40d1983d2338f4` 的 `git archive` 到临时目录，仅复用已有 `node_modules`，重新构建成功，输出逐字节一致；**未在全新依赖安装环境复验**。本机系统 Node 有动态库故障，本次使用已有 Codex Node，不改系统设置。
-- 21 HTML SHA256：`149162c58741dd64702dfba8be2c4170ebf2ac4f49ec4f001c8fd05691c94716`
-- 20 HTML SHA256：`2ecc861a40152b40e546d82546dbb3de180831656ca29c6d33545613cdf7741f`，未改
-- 上轮真实浏览器覆盖中英文、深浅主题、桌面/平板/355–390 CSS 像素窄屏、菜单焦点、主页链接、缩放、reduced motion 和主题切换时钟连续性，无横向溢出或控制台错误；修正了发现轨迹穿字和边缘裁切。本轮追加验证最终人物卡、个人页同标签进入、中文/浅色切换与返回官网，桌面及 355 CSS 像素窄屏无横向溢出，首屏可见图片加载正常，未见控制台错误。
-- 人物分组后重新构建 21，并实测桌面英文深色、手机中文浅色：9/6 人完整，两组照片同尺寸、同裁切，无横向溢出或控制台错误。桌面 6 列、中屏 3 列、手机 2 列；原人物角色和链接保留。
-- Vite production build 通过，个人页随 public 正确复制；现有主 bundle 超过 500 kB 的提示仍在。本次不涉及完整生产首页替换。
-- 截图是定帧画面，不能代表整段动效或用户审美认可。标题和周天字形仍有系统字体回退，跨系统一致性尚未验证。
-- 自写源码空白检查通过；冻结 HTML 内的上游 shader 和原样许可仍含原始空白，未为格式检查改写基底。临时构建目录已清理。
+- 22 HTML SHA256：`f1ce6c6c569e2970300a19535334a378f1c2ad1d1de5eebe213246c6d2efd549`；21 `149162c5…1c94716`、20 `2ecc861a…7741f` 未变。
+- 2026-10-12 用 Playwright + 系统 Chrome 实测：桌面 1440 与手机 360/390，中英文 × 深浅；周天 1/7/13/19/25 秒定帧，25 秒与 1 秒姿态一致、无停顿；`?motion=reduce` 停在静止帧；主题切换不重置周天时钟、不累积画布（4 个 canvas）；355/375/390/768/1440 无横向溢出；无控制台错误。
+- 链接：Founder 整卡 → `/people/zaoqu-liu/?lang=&theme=`，返回 `piai-redesign-22.html` 并延续语言与主题；贺福初 → π-HuB 指定页；邮箱 mailto；Haros → GitHub。
+- 截图为定帧，不代表整段动效或用户审美认可。未在全新依赖安装环境复验构建。
+
+## 官网内个人页
+
+唯一维护源 `client/public/people/zaoqu-liu/`；`node scripts/build-founder-profile.mjs` 生成 `docs/people/zaoqu-liu/` 和原型旁预览副本（后者 gitignore），原型返回链接现指向 v22。不手改产物，不改原页面文案、布局或动效。
 
 ## 下一步
 
-继续在 `feat/lab-v21-design-handoff` 分支工作，沿用 Draft PR #7。从 21 出发完成第 22 版候选，保留 20/21 对照。用户最新要求提高创造性与审美标准，逐项审视元素和措辞的存在理由，重点解决品牌名重复、首屏星空感知覆盖不完整、结尾空泛口号。以上是用户指出的问题与新要求，尚未在网页中实施，不是已验证修复。遇到影响结果的疑问要积极澄清。
-
-### 可直接复制的启动提示
-
-```text
-请接手 πAI Lab 官网的下一轮设计。你需要同时承担创意总监、UI 设计师、动效设计师和产品经理的判断责任，把它做成有原创气质、令人印象深刻的研究机构网站。
-
-仓库：/Users/liuzaoqu/Desktop/Develop/piai-lab.github.io
-工作分支：feat/lab-v21-design-handoff
-现有 Draft PR：https://github.com/piai-lab/piai-lab.github.io/pull/7
-当前基底：artifacts/ui-prototypes/piai-redesign-21.html
-本地预览：http://127.0.0.1:4318/piai-redesign-21.html
-
-先读根目录 AGENTS.md 和 HANDOFF.md，核对 Git 状态、真实源码和运行页面。继续在上述分支工作，保护已有修改，复用 PR #7。交付第 22 版可运行候选，保留 20/21 供对照；本次不自行合并或部署。当前画面和前任的“已优化”评价都不代表我认可了最终设计。
-
-1. 先建立一个足以统领整站的创意
-我希望你有想象力，主动探索超出当前页面惯性的构图、空间关系、视觉叙事和动态表达。让人第一眼感到探索的勇气与野心，继续阅读时又能清楚理解实验室做什么、为什么值得关注。创意必须与研究方向有关，能在真实网页中流畅实现。保留已有获得认可的辨识度，但允许有理由地重构布局与阅读节奏，不要把现有 CSS 当成审美边界，也不要无依据推翻已确认的内容。
-
-2. 对审美提出更高要求
-我要简洁、优雅、饱满、有力量感，重视平衡、比例、留白、秩序、空间深度与数理之美。整站应有统一的字体系统、色彩关系、材质、图标语言和动效节奏。首屏、研究、成果、团队、合作入口必须构成完整体验。避免模板感、空瘦松散、廉价霓虹、机械装饰和各章节各自为政；精致感要来自准确的判断与执行，不是堆特效或把文字做得更小更淡。
-
-3. 逐项审视每一个元素和每一句话
-从访客角度问：它为什么存在？表达了什么？是否重复？是否放对位置？删掉或合并后，体验会不会更清楚？审阅 logo、品牌名、标题、副标题、编号、标签、分隔线、图标、照片、说明、按钮和装饰的必要性与层级。πAI Lab 在很多位置反复出现可能冗余，请实际检查并保留有用的品牌识别，不能靠到处重复名字强化品牌。不要无理由增加分组、口号或解释性界面。
-
-4. 重新组织完整的空间与动效
-首屏星空应该让人感到整个屏幕处于同一个空间，而不是只在周天附近有背景。检查文字区、四角、上下边缘与后续章节的实际连贯性；一个全屏 canvas 并不等于视觉上已经成立。星空覆盖全站，保持稀疏、有远近、有呼吸和留白，深浅主题都要协调。周天的秩序、演化与往复要体现“道”和数理之美；运镜有想象力，变化有逻辑，循环自然且不长时间停住。资源网络和自主发现应各有清楚寓意。交互主要带来直接的视觉变化，遵守既有拒绝：不要点击弹出解释文字，不再引入涡轮旋纹、中央黑团或多余控制工具条。
-
-5. 中英文文案按作品级标准重写与校准
-措辞要准确、凝练、有思想和辨识度。“让科学发现继续向前”这句话我明确不喜欢，请重新判断这个位置真正需要表达什么，不要换几个同义词继续套用空话。高级感来自明确的研究立场和有分量的表达，不是宏大词汇或玄学术语。逐句独立审阅中英文，避免翻译腔；独立标题、标语和单句说明不加句末标点。不编造事实、成熟度、规模或成果。默认英文、深色，完整支持中文和浅色。
-
-6. 以真实体验交付
-先运行网站并看完全部章节和动效循环，再形成少数有证据的设计判断，直接做出完成度足够高的第 22 版。检查桌面与手机、明暗主题、中英文、阅读层级、换行、裁切、对比度、链接和动效连续性，修到最终版本再展示。保留 Team 与 Collaborators 分开且全展开、现有角色和人物链接。我的官网内个人页沿用已确认内容与样式，原独立个人站和仓库不改。给我可打开的页面、关键前后对照，以及你改动或保留主要设计的理由，不要用一份建议清单代替作品。
-
-7. 有任何拿不准的问题，积极问我
-对我的意图、事实、文案含义、视觉寓意、审美方向或实现边界有疑问时，主动提出，不要默默猜测，也不要等全部做完才问。说明你具体拿不准什么、推荐怎么做、不同选择会改变什么，优先围绕真实画面或具体措辞讨论。能自行查清的事实先核实，已明确的常规实现直接推进。我要你发挥判断力，也希望我们能及时讨论那些真正决定作品品质的问题。
-```
+等待用户审阅 22，尤其是首屏副句、浅色主题和人物照片底色是否统一。审阅通过前不替换生产首页。
