@@ -6,7 +6,7 @@ export default function SiteMotion({reduced,paused}:{reduced:boolean;paused:bool
  const {scrollYProgress}=useScroll();
  useEffect(()=>{
   const root=document.querySelector('.biomedical') as HTMLElement;
-  const selectors='.direction-opening,.work-title,.paper,.systems-heading,.systems-grid article,.people-heading,.people-grid article,.contact-layout';
+  const selectors='.direction-opening,.section-title,.news-item,.platforms,.people-heading,.people-grid article,.contact-layout';
   const elements=Array.from(root.querySelectorAll<HTMLElement>(selectors));
   if(reduced||paused){elements.forEach(el=>{el.style.opacity='1';el.style.transform='none';});return;}
   const animations:ReturnType<typeof animate>[]=[];

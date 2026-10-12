@@ -38,7 +38,7 @@
 - **结尾**：标题与说明、邮箱改为底边对齐，消除左低右高；中文说明在逗号处换行。
 - **节奏**：章节间距收为 `clamp(112px,9.5vw,144px)`；研究系统四列标题对齐；自主发现图形与标题拉开、手机端隐藏走位异常的流程点。
 - **自主发现**：保留“粒子轨迹被隐藏的力弯折”的具体物理画面（用户否决了更抽象的假设地形）。青色扇面是后验仍允许的解释各自预测的路径，每次观测后收拢；两个力的光核随后验均值与不确定性变亮、变紧；删除标题 HUD、图例、浮动标签与四步流程条；数字全部来自 `discovery-model.mjs`（新增导出 `weights`、`hypotheses`，对 v21 无影响）。用户否决了剩余解释数读数和研究方向→成果之间的过渡句（“说得太具体”），均已删除，不再加回。
-- **下半页**：成果按年份分组（大号年份在桌面端吸顶，窄屏顺排），成果行悬停时沿底线走过青铜渐变光迹；研究系统改为与周天同语言的线性轨道图形（悬停重绘）；人像加细光边；联系区以三道倾斜轨道和缓行光点收束（SVG，离屏/减少动态时暂停）。间距统一：团队与合作者之间、联系区上下均用 `--section`，收尾标题用 `--closing`（桌面 clamp(48px,5.2vw,80px)，手机 42px）。Founder 保持与成员同尺寸（用户否决放大）。
+- **下半页**：研究方向之后依次为 News & Events、团队、联系。用户已删除 Selected work（论文列表）与 Research systems，研究系统未来另做独立页面。News & Events 时间线按日期倒序：2026.10.10 OmniKnowledge 发布、09.20 OmniScholar 发布、09.18 PathWeaver 投稿 ICLR 2027、09.16 OmniFigure 投稿 ICLR 2027、09.15 AI4S News 发布、09.01 πAI Lab 成立；发布条目整行链接对应平台，不写介绍。时间线下方一行 Platforms：AI4S News、OmniScholar、OmniKnowledge、Euler，只放图标、名称和外链（新标签页，rel=noopener）。图标取自各产品的线上站点或仓库：AI4S News 用小信鸟（`apps/web/public/messenger-bird.svg`），OmniScholar 用 `icon.svg` 的白色主形，Euler 用 `euler-logo-dark-white-exact.png` 转成 alpha，OmniKnowledge 没有图片图标，沿用其界面中的 Lucide `BookOpen`。四个图标统一以 CSS mask 单色渲染，跟随 `--ink`，悬停时取 `--accent`，深浅主题都适用，源文件在 `version-22/platforms/`。人像加细光边；联系区以三道倾斜轨道和缓行光点收束（SVG，离屏/减少动态时暂停）。间距统一用 `--section`，收尾标题用 `--closing`。Founder 保持与成员同尺寸（用户否决放大）。字级整体上调一档：导航 15px、语言 14px、栏目小标 13px、人物职位 14px、页脚 13px、方法说明 12.5px。
 
 ## 已知未决
 
@@ -56,7 +56,7 @@ python3 -m http.server 4318 --bind 127.0.0.1 --directory artifacts/ui-prototypes
 
 打开 `http://127.0.0.1:4318/piai-redesign-22.html`。`?lang=zh`、`?theme=light`、`?motion=reduce` 直达对应状态。本机 Homebrew Node 缺动态库，使用 `~/.local/zcode-node/node-v24.14.0-darwin-arm64/bin`。
 
-- 22 HTML SHA256：`a46e1fab512c8203c6c39e5d0cb33da7d8f7e583e11d321eae326e1c15be625d`；21 `149162c5…1c94716`、20 `2ecc861a…7741f` 未变。
+- 22 HTML SHA256：`e4ba8a7e1f8abc609aacae399de5a9158ebc073d3bec88bc380c262a88ffc139`；21 `149162c5…1c94716`、20 `2ecc861a…7741f` 未变。
 - 2026-10-12 用 Playwright + 系统 Chrome 实测：桌面 1440 与手机 360/390，中英文 × 深浅；周天 1/7/13/19/25 秒定帧，25 秒与 1 秒姿态一致、无停顿；`?motion=reduce` 停在静止帧；主题切换不重置周天时钟、不累积画布（4 个 canvas）；355/375/390/768/1440 无横向溢出；无控制台错误。
 - 链接：Founder 整卡 → `/people/zaoqu-liu/?lang=&theme=`，返回 `piai-redesign-22.html` 并延续语言与主题；贺福初 → π-HuB 指定页；邮箱 mailto；Haros → GitHub。
 - 截图为定帧，不代表整段动效或用户审美认可。未在全新依赖安装环境复验构建。

@@ -1,6 +1,6 @@
 import React,{useEffect,useRef,useState,useSyncExternalStore} from 'react';
 import {createRoot} from 'react-dom/client';
-import {ArrowUpRight,ArrowUp,ArrowDown,Menu,X,Sun,Moon,Mail,Github} from 'lucide-react';
+import {ArrowUpRight,ArrowUp,ArrowDown,Menu,X,Sun,Moon,Mail,Github,BookOpen} from 'lucide-react';
 import {Sheet,SheetTrigger,SheetContent,SheetTitle,SheetDescription} from '../../../client/src/components/ui/sheet';
 import Logo from '../../../client/src/components/Logo';
 import CelestialWheel from './celestial-replica/view';
@@ -9,28 +9,28 @@ import AutonomousDiscovery from './autonomous-discovery';
 import StarlightBackdrop from './starlight-backdrop';
 import SiteMotion from './site-motion';
 import data from '../discovery-data.json';
+import ai4sIcon from './platforms/ai4s-news.svg';
+import scholarIcon from './platforms/omnischolar.svg';
+import eulerIcon from './platforms/euler.png';
 
-const papers=[
- ['KnowMe-Bench','Benchmarking Person Understanding for Lifelong Digital Companions','ACL','https://aclanthology.org/2026.acl-long.1394/','2026'],
- ['LiveCANNBench','Benchmark SWE AI Coding for Ascend CANN','Findings of ACL','https://aclanthology.org/2026.findings-acl.1143/','2026'],
- ['MemGovern','Enhancing Code Agents through Learning from Governed Human Experiences','arXiv','https://arxiv.org/abs/2601.06789','2026'],
- ['Controlled Self-Evolution','for Algorithmic Code Optimization','arXiv','https://arxiv.org/abs/2601.07348','2026'],
- ['π-HuB','The proteomic navigator of the human body','Nature · Perspective','https://www.nature.com/articles/s41586-024-08280-5','2024']
+const svgSrc=(svg:string)=>'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+const platforms:{id:string,name:string,url:string,icon?:string}[]=[
+ {id:'ai4s-news',name:'AI4S News',url:'https://ai4snews.wisdomeyes.cn/en',icon:svgSrc(ai4sIcon)},
+ {id:'omnischolar',name:'OmniScholar',url:'https://omnischolar.wisdomeyes.cn/',icon:svgSrc(scholarIcon)},
+ {id:'omniknowledge',name:'OmniKnowledge',url:'https://omniknowledge.wisdomeyes.cn/'},
+ {id:'euler',name:'Euler',url:'https://euler.wisdomeyes.cn/',icon:eulerIcon}
 ];
-const systems=[
- ['Haros','智能体工作台','连接 Codex、Claude Code 等智能体运行环境，在同一界面管理项目、对话与工作记录。','https://github.com/piai-lab/Haros'],
- ['OmniScholar','科学知识与研究线索','围绕科学问题，组织文献、证据与研究线索。',''],
- ['OmniSketch','科学图示','以科研图示呈现科学机制与研究思路。',''],
- ['OmniPlotter','数据可视化','面向研究数据的科学图表与可视化工具。','']
+function PlatformIcon({id}:{id:string}){const p=platforms.find(x=>x.id===id)!;return <span className={'platform-icon '+p.id} aria-hidden="true">{p.icon?<i style={{WebkitMaskImage:`url("${p.icon}")`,maskImage:`url("${p.icon}")`}}/>:<BookOpen size={17}/>}</span>}
+// [date, English title, Chinese title, English line, Chinese line, platform id]
+const news:[string,string,string,string,string,string][]=[
+ ['2026.10.10','OmniKnowledge released','OmniKnowledge 发布','','','omniknowledge'],
+ ['2026.09.20','OmniScholar released','OmniScholar 发布','','','omnischolar'],
+ ['2026.09.18','PathWeaver submitted to ICLR 2027','PathWeaver 投稿 ICLR 2027','Our work explores how explicit reasoning graphs can enhance diagnostic reasoning in pathology vision-language models','探索显式推理图如何增强病理视觉语言模型的诊断推理',''],
+ ['2026.09.16','OmniFigure submitted to ICLR 2027','OmniFigure 投稿 ICLR 2027','We explore a unified representation for data visualization, aiming to describe different visualization forms within a common framework','探索数据可视化的统一表示，在同一框架内描述不同的可视化形式',''],
+ ['2026.09.15','AI4S News released','AI4S News 发布','','','ai4s-news'],
+ ['2026.09.01','Founded πAI Lab','πAI Lab 成立','Advancing AI-ready scientific infrastructure and autonomous scientific discovery','推进 AI-ready 科学基础设施与自主科学发现','']
 ];
 
-// Line glyphs share the wheel's orbit language; each draws what its system does.
-const glyphs=[
- <><ellipse cx="32" cy="32" rx="25" ry="9" transform="rotate(-24 32 32)"/><ellipse cx="32" cy="32" rx="25" ry="9" transform="rotate(30 32 32)"/><circle cx="32" cy="32" r="5"/><circle className="node" cx="11" cy="42" r="2.2"/><circle className="node" cx="52" cy="45" r="2.2"/><circle className="node warm" cx="48" cy="17" r="2.2"/></>,
- <><path d="M12 44L24 20L40 28L52 14M24 20L30 50L40 28L50 46M12 44L30 50"/><circle className="node" cx="12" cy="44" r="2.2"/><circle className="node" cx="24" cy="20" r="2.2"/><circle className="node warm" cx="40" cy="28" r="2.8"/><circle className="node" cx="52" cy="14" r="2.2"/><circle className="node" cx="30" cy="50" r="2.2"/><circle className="node" cx="50" cy="46" r="2.2"/></>,
- <><path d="M10 46C22 46 20 18 32 18S42 46 54 46"/><path className="faint" d="M10 46L20 28M54 46L44 28"/><circle className="node" cx="20" cy="28" r="2"/><circle className="node" cx="44" cy="28" r="2"/><circle className="node warm" cx="32" cy="18" r="2.8"/></>,
- <><path className="faint" d="M10 12V52H56"/><path d="M14 46C22 44 24 34 31 32S41 26 44 20S50 14 54 13"/><circle className="node" cx="22" cy="42" r="2"/><circle className="node" cx="31" cy="32" r="2"/><circle className="node" cx="44" cy="20" r="2"/><circle className="node warm" cx="54" cy="13" r="2.8"/></>
-];
 function ClosingOrbit({reduced}:{reduced:boolean}){
  const ref=useRef<SVGSVGElement>(null);
  useEffect(()=>{const svg=ref.current;if(!svg)return;if(reduced){svg.pauseAnimations();svg.setCurrentTime(6);return}svg.unpauseAnimations();const io=new IntersectionObserver(([e])=>e?.isIntersecting?svg.unpauseAnimations():svg.pauseAnimations());io.observe(svg);return()=>io.disconnect()},[reduced]);
@@ -40,7 +40,7 @@ function ClosingOrbit({reduced}:{reduced:boolean}){
   {rings.map(([tilt,rx,ry,dur],i)=><g key={i} transform={`rotate(${tilt})`}><path id={'orbit-'+i} d={`M${-rx} 0A${rx} ${ry} 0 1 0 ${rx} 0A${rx} ${ry} 0 1 0 ${-rx} 0`} fill="none" stroke="url(#orbit-fade)" strokeWidth="1"/><circle r="9" fill="url(#orbit-spark)"><animateMotion dur={dur+'s'} begin={-i*11+'s'} repeatCount="indefinite"><mpath href={'#orbit-'+i}/></animateMotion></circle></g>)}
  </svg>
 }
-const sectionIds=['home','research','infrastructure','discovery','work','people','contact'];
+const sectionIds=['home','research','infrastructure','discovery','news','people','contact'];
 const initialTheme = (): 'dark'|'light' => document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
 const languageFromUrl=()=>new URLSearchParams(location.search).get('lang')!=='zh';
 const motionPreference=matchMedia('(prefers-reduced-motion: reduce)');
@@ -66,18 +66,15 @@ function App(){
   window.addEventListener('scroll',track,{passive:true});window.addEventListener('resize',track);track();
   return()=>{window.removeEventListener('scroll',track);window.removeEventListener('resize',track);if(frame)cancelAnimationFrame(frame)}
  },[]);
- const nav=[['research',t('研究方向','Research')],['work',t('研究成果','Selected work')],['people',t('团队','Team')]];
+ const nav=[['research',t('研究方向','Research')],['news',t('新闻与动态','News & Events')],['people',t('团队','Team')]];
  const navLinks=nav.map(([id,label])=><a key={id} href={'#'+id} aria-current={(section===id||(id==='research'&&['infrastructure','discovery'].includes(section)))?'location':undefined} onClick={e=>{e.preventDefault();go(id)}}>{label}</a>);
- const systemKinds=['Agent workspace','Scientific knowledge','Scientific illustration','Data visualization'];
- const systemNotes=['A shared workspace for agent runtimes, projects, conversations and research history','Organizing literature, evidence and research leads around scientific questions','Illustrations that make mechanisms and research ideas legible','Charts and visualization tools for research data'];
- const systemNotesZh=['连接 Codex、Claude Code 等智能体运行环境，在同一界面管理项目、对话与工作记录','围绕科学问题，组织文献、证据与研究线索','以科研图示呈现科学机制与研究思路','面向研究数据的科学图表与可视化工具'];
  return <div className={'biomedical starlight-site research-site frontier-site v22 '+(reduced?'reduced-motion':'')}>
  <StarlightBackdrop reduced={reduced} theme={theme}/><SiteMotion reduced={reduced} paused={false}/>
  <a className="skip-link" href="#research">{t('跳至正文','Skip to content')}</a>
  <header className={"site-nav"+(section!=="home"?" nav-scrolled":"")}>
   <a className="brand" href="#home" aria-label={t('πAI Lab 首页','πAI Lab home')} onClick={e=>{e.preventDefault();go('home')}}><Logo/></a>
   <nav aria-label={t('主导航','Main navigation')}>{navLinks}</nav>
-  <div className="nav-actions"><a className="contact-link" href="#contact" onClick={e=>{e.preventDefault();go('contact')}}>{t('联系合作','Contact')}</a><button className="theme-switch" onClick={toggleTheme} aria-label={theme==='dark'?t('切换浅色主题','Switch to light theme'):t('切换深色主题','Switch to dark theme')} title={theme==='dark'?t('浅色主题','Light theme'):t('深色主题','Dark theme')}>{theme==='dark'?<Sun size={18}/>:<Moon size={18}/>}</button><button className="language-switch" onClick={changeLanguage} lang={en?'zh-CN':'en'} aria-label={en?'切换至中文':'Switch to English'}>{en?'中文':'EN'}</button>
+  <div className="nav-actions"><a className="contact-link" href="#contact" onClick={e=>{e.preventDefault();go('contact')}}>{t('联系合作','Contact')}</a><button className="theme-switch" onClick={toggleTheme} aria-label={theme==='dark'?t('切换浅色主题','Switch to light theme'):t('切换深色主题','Switch to dark theme')} title={theme==='dark'?t('浅色主题','Light theme'):t('深色主题','Dark theme')}>{theme==='dark'?<Sun size={19}/>:<Moon size={19}/>}</button><button className="language-switch" onClick={changeLanguage} lang={en?'zh-CN':'en'} aria-label={en?'切换至中文':'Switch to English'}>{en?'中文':'EN'}</button>
   <Sheet open={menu} onOpenChange={setMenu}><SheetTrigger className="mobile-menu" aria-label={t('打开导航','Open navigation')}><Menu size={22}/></SheetTrigger><SheetContent className="bio-menu" onCloseAutoFocus={e=>{if(menuDestination.current){e.preventDefault();menuDestination.current.focus({preventScroll:true});menuDestination.current=null}}}><SheetTitle><Logo/></SheetTitle><SheetDescription>{t('AI-ready 科学基础设施 · 自主科学发现','AI-ready scientific infrastructure · Autonomous scientific discovery')}</SheetDescription><button onClick={()=>setMenu(false)} aria-label={t('关闭导航','Close navigation')}><X size={20}/></button><nav>{navLinks}<a href="#contact" onClick={e=>{e.preventDefault();go('contact')}}>{t('联系合作','Contact')}</a></nav></SheetContent></Sheet></div>
  </header>
  <main>
@@ -105,11 +102,10 @@ function App(){
    <AutonomousDiscovery en={en} reduced={reduced} theme={theme}/>
   </section>
  </section>
- <section className="work section" id="work" aria-labelledby="work-heading">
-  <div className="work-title"><h2 id="work-heading">{t('研究成果','Selected work')}</h2><p>{t('智能体方法、研究系统与科学应用','Agent methods, research systems and scientific applications')}</p></div>
-  <div className="papers">{[...new Set(papers.map(p=>p[4]))].map(year=><div className="paper-year-group" key={year}><p className="paper-year">{year}</p><div>{papers.filter(p=>p[4]===year).map(p=><a className="paper" key={p[0]} href={p[3]} target="_blank" rel="noreferrer"><div><h3>{p[0]}</h3><p>{p[1]}</p></div><span className="paper-venue">{p[2]}</span><ArrowUpRight size={18} aria-hidden="true"/></a>)}</div></div>)}</div>
-  <h3 className="systems-heading">{t('研究系统','Research systems')}</h3>
-  <div className="systems-grid">{systems.map((s,i)=><article key={s[0]}><svg className="system-glyph" viewBox="0 0 64 64" aria-hidden="true" focusable="false">{glyphs[i]}</svg><div className="system-title"><h4>{s[0]}</h4>{s[3]?<a href={s[3]} target="_blank" rel="noreferrer" aria-label={t('查看 '+s[0]+' 开源项目','View '+s[0]+' on GitHub')}><Github size={17}/></a>:null}</div><p className="system-kind">{t(s[1],systemKinds[i])}</p><p>{en?systemNotes[i]:systemNotesZh[i]}</p></article>)}</div>
+ <section className="news section" id="news" aria-labelledby="news-heading">
+  <div className="section-title"><h2 id="news-heading">{t('新闻与动态','News & Events')}</h2></div>
+  <ol className="news-list">{news.map(([date,title,titleZh,line,lineZh,platform])=>{const p=platforms.find(x=>x.id===platform);const body=<><time dateTime={date.replaceAll('.','-')}>{date}</time><div><h3>{en?title:titleZh}</h3>{line&&<p>{en?line:lineZh}</p>}</div>{p?<><PlatformIcon id={p.id}/><ArrowUpRight size={18} aria-hidden="true"/></>:null}</>;return <li key={date} className="news-item">{p?<a href={p.url} target="_blank" rel="noopener noreferrer">{body}</a>:<div>{body}</div>}</li>})}</ol>
+  <div className="platforms"><h3>{t('平台','Platforms')}</h3><ul>{platforms.map(p=><li key={p.id}><a href={p.url} target="_blank" rel="noopener noreferrer"><PlatformIcon id={p.id}/><span>{p.name}</span><ArrowUpRight size={16} aria-hidden="true"/></a></li>)}</ul></div>
  </section>
  <section className="people section" id="people" aria-label={t('团队与合作者','Team and collaborators')}>
   <section className="people-group" aria-labelledby="team-heading">
