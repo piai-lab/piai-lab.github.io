@@ -1,12 +1,13 @@
-// The checked-in personal page has one source: client/public/people/zaoqu-liu.
+// Each personal page has one source: client/public/people/<slug>.
 // Pages publishes docs; the standalone lab prototype uses its own static root.
 import fs from 'node:fs';
 import path from 'node:path';
 
 const root = path.resolve(import.meta.dirname, '..');
-const source = path.join(root, 'client/public/people/zaoqu-liu');
-for (const output of ['docs', 'artifacts/ui-prototypes']) {
-  const destination = path.join(root, output, 'people/zaoqu-liu');
+const people = path.join(root, 'client/public/people');
+for (const slug of fs.readdirSync(people)) for (const output of ['docs', 'artifacts/ui-prototypes']) {
+  const source = path.join(people, slug);
+  const destination = path.join(root, output, 'people', slug);
   fs.mkdirSync(destination, {recursive: true});
   fs.cpSync(source, destination, {recursive: true});
   if (output === 'artifacts/ui-prototypes') {
@@ -17,4 +18,4 @@ for (const output of ['docs', 'artifacts/ui-prototypes']) {
     ));
   }
 }
-console.log('Built founder profile for Pages and the current (v22) preview');
+console.log('Built personal pages for Pages and the current (v22) preview');
