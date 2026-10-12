@@ -40,6 +40,8 @@ function ClosingOrbit({reduced}:{reduced:boolean}){
   {rings.map(([tilt,rx,ry,dur],i)=><g key={i} transform={`rotate(${tilt})`}><path id={'orbit-'+i} d={`M${-rx} 0A${rx} ${ry} 0 1 0 ${rx} 0A${rx} ${ry} 0 1 0 ${-rx} 0`} fill="none" stroke="url(#orbit-fade)" strokeWidth="1"/><circle r="9" fill="url(#orbit-spark)"><animateMotion dur={dur+'s'} begin={-i*11+'s'} repeatCount="indefinite"><mpath href={'#orbit-'+i}/></animateMotion></circle></g>)}
  </svg>
 }
+// Team members whose personal pages live under /people/<slug>/
+const onSite:Record<string,string>={'Zaoqu Liu':'zaoqu-liu','Yushuai Wu':'yushuai-wu'};
 const phrases:Record<string,string>={
  '中山大学副教授':'中山大学|副教授',
  '德克萨斯大学休斯顿健康科学中心博士后研究员':'德克萨斯大学|休斯顿健康科学中心|博士后研究员',
@@ -128,10 +130,10 @@ function App(){
   <div className="people-heading"><h2 id="team-heading">{t('团队成员','Team')}</h2></div>
   <div className="people-grid">
    {data.members.map(p=>{
-    const isFounder=p.nameEn==='Zaoqu Liu',isPresident=p.nameEn==='Fuchu He';
-    const profileHref=isFounder?`/people/zaoqu-liu/?lang=${en?'en':'zh'}&theme=${theme}`:isPresident?'https://www.pi-hub.org.cn/news/news/%2091':null;
+    const isFounder=p.nameEn==='Zaoqu Liu',isPresident=p.nameEn==='Fuchu He',page=onSite[p.nameEn];
+    const profileHref=page?`/people/${page}/?lang=${en?'en':'zh'}&theme=${theme}`:isPresident?'https://www.pi-hub.org.cn/news/news/%2091':null;
     const content=<><div className="portrait"><img src={data.assets[p.avatar as keyof typeof data.assets]} alt={en?p.nameEn:p.nameZh} loading="lazy"/></div><div className="person-name"><h3>{en?p.nameEn:p.nameZh}{profileHref&&<ArrowUpRight size={15} aria-hidden="true"/>}</h3>{!en&&<p className="person-alias">{p.nameEn}</p>}{isFounder&&<p className="person-role founder">{t('创始人','Founder')}</p>}{isPresident&&<p className="person-role">{ph(t('广东智慧医学国际研究院院长','President, IAPM'))}</p>}<p className="person-role">{ph(isFounder?t('生物医学多模态大模型科学家','Biomedical Multimodal Large Model Scientist'):(en?p.roleEn:p.roleZh))}</p></div></>;
-    return <article key={p.nameEn}>{profileHref?<a className="person-profile" href={profileHref} target={isPresident?'_blank':undefined} rel={isPresident?'noopener noreferrer':undefined} aria-label={isFounder?t('刘灶渠的个人主页','Zaoqu Liu’s personal website'):t('贺福初院士的 π-HuB 官方介绍（新窗口）','Fuchu He’s π-HuB profile (opens in a new tab)')}>{content}</a>:content}</article>
+    return <article key={p.nameEn}>{profileHref?<a className="person-profile" href={profileHref} target={isPresident?'_blank':undefined} rel={isPresident?'noopener noreferrer':undefined} aria-label={page?t(`${p.nameZh}的个人主页`,`${p.nameEn}’s personal website`):t('贺福初院士的 π-HuB 官方介绍（新窗口）','Fuchu He’s π-HuB profile (opens in a new tab)')}>{content}</a>:content}</article>
    })}
   </div>
   </section>

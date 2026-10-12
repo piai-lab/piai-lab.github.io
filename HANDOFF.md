@@ -64,7 +64,7 @@ python3 -m http.server 4318 --bind 127.0.0.1 --directory artifacts/ui-prototypes
 
 ## 官网内个人页
 
-唯一维护源 `client/public/people/zaoqu-liu/`；`node scripts/build-founder-profile.mjs` 生成 `docs/people/zaoqu-liu/` 和原型旁预览副本（后者 gitignore），原型返回链接现指向 v22。不手改产物，不改原页面文案、布局或动效。
+个人页唯一维护源为 `client/public/people/<slug>/`（现有 `zaoqu-liu`、`yushuai-wu`）；`node scripts/build-founder-profile.mjs` 逐个生成 `docs/people/<slug>/` 和原型旁预览副本（后者 gitignore）。团队卡片是否链接站内个人页由 `version-22/app.tsx` 的 `onSite` 映射决定。吴俣帅页沿用刘灶渠页的样式与脚本，内容来自其简历，不含电话、不含机器人头像，原型返回链接现指向 v22。不手改产物，不改原页面文案、布局或动效。
 
 ## 下一步
 

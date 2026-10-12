@@ -112,5 +112,5 @@ temp/
 client/public/__manus__/version.json
 .project-config.json
 
-# Generated alongside the v21 preview from client/public/people/zaoqu-liu
-/artifacts/ui-prototypes/people/zaoqu-liu/
+# Generated alongside the v22 preview from client/public/people/
+/artifacts/ui-prototypes/people/
