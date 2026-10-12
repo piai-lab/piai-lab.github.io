@@ -7,7 +7,7 @@ const result=await build({entryPoints:[path.join(dir,'version-22/app.tsx')],bund
 const js=result.outputFiles[0].text.replaceAll('</script','<\\/script');
 // Keep the existing Latin faces; the current Chinese subset replaces the older incomplete faces.
 const latinFonts=fs.readFileSync(path.join(dir,'discovery-fonts.css'),'utf8').replace(/@font-face\s*\{[^}]*font-family:\s*'Noto Sans SC'[^}]*\}/g,'');
-const css=latinFonts+'\n'+['research-cjk-fonts.css','autonomous-discovery.css','model-dikw/style.css','celestial-replica/style.css','version-22/site.css'].map(f=>fs.readFileSync(path.join(dir,f),'utf8')).join('\n');
+const css=latinFonts+'\n'+['version-22/cjk-fonts.css','autonomous-discovery.css','model-dikw/style.css','celestial-replica/style.css','version-22/site.css'].map(f=>fs.readFileSync(path.join(dir,f),'utf8')).join('\n');
 const licenses=fs.readFileSync(path.join(dir,'THIRD_PARTY_NOTICES.txt'),'utf8');
 const favicon=fs.readFileSync(path.resolve(dir,'../../client/public/brand/piai-lab-favicon.svg'),'utf8').replace('#dce8ff','#a0dacb');
 const icon='<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,'+Buffer.from(favicon).toString('base64')+'">';

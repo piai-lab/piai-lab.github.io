@@ -114,7 +114,7 @@ function App(){
   </section>
  </section>
  </main>
- <footer id="contact" className="section" aria-labelledby="contact-heading"><div className="contact-layout"><h2 id="contact-heading">{t('欢迎研究合作','Open to collaboration')}</h2><div className="contact-details"><p>{t('围绕科学基础设施、自主发现与智能体方法，开展学术交流与联合研究','Academic exchange and joint research on scientific infrastructure, autonomous discovery and agent methods')}</p><a href="mailto:liuzaoqu@163.com"><Mail size={18} aria-hidden="true"/>liuzaoqu@163.com</a></div></div><div className="footer-meta"><span>© 2026 πAI Lab</span><a href="https://github.com/piai-lab" target="_blank" rel="noreferrer"><Github size={16} aria-hidden="true"/>GitHub</a><a href="#home" onClick={e=>{e.preventDefault();go('home')}}>{t('返回顶部','Back to top')}<ArrowUp size={16} aria-hidden="true"/></a></div></footer>
+ <footer id="contact" className="section" aria-labelledby="contact-heading"><div className="contact-layout"><h2 id="contact-heading">{t('欢迎研究合作','Open to collaboration')}</h2><div className="contact-details"><p>{en?'Academic exchange and joint research on scientific infrastructure, autonomous discovery and agent methods':<>围绕科学基础设施、自主发现与智能体方法，<span className="keep">开展学术交流与联合研究</span></>}</p><a href="mailto:liuzaoqu@163.com"><Mail size={18} aria-hidden="true"/>liuzaoqu@163.com</a></div></div><div className="footer-meta"><span>© 2026 πAI Lab</span><a href="https://github.com/piai-lab" target="_blank" rel="noreferrer"><Github size={16} aria-hidden="true"/>GitHub</a><a href="#home" onClick={e=>{e.preventDefault();go('home')}}>{t('返回顶部','Back to top')}<ArrowUp size={16} aria-hidden="true"/></a></div></footer>
  </div>
 }
 createRoot(document.getElementById('root')!).render(<App/>);
