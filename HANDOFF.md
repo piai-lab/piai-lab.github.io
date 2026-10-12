@@ -8,7 +8,7 @@
 
 - 分支：`feat/lab-v21-design-handoff`，对应 [Draft PR #7](https://github.com/piai-lab/piai-lab.github.io/pull/7)，未合并、未部署。续接时先核对 `git status --short`、`git log -3 --oneline`。
 - 当前候选为 `piai-redesign-22.html`。**用户尚未对 22 做最终视觉验收**；20/21 文件未改。
-- Pages 实际发布 `docs/`；22 仍是独立原型，不等于官网首页上线。其余历史 `artifacts/` 草稿留在工作区，未提交、未删除。
+- GitHub Pages 与 Vercel（piailab.cn，`vercel.json` 指定直接发布 `docs/`、跳过安装与构建）都发布 `docs/`。`node artifacts/ui-prototypes/build-22.mjs` 同时把 22 写为 `docs/index.html`，同步 `docs/team/` 照片，`docs/404.html` 回到首页；旧 Vite 首页的 `docs/assets/` 与 `docs/team/index.html` 已删除。不要手改 `docs/index.html`。其余历史 `artifacts/` 草稿留在工作区，未提交、未删除。
 
 ## 入口
 
