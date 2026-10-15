@@ -69,3 +69,14 @@ python3 -m http.server 4318 --bind 127.0.0.1 --directory artifacts/ui-prototypes
 ## 下一步
 
 等待用户审阅 22，尤其是首屏副句、浅色主题和人物照片底色是否统一。审阅通过前不替换生产首页。
+
+## 闫明阳个人页（2026-10-15）
+
+- 分支：`feat/mingyang-yan-profile`，从 main `03055f6` 创建；已通过 smallNyx 的 fork 提交 [PR #9](https://github.com/piai-lab/piai-lab.github.io/pull/9)，待审阅合并。
+- 唯一维护源：`client/public/people/mingyang-yan/`，通过现有 `build-founder-profile.mjs` 生成 `docs/people/mingyang-yan/`；首页 `onSite` 映射新增 Mingyang Yan，整张团队卡片链接 `/people/mingyang-yan/` 并保留语言与主题。页面底部可返回当前语言和主题的团队区。
+- 内容来自本人确认的原型：AI 产品与全栈工程师，研究院职责为 OmniMind 和 AI4S News 开发；保留教育、工作经历、OmniFigure 投稿状态和 Idea2Paper 参与说明。无研究方向、荣誉、毕业设计或论文资料占位。透明 PNG 人像沿用此前按本人要求处理的版本。
+- 站内适配默认英文、深色；中文保留中英文姓名，英文仅显示英文姓名。照片独立为本地资源，增加 canonical、分享元信息与来源说明。
+- 已运行 `node scripts/build-founder-profile.mjs`、`node artifacts/ui-prototypes/build-22.mjs` 和 `pnpm check`；个人页源与 docs 副本逐文件一致。两个首页生成产物的语义改动均精确限定为新增个人页映射。
+- 浏览器检查：1440 桌面、390/320 窄屏，中英文和深浅主题，无横向溢出；透明头像、邮件和 GitHub 链接正常。实测英文深色、中文浅色的“团队卡片 → 个人页 → 首页”状态传递；控制台无错误或警告。
+- 安装限制：仓库现有 `pnpm install --frozen-lockfile` 因 overrides 与 lockfile 不一致失败。使用非冻结安装完成本地构建，未提交依赖或 lockfile 变更。
+- PR 合并前页面尚未上线；本次授权为提交 PR。
