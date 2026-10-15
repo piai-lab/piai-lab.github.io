@@ -72,7 +72,7 @@ python3 -m http.server 4318 --bind 127.0.0.1 --directory artifacts/ui-prototypes
 
 ## 闫明阳个人页（2026-10-15）
 
-- 分支：`feat/mingyang-yan-profile`，从 main `03055f6` 创建；用户要求向本仓库提交个人主页 PR。
+- 分支：`feat/mingyang-yan-profile`，从 main `03055f6` 创建；已通过 smallNyx 的 fork 提交 [PR #9](https://github.com/piai-lab/piai-lab.github.io/pull/9)，待审阅合并。
 - 唯一维护源：`client/public/people/mingyang-yan/`，通过现有 `build-founder-profile.mjs` 生成 `docs/people/mingyang-yan/`；首页 `onSite` 映射新增 Mingyang Yan，整张团队卡片链接 `/people/mingyang-yan/` 并保留语言与主题。页面底部可返回当前语言和主题的团队区。
 - 内容来自本人确认的原型：AI 产品与全栈工程师，研究院职责为 OmniMind 和 AI4S News 开发；保留教育、工作经历、OmniFigure 投稿状态和 Idea2Paper 参与说明。无研究方向、荣誉、毕业设计或论文资料占位。透明 PNG 人像沿用此前按本人要求处理的版本。
 - 站内适配默认英文、深色；中文保留中英文姓名，英文仅显示英文姓名。照片独立为本地资源，增加 canonical、分享元信息与来源说明。
