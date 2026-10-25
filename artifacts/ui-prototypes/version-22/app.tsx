@@ -41,7 +41,7 @@ function ClosingOrbit({reduced}:{reduced:boolean}){
  </svg>
 }
 // Team members whose personal pages live under /people/<slug>/
-const onSite:Record<string,string>={'Zaoqu Liu':'zaoqu-liu','Yushuai Wu':'yushuai-wu'};
+const onSite:Record<string,string>={'Zaoqu Liu':'zaoqu-liu','Ronghao Chen':'ronghao-chen','Yushuai Wu':'yushuai-wu'};
 const phrases:Record<string,string>={
  '中山大学副教授':'中山大学|副教授',
  '德克萨斯大学休斯顿健康科学中心博士后研究员':'德克萨斯大学|休斯顿健康科学中心|博士后研究员',
