@@ -1,7 +1,8 @@
 import {build} from 'esbuild';
 import fs from 'node:fs';
 import path from 'node:path';
-import '../../scripts/build-founder-profile.mjs';
+import {buildPersonalPages} from '../../scripts/build-founder-profile.mjs';
+buildPersonalPages('artifacts/ui-prototypes', '/piai-redesign-21.html');
 const dir=import.meta.dirname;
 const result=await build({entryPoints:[path.join(dir,'version-21/app.tsx')],bundle:true,write:false,minify:true,format:'iife',jsx:'automatic',alias:{'@':path.resolve(dir,'../../client/src')},define:{'process.env.NODE_ENV':'"production"'},legalComments:'inline',loader:{'.css':'empty','.svg':'text','.png':'dataurl'}});
 const js=result.outputFiles[0].text.replaceAll('</script','<\\/script');

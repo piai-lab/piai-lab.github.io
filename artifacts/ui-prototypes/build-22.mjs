@@ -1,7 +1,9 @@
 import {build} from 'esbuild';
 import fs from 'node:fs';
 import path from 'node:path';
-import '../../scripts/build-founder-profile.mjs';
+// Historical preview only. Production is built by build-25.mjs --production.
+import {buildPersonalPages} from '../../scripts/build-founder-profile.mjs';
+buildPersonalPages('artifacts/ui-prototypes', '/piai-redesign-22.html');
 const dir=import.meta.dirname;
 const result=await build({entryPoints:[path.join(dir,'version-22/app.tsx')],bundle:true,write:false,minify:true,format:'iife',jsx:'automatic',alias:{'@':path.resolve(dir,'../../client/src')},define:{'process.env.NODE_ENV':'"production"'},legalComments:'inline',loader:{'.css':'empty','.svg':'text','.png':'dataurl'}});
 const js=result.outputFiles[0].text.replaceAll('</script','<\\/script');
@@ -14,10 +16,3 @@ const icon='<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base6
 const html='<!doctype html><html lang="en" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>πAI Lab · Autonomous Discovery &amp; AI-Ready Infrastructure</title><meta name="description" content="πAI Lab pursues autonomous scientific discovery and builds AI-ready scientific infrastructure">'+icon+'<script>document.documentElement.dataset.theme=new URLSearchParams(location.search).get("theme")==="light"?"light":"dark"</script><style>'+css+'</style></head><body><!-- 22: one starfield, one reading rhythm; adapted from v21. -adapted from the verified v20 sources. Licenses: '+licenses.replaceAll('--','—')+' --><div id="root"></div><script>'+js+'</script></body></html>';
 fs.writeFileSync(path.join(dir,'piai-redesign-22.html'),html);
 console.log('Built piai-redesign-22.html:',Buffer.byteLength(html),'bytes');
-// GitHub Pages and Vercel both publish docs/, where v22 is the home page; retired routes fall back to it.
-const docs=path.resolve(dir,'../../docs');
-fs.writeFileSync(path.join(docs,'index.html'),html);
-fs.writeFileSync(path.join(docs,'404.html'),'<!doctype html><html lang="en"><head><meta charset="utf-8"><title>πAI Lab</title><meta http-equiv="refresh" content="0; url=/"><link rel="canonical" href="/"></head><body><a href="/">πAI Lab</a></body></html>\n');
-fs.cpSync(path.resolve(dir,'../../client/public/team'),path.join(docs,'team'),{recursive:true});
-fs.rmSync(path.join(docs,'team/index.html'),{force:true});
-console.log('Published v22 to docs/');
