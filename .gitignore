@@ -114,3 +114,6 @@ client/public/__manus__/version.json
 
 # Generated alongside the v22 preview from client/public/people/
 /artifacts/ui-prototypes/people/
+
+# Reproducible v25 preview; production output is committed under docs/.
+/artifacts/ui-prototypes/version-25/preview/

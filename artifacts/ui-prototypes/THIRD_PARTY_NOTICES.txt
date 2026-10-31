@@ -1,17 +1,16 @@
-THIRD-PARTY NOTICES — πAI Lab website design candidates 20 and 21
+THIRD-PARTY NOTICES — πAI Lab website (v25 and historical candidates)
 
 Scope
 
-This repository contains a website design candidate and a read-only reference
-snapshot of candidate 20. It is not a distribution of standalone components or
+This repository contains the πAI Lab website and historical design candidates. It is not a distribution of standalone components or
 a component collection. The React Bits notice below permits distribution as
 part of an application, website or product and retains its restriction on
 selling, sublicensing or redistributing the components themselves. Do not
 remove that restriction or describe the complete candidate as MIT-only.
 
 This file records license texts for the 35 npm packages that contribute bytes
-to both candidates 20 and 21, plus the existing graphical source and font
-notices. Their esbuild output package sets are identical. Package names and
+to v25, plus the existing graphical source and font notices. The contributing
+package versions match the notices retained from candidates 20 and 21. Package names and
 versions were read from the installed packages; each package appears once. Original license texts are
 reproduced without rewriting their terms. Six small Radix packages omit a
 license file in their npm payloads; their manifests identify the same
@@ -36,8 +35,9 @@ sibling project's notice or claiming it was version-tag verified.
 
 Asset context
 
-The 15 portrait images embedded in discovery-data.json are byte-identical to
-the corresponding existing client/public/team files. This notice does not
+The 16 portrait images sourced from discovery-data.json are byte-identical to
+the corresponding existing client/public/team files; v25 emits them as separate
+content-addressed assets. This notice does not
 relicense those portraits. The wisdom-center-approved-reference.png image is
 a user-selected generated visual concept, according to the existing local
 model-dikw/README.md; it is not measured scientific data or a reconstructed
